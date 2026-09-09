@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1728">
+<script src="footerlaw.js?v=20260825a"></script>
+<title>SIXTWENTYSIX — Contact</title>
+<!--
+  CONTACT — synced 1:1 to Full Site frame 220:1495 "Contact — 1920" (2026-08-18).
+  White directory page: statement + hello/phone top row, then three columns —
+  Headquarters/Careers/Follow/More · Team (two sub-columns) · Representation.
+  No footer on this frame.
+-->
+<style>
+  @font-face {
+    font-family: 'HelveticaNeueCyr';
+    src: url('fonts/HelveticaNeueCyr-Roman.ttf') format('truetype');
+    font-weight: 400;
+  }
+  @font-face {
+    font-family: 'HelveticaNeueCyr';
+    src: url('fonts/HelveticaNeueCyr-Medium.ttf') format('truetype');
+    font-weight: 500;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #fff; overscroll-behavior: none; }
+  body {
+    overflow-x: clip; /* auto broke position:sticky in Safari */
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  }
+  p { margin: 0; }
+  a { color: inherit; text-decoration: none; }
+  img { display: block; }
+  .cyr { font-family: 'HelveticaNeueCyr', 'Helvetica Neue', Helvetica, sans-serif; }
+
+  .page {
+    position: relative;
+    width: 1728px;
+    height: 1131px;
+    margin: 0 auto;
+    background: #fff;
+  }
+
+  /* ---------- Scroll fade-in ---------- */
+  .fd { opacity: 0; transform: translateY(28px); }
+  .fd.seen {
+    opacity: 1; transform: none;
+    transition: opacity 0.9s cubic-bezier(0.16,1,0.3,1), transform 0.9s cubic-bezier(0.16,1,0.3,1);
+    transition-delay: var(--fd, 0s);
+  }
+
+  /* ---------- Header (interior component 459:3638) ---------- */
+  .hdr {
+    /* FIXED, not sticky (Joel 8/21 zero-vibration): sticky repositions
+       asynchronously under scripted per-frame scrolling (the smooth
+       scroll), which reads as a 1px bob. Fixed is compositor-pinned. */
+    position: fixed;
+    top: 0;
+    left: 50%;
+    margin-left: -864px;
+    width: 1728px;
+    height: 118px;
+    background: #fff;
+    z-index: 50;
+  }
+  .hdr-logo { position: absolute; left: 63px; top: 43px; width: 146px; height: 50px; }
+  .hdr-logo .v1 { position: absolute; top: 0.11%; right: 55.69%; bottom: 0; left: 0; }
+  .hdr-logo .v2 { position: absolute; top: 1.81%; right: 8.88%; bottom: 1.81%; left: 42.46%; }
+  .hdr-logo .v3 { position: absolute; top: 0; right: 0; bottom: 82.78%; left: 91.12%; }
+  .hdr-logo img { position: absolute; inset: 0; width: 100%; height: 100%; max-width: none; }
+  .hdr-menu {
+    position: absolute; left: 1636px; top: 44px; width: 57px; height: 30px;
+    cursor: pointer;
+  }
+  .hdr-menu .l {
+    position: absolute; left: 12px; width: 33px; height: 2px;
+    background: #000; border-radius: 2px;
+  }
+  .nav-sm {
+    position: absolute;
+    font-size: 16px; line-height: 25px; letter-spacing: 0.48px;
+    color: #000; white-space: nowrap; font-weight: 400;
+  }
+
+  /* ===================== TOP ROW ===================== */
+  .ct-statement {
+    position: absolute; left: 134px; top: 284px; width: 699px;
+    font-weight: 500; font-size: 40px; line-height: 50px; letter-spacing: -1.2px;
+    color: #000;
+  }
+  .ct-mail {
+    position: absolute; left: 1164px; top: 296px;
+    font-family: 'HelveticaNeueCyr', 'Helvetica Neue', Helvetica, sans-serif;
+    font-weight: 500; font-size: 34px; line-height: 34px;
+    color: #000; white-space: nowrap;
+  }
+  .ct-mail:hover { opacity: 0.6; }
+  .ct-phone:hover { opacity: 0.6; }
+  .ct-phone {
+    position: absolute; left: 1164px; top: 358px;
+    font-family: 'HelveticaNeueCyr', 'Helvetica Neue', Helvetica, sans-serif;
+    font-weight: 300; font-size: 34px; line-height: 34px;
+    color: #000; white-space: nowrap;
+  }
+
+  /* ===================== DIRECTORY ===================== */
+  .ct-label {
+    position: absolute;
+    font-family: 'HelveticaNeueCyr', 'Helvetica Neue', Helvetica, sans-serif;
+    font-weight: 500; font-size: 13px; line-height: 12.8px;
+    color: #737373; white-space: nowrap;
+  }
+  .ct-body {
+    position: absolute;
+    font-weight: 400; font-size: 16px; line-height: 21.6px; letter-spacing: -0.32px;
+    color: #000; white-space: pre-line;
+  }
+  .ct-link {
+    position: absolute;
+    font-family: 'HelveticaNeueCyr', 'Helvetica Neue', Helvetica, sans-serif;
+    font-weight: 400; font-size: 17px; line-height: 16.9px;
+    color: #000; white-space: nowrap; cursor: pointer;
+  }
+  .ct-link:hover { opacity: 0.6; }
+  .ct-name {
+    position: absolute;
+    font-family: 'HelveticaNeueCyr', 'Helvetica Neue', Helvetica, sans-serif;
+    font-weight: 500; font-size: 19px; line-height: 18.8px;
+    color: #000; white-space: nowrap;
+  }
+  .ct-role {
+    position: absolute;
+    font-family: 'HelveticaNeueCyr', 'Helvetica Neue', Helvetica, sans-serif;
+    font-weight: 400; font-size: 14px; line-height: 20.3px;
+    color: #737373;
+  }
+  .ct-role-hn {
+    position: absolute;
+    font-weight: 400; font-size: 16px; line-height: 21.6px; letter-spacing: -0.32px;
+    color: #737373;
+  }
+
+  /* ---------- Footer (black, SIX26) — THE FOOTER LAW: on every page ---------- */
+  @font-face {
+    font-family: 'Azeret Mono';
+    src: url('fonts/AzeretMono-VF.woff2') format('woff2-variations');
+    font-weight: 100 900;
+  }
+  .footer {
+    position: absolute; left: 0; width: 1728px; height: 349px;
+    background: #000; overflow: hidden; z-index: 6;
+  }
+  .foot-cta {
+    position: absolute; left: 40px; top: 60px; width: 470px; height: 74px;
+    font-weight: 700; font-size: 24px; line-height: 24px;
+    color: #fff; text-transform: uppercase; word-break: break-word;
+  }
+  .foot-cta a { text-decoration: underline; text-underline-position: from-font; cursor: pointer; color: inherit; }
+  .foot-mark { position: absolute; top: 54.44%; right: 2.23%; bottom: -35.46%; left: 2.29%; }
+  .foot-mark img { position: absolute; inset: 0; width: 100%; height: 100%; max-width: none; }
+  .foot-col {
+    position: absolute;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; /* 9/4 Joel: footers all in Helvetica (was Azeret Mono) */
+    font-weight: 400; font-size: 15px; line-height: 17.5px;
+    color: #fff; text-transform: uppercase; word-break: break-word;
+  }
+  .foot-col .b, .foot-b { font-weight: 700; }
+</style>
+</head>
+<body>
+<script>
+(function () {
+  if (window.self === window.top && !location.search.includes('flat=1')) {
+    var page = location.pathname.split('/').pop() || 'index.html';
+    location.replace('view.html?p=' + encodeURIComponent(page));
+  }
+  if (location.search.includes('reveal=1')) {
+    document.write('<style>.fd{opacity:1 !important; transform:none !important;}' +
+      '.hdr{position:relative !important;}' +
+      '*,*::before,*::after{transition:none !important; animation:none !important;}' +
+      '#menu-overlay{display:none !important;}</style>');
+  }
+})();
+</script>
+
+<div class="page" id="page">
+
+  <!-- ============ HEADER ============ -->
+  <div class="hdr">
+    <a href="index.html" id="lettermark" style="left:63px; top:0; width:639px; height:161px; z-index:2;"></a>
+    <p class="nav-sm" style="left:504px; top:43px;">LOS ANGELES, CA</p>
+    <p class="nav-sm" style="left:504px; top:68px;">NEW YORK, NY</p>
+    <div class="hdr-menu" title="Menu">
+      <div class="l" style="top:12px;"></div>
+      <div class="l" style="top:20px;"></div>
+      <div class="l" style="top:28px;"></div>
+    </div>
+  </div>
+
+  <!-- ============ TOP ROW ============ -->
+  <p class="ct-statement fd">No matter where you are in your creative and production journey, we're ready to dive in and get to work.</p>
+  <a class="ct-mail fd" style="--fd:0.1s;" href="mailto:hello@sixtwentysix.co">hello@sixtwentysix.co</a>
+  <a class="ct-phone fd" style="--fd:0.15s; text-decoration:none;" href="tel:+18182330518">818-233-0518</a>
+
+  <!-- ============ COLUMN 1: HQ / CAREERS / FOLLOW / MORE ============ -->
+  <p class="ct-label fd" style="left:134px; top:480px;">Headquarters</p>
+  <a class="ct-body fd" style="left:134px; top:510px; width:159px; display:block; text-decoration:none;" href="https://www.google.com/maps/search/?api=1&query=5976+Washington+Blvd,+Culver+City,+CA+90232" target="_blank" rel="noopener">5976 Washington Blvd,
+Culver City, CA 90232</a>
+
+  <p class="ct-label fd" style="left:134px; top:620px;">Careers</p>
+  <a class="ct-body fd" style="left:134px; top:650px;" href="mailto:careers@sixtwentysix.co">careers@sixtwentysix.co</a>
+
+  <p class="ct-label fd" style="left:134px; top:730px;">Follow us</p>
+  <a class="ct-link fd" style="left:134px; top:760px;" href="https://www.instagram.com/sixtwentysixco/" target="_blank" rel="noopener">Instagram</a>
+  <a class="ct-link fd" style="left:134px; top:790px;" href="https://www.linkedin.com/company/sixtwentysix/" target="_blank" rel="noopener">LinkedIn</a>
+
+  <p class="ct-label fd" style="left:134px; top:870px;">More</p>
+  <a class="ct-link fd" style="left:134px; top:900px;" href="mailto:hello@sixtwentysix.co?subject=Capabilities%20deck%20request">Request our capabilities deck</a>
+  <a class="ct-link fd" style="left:134px; top:930px;" href="mailto:hello@sixtwentysix.co?subject=Newsletter">Subscribe to our newsletter</a>
+
+  <!-- ============ COLUMN 2: TEAM ============ -->
+  <p class="ct-label fd" style="left:587px; top:480px;">Team</p>
+
+  <p class="ct-name fd" style="left:587px; top:510px;">Austin Barbera</p>
+  <p class="ct-role-hn fd" style="left:587px; top:538px; width:300px;">Co-Founder / Managing Director</p>
+
+  <p class="ct-name fd" style="left:587px; top:620px;">Jake Krask</p>
+  <p class="ct-role fd" style="left:587px; top:648px; width:300px;">Co-Founder / Managing Partner</p>
+
+  <p class="ct-name fd" style="left:587px; top:730px;">Carleigh Finch</p>
+  <p class="ct-role-hn fd" style="left:587px; top:758px; width:300px;">Executive Producer / Head of Business Development</p>
+
+  <p class="ct-name fd" style="left:587px; top:840px;">Kaylen Rozier</p>
+  <p class="ct-role fd" style="left:587px; top:868px; width:300px;">Internal Sales Rep</p>
+
+  <p class="ct-name fd" style="left:927px; top:510px;">Jonny Edwards</p>
+  <p class="ct-role fd" style="left:927px; top:538px; width:237px;">Chief Executive Producer</p>
+
+  <p class="ct-name fd" style="left:927px; top:620px;">Sarah Donnenberg</p>
+  <p class="ct-role-hn fd" style="left:927px; top:648px; width:237px;">Executive Producer / Special Projects</p>
+
+  <p class="ct-name fd" style="left:927px; top:730px;">Jay Wert</p>
+  <p class="ct-role fd" style="left:927px; top:758px; width:237px;">Executive Producer</p>
+
+  <!-- ============ COLUMN 3: REPRESENTATION ============ -->
+  <p class="ct-label fd" style="left:1391px; top:480px;">Representation</p>
+
+  <p class="ct-name fd" style="left:1391px; top:510px;">West Coast</p>
+  <p class="ct-role fd" style="left:1391px; top:538px; width:203px; line-height:13.9px;">Stephanie Stephens Reps</p>
+
+  <p class="ct-name fd" style="left:1391px; top:620px;">Midwest</p>
+  <p class="ct-role fd" style="left:1391px; top:648px; width:203px; line-height:13.9px;">The House of Representatives</p>
+
+  <p class="ct-name fd" style="left:1391px; top:730px;">East Coast</p>
+  <p class="ct-role fd" style="left:1391px; top:758px; width:203px; line-height:13.9px;">Moustache</p>
+
+  <p class="ct-name fd" style="left:1391px; top:840px;">Music Video</p>
+  <p class="ct-role fd" style="left:1391px; top:868px; width:203px; line-height:13.9px;">Labuda</p>
+
+
+  <!-- THE FOOTER LAW (8/21): the black footer sits at the bottom of every page -->
+  <div class="footer" style="top:1131px;">
+    <div class="foot-cta">
+      <p>Let&rsquo;s get started.&nbsp;</p>
+      <p>Connect with us at <a href="mailto:hello@sixtwentysix.co">hello@sixtwentysix.co</a></p>
+    </div>
+    <div class="foot-mark"><img src="assets/six26-wordmark.svg" alt="SIX26"></div>
+    <p class="foot-col foot-b" style="left:884px; top:60px;">join the team</p>
+    <p class="foot-col" style="left:884px; top:96px; width:225px;"><a href="mailto:careers@sixtwentysix.co" style="color:inherit; text-decoration:none; cursor:pointer;">careers@sixtwentysix.co</a></p>
+    <div class="foot-col" style="left:1185px; top:60px; width:166px;">
+      <p class="b">capabilities Deck</p>
+      <p>&#8203;</p>
+      <p><a href="mailto:hello@sixtwentysix.co?subject=SX%20-%20Capabilities%20Deck%20Request&body=Hi!%20I%20am%20requesting%20the%20SixTwentySix%20capabilities%20deck." style="color:inherit; text-decoration:none; cursor:pointer;">request our deck</a></p>
+    </div>
+    <div class="foot-col" style="left:1427px; top:60px; width:130px;">
+      <p class="b">newsletter</p>
+      <p>&#8203;</p>
+      <p><a href="mailto:hello@sixtwentysix.co?subject=Newsletter" style="color:inherit; text-decoration:none; cursor:pointer;">Subscribe</a></p>
+    </div>
+    <div class="foot-col" style="left:1595px; top:60px; width:80px;">
+      <p class="b">Follow us</p>
+      <p>&#8203;</p>
+      <p><a href="https://www.instagram.com/sixtwentysixco/" target="_blank" rel="noopener" style="color:inherit; text-decoration:none; cursor:pointer;">ig</a> / <a href="https://www.linkedin.com/company/sixtwentysix" target="_blank" rel="noopener" style="color:inherit; text-decoration:none; cursor:pointer;">li</a></p>
+    </div>
+  </div>
+</div><!-- /.page -->
+
+<script>
+if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+window.scrollTo(0, 0);
+
+const io = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    const b = e.boundingClientRect;
+    /* zero-size wrappers (absolute children only) never reach ratio 0.15 —
+       they were permanently invisible (the empty-content bug, 8/19) */
+    if (e.intersectionRatio >= 0.15 || (e.isIntersecting && (b.width < 2 || b.height < 2))) {
+      /* one-shot (8/21): un-revealing on exit made the reveal REPLAY when
+         scrolling back up — tabs/toggles popped in 28px low on staggered
+         delays, overlapping, then jumped to their seats. Seen stays seen. */
+      e.target.classList.add('seen');
+      io.unobserve(e.target);
+    }
+  });
+}, { threshold: [0, 0.15] });
+document.querySelectorAll('.fd').forEach(el => io.observe(el));
+</script>
+<script src="fitpage.js?v=20260820a"></script>
+<script>
+SXFit(1480, 349);
+/* Joel 8/20: the statement + hello/phone block sits DEAD CENTER between the
+   header and the directory columns, at any viewport height. Runs after
+   SXFit (and again on resize, after SXFit's own resize pass). */
+(function () {
+  const stmt = document.querySelector('.ct-statement');
+  const mail = document.querySelector('.ct-mail');
+  const phone = document.querySelector('.ct-phone');
+  function center() {
+    const colsTop = Math.min(...[...document.querySelectorAll('.ct-label')]
+      .map(el => parseFloat(el.style.top)).filter(n => !isNaN(n)));
+    const blockH = stmt.getBoundingClientRect().height; // statement is the tall side
+    /* clamp: the block can never reach the directory columns (8/21) */
+    const top = Math.max(150, Math.min(Math.round(118 + (colsTop - 118 - blockH) / 2),
+                                       Math.round(colsTop - blockH - 60)));
+    stmt.style.top = top + 'px';
+    mail.style.top = (top + 12) + 'px';   // keep the design offsets (284/296/358)
+    phone.style.top = (top + 74) + 'px';
+  }
+  center();
+  window.addEventListener('resize', () => requestAnimationFrame(center));
+})();
+</script>
+<script src="smoothscroll.js?v=20260819095356"></script>
+<script src="logomorph.js?v=20260824a"></script>
+<script src="menu.js?v=20260824c"></script>
+<script>
+/* Safari back-forward cache restores dead builds from memory - always reload */
+window.addEventListener('pageshow', function (e) { if (e.persisted) location.reload(); });
+</script>
+</body>
+</html>

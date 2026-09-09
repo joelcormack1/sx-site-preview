@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1728">
+<script src="footerlaw.js?v=20260825a"></script>
+<script src="gridhover.js?v=20260821a"></script>
+<title>SIXTWENTYSIX — Case Studies</title>
+<!--
+  CASE STUDIES — synced 1:1 to Full Site frame 234:1667 (2026-08-18).
+  "Case Studies" in HelveticaNeueCyr Bold with the three filter tabs on the
+  same line (creative studio / Live Action / Experiential, in-place filters),
+  density cluster below, uniform 3-up grid (431x242, r7.6), black footer.
+  Hover = the white ghost treatment (Full Site frames 174-177), not the old
+  black takeover.
+-->
+<style>
+  @font-face {
+    font-family: 'HelveticaNeueCyr';
+    src: url('fonts/HelveticaNeueCyr-Bold.ttf') format('truetype');
+    font-weight: 700;
+  }
+  @font-face {
+    font-family: 'Azeret Mono';
+    src: url('fonts/AzeretMono-VF.woff2') format('woff2-variations');
+    font-weight: 100 900;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #fff; overscroll-behavior: none; }
+  body {
+    overflow-x: clip; /* auto broke position:sticky in Safari */
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  }
+  p { margin: 0; }
+  a { color: inherit; text-decoration: none; }
+  img { display: block; }
+
+  .page {
+    position: relative;
+    width: 1728px;
+    margin: 0 auto;
+    background: #fff;
+  }
+
+  /* ---------- Scroll fade-in ---------- */
+  .fd { opacity: 0; transform: translateY(28px); }
+  .fd.seen {
+    opacity: 1; transform: none;
+    transition: opacity 0.9s cubic-bezier(0.16,1,0.3,1), transform 0.9s cubic-bezier(0.16,1,0.3,1);
+    transition-delay: var(--fd, 0s);
+  }
+
+  /* ---------- Header (interior component 459:3638) ---------- */
+  .hdr {
+    /* FIXED, not sticky (Joel 8/21 zero-vibration): sticky repositions
+       asynchronously under scripted per-frame scrolling (the smooth
+       scroll), which reads as a 1px bob. Fixed is compositor-pinned. */
+    position: fixed;
+    top: 0;
+    left: 50%;
+    margin-left: -864px;
+    width: 1728px;
+    height: 118px;
+    background: #fff;
+    z-index: 50;
+  }
+  .hdr-logo { position: absolute; left: 63px; top: 43px; width: 146px; height: 50px; }
+  .hdr-logo .v1 { position: absolute; top: 0.11%; right: 55.69%; bottom: 0; left: 0; }
+  .hdr-logo .v2 { position: absolute; top: 1.81%; right: 8.88%; bottom: 1.81%; left: 42.46%; }
+  .hdr-logo .v3 { position: absolute; top: 0; right: 0; bottom: 82.78%; left: 91.12%; }
+  .hdr-logo img { position: absolute; inset: 0; width: 100%; height: 100%; max-width: none; }
+  .hdr-menu {
+    position: absolute; left: 1636px; top: 44px; width: 57px; height: 30px;
+    cursor: pointer;
+  }
+  .hdr-menu .l {
+    position: absolute; left: 12px; width: 33px; height: 2px;
+    background: #000; border-radius: 2px;
+  }
+  .nav-sm {
+    position: absolute;
+    font-size: 16px; line-height: 25px; letter-spacing: 0.48px;
+    color: #000; white-space: nowrap; font-weight: 400;
+  }
+
+  /* ===================== TITLE + FILTER TABS (234:1667) ===================== */
+  .cs-title {
+    position: absolute; left: 62px; top: 231px;
+    font-family: 'HelveticaNeueCyr', 'Helvetica Neue', Helvetica, sans-serif;
+    font-weight: 700; font-size: 40px; line-height: 48px; letter-spacing: -1.6px;
+    color: #000; text-transform: capitalize; white-space: nowrap;
+  }
+  .cs-tab {
+    position: absolute; top: 231px;
+    font-weight: 400; font-size: 17.59px; line-height: 17.6px;
+    letter-spacing: -0.18px; text-transform: uppercase; color: #000;
+    white-space: nowrap; cursor: pointer; transition: opacity 0.3s ease;
+  }
+  .cs-tab:hover { opacity: 0.55; }
+  .cs-tab.on { font-weight: 700; opacity: 1; }
+  #cs-under {
+    position: absolute; top: 256px; height: 2px; background: #000;
+    transition: left 0.45s cubic-bezier(0.16,1,0.3,1), width 0.45s cubic-bezier(0.16,1,0.3,1);
+  }
+
+  /* ---------- Density cluster (12-dot / 6-block / 2x2) ---------- */
+  .tbtn { position: absolute; cursor: pointer; z-index: 2; }
+  .gt {
+    position: absolute; background: #898989; border-radius: 2px;
+    opacity: 0.13; transition: opacity 0.3s ease;
+  }
+  .tbtn:hover .gt { opacity: 0.35; }
+  .tbtn.active .gt, .tbtn.active:hover .gt { opacity: 0.60; }
+
+  /* ---------- Work grid ---------- */
+  .work-thumb {
+    position: absolute; border-radius: 0; overflow: hidden; /* 9/4 Joel: no rounding on media, ever */ cursor: pointer;
+    display: block; background: #d9d9d9;
+    transition: left 0.7s ease-in-out /* Figma component 508:740: 700ms Ease-in-and-out on hover */, top 0.7s ease-in-out /* Figma component 508:740: 700ms Ease-in-and-out on hover */,
+                width 0.7s ease-in-out /* Figma component 508:740: 700ms Ease-in-and-out on hover */, height 0.7s ease-in-out /* Figma component 508:740: 700ms Ease-in-and-out on hover */,
+                opacity 0.5s ease;
+  }
+  .work-thumb img {
+    width: 100%; height: 100%; object-fit: cover; pointer-events: none;
+    transition: transform 0.7s ease-in-out;
+  }
+  .wtitle {
+    position: absolute;
+    font-weight: 700; font-size: 14.422px; line-height: 19.263px;
+    letter-spacing: -0.1442px; text-transform: uppercase; color: #000;
+    white-space: nowrap;
+    transition: opacity 0.3s ease, left 0.7s ease-in-out /* Figma component 508:740: 700ms Ease-in-and-out on hover */, top 0.7s ease-in-out /* Figma component 508:740: 700ms Ease-in-and-out on hover */;
+  }
+
+  /* White ghost hover (Full Site frames 174-177) */
+  body.ghost .work-thumb:not(.is-hover) { opacity: 0.15 !important; }
+  body.ghost .work-thumb:not(.is-hover) img { transform: scale(1.09); }
+  body.ghost .work-thumb.is-hover { z-index: 20; }
+  body.ghost .wtitle:not(.is-hover) { opacity: 0.17 !important; }
+  .wtitle.is-hover { z-index: 21; opacity: 1 !important; }
+
+  /* ---------- Footer (black, SIX26) ---------- */
+  .footer {
+    position: absolute; left: 0; width: 1728px; height: 349px;
+    background: #000; overflow: hidden;
+  }
+  .foot-cta {
+    position: absolute; left: 40px; top: 60px; width: 470px; height: 74px;
+    font-weight: 700; font-size: 24px; line-height: 24px;
+    color: #fff; text-transform: uppercase; word-break: break-word;
+  }
+  .foot-cta a { text-decoration: underline; text-underline-position: from-font; cursor: pointer; }
+  .foot-mark { position: absolute; top: 54.44%; right: 2.23%; bottom: -35.46%; left: 2.29%; }
+  .foot-mark img { position: absolute; inset: 0; width: 100%; height: 100%; max-width: none; }
+  .foot-col {
+    position: absolute;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; /* 9/4 Joel: footers all in Helvetica (was Azeret Mono) */
+    font-weight: 400; font-size: 15px; line-height: 17.5px;
+    color: #fff; text-transform: uppercase; word-break: break-word;
+  }
+  .foot-col .b, .foot-b { font-weight: 700; }
+
+  /* THE 8/19 SNAP BUG: .fd.seen (scroll fade-in) declares its own transition,
+     which out-specifies the tile rules and erased the hover glide entirely —
+     every enlarge snapped. These merge both systems at higher specificity. */
+  .work-thumb.fd.seen {
+    transition: left 0.7s ease-in-out, top 0.7s ease-in-out,
+                width 0.7s ease-in-out, height 0.7s ease-in-out,
+                opacity 0.5s ease, transform 0.9s cubic-bezier(0.16,1,0.3,1);
+  }
+  .wtitle.fd.seen, .wdir.fd.seen {
+    transition: left 0.7s ease-in-out, top 0.7s ease-in-out,
+                opacity 0.4s ease, transform 0.9s cubic-bezier(0.16,1,0.3,1);
+  }
+</style>
+</head>
+<body>
+<script>
+(function () {
+  if (window.self === window.top && !location.search.includes('flat=1')) {
+    var page = location.pathname.split('/').pop() || 'index.html';
+    location.replace('view.html?p=' + encodeURIComponent(page));
+  }
+  if (location.search.includes('reveal=1')) {
+    document.write('<style>.fd{opacity:1 !important; transform:none !important;}' +
+      '.hdr{position:relative !important;}' +
+      '*,*::before,*::after{transition:none !important; animation:none !important;}' +
+      '#menu-overlay{display:none !important;}</style>');
+  }
+})();
+</script>
+
+<div class="page" id="page">
+
+  <!-- ============ HEADER ============ -->
+  <div class="hdr">
+    <a href="index.html" id="lettermark" style="left:63px; top:0; width:639px; height:161px; z-index:2;"></a>
+    <p class="nav-sm" style="left:504px; top:43px;">LOS ANGELES, CA</p>
+    <p class="nav-sm" style="left:504px; top:68px;">NEW YORK, NY</p>
+    <div class="hdr-menu" title="Menu">
+      <div class="l" style="top:12px;"></div>
+      <div class="l" style="top:20px;"></div>
+      <div class="l" style="top:28px;"></div>
+    </div>
+  </div>
+
+  <!-- ============ TITLE + FILTERS ============ -->
+  <p class="cs-title fd">Case studies</p>
+  <div id="cstabs" class="fd" style="--fd:0.1s;">
+    <p class="cs-tab on" data-cat="cs"   style="left:1214px;">creative studio</p>
+    <p class="cs-tab"    data-cat="live" style="left:1397px;">Live Action</p>
+    <p class="cs-tab"    data-cat="exp"  style="left:1528px;">Experiential</p>
+    <div id="cs-under" style="left:1214px; width:154px;"></div>
+  </div>
+
+  <!-- ============ DENSITY CLUSTER (234:1667: 6-block active) ============ -->
+  <div id="toggles" class="fd" style="--fd:0.15s;">
+    <div class="tbtn active" data-cols="3" style="left:1566px; top:372px; width:38px; height:28px;">
+      <div class="gt" style="left:0px; top:0px; width:11px; height:12px;"></div>
+      <div class="gt" style="left:0px; top:15px; width:11px; height:13px;"></div>
+      <div class="gt" style="left:13px; top:0px; width:12px; height:12px;"></div>
+      <div class="gt" style="left:13px; top:15px; width:12px; height:13px;"></div>
+      <div class="gt" style="left:27px; top:0px; width:11px; height:12px;"></div>
+      <div class="gt" style="left:27px; top:15px; width:11px; height:13px;"></div>
+    </div>
+    <div class="tbtn" data-cols="2" style="left:1613px; top:372px; width:33px; height:28px;">
+      <div class="gt" style="left:0px; top:0px; width:15px; height:12px;"></div>
+      <div class="gt" style="left:0px; top:15px; width:15px; height:13px;"></div>
+      <div class="gt" style="left:17px; top:0px; width:16px; height:12px;"></div>
+      <div class="gt" style="left:17px; top:15px; width:16px; height:13px;"></div>
+    </div>
+  </div>
+
+  <div id="csgrid"></div>
+
+  <!-- ============ FOOTER ============ -->
+  <div class="footer" id="footer" style="top: 1285px;">
+    <div class="foot-cta">
+      <p>Let&rsquo;s get started.&nbsp;</p>
+      <p>Connect with us at <a href="mailto:hello@sixtwentysix.co">hello@sixtwentysix.co</a></p>
+    </div>
+    <div class="foot-mark"><img src="assets/six26-wordmark.svg" alt="SIX26"></div>
+    <p class="foot-col foot-b" style="left:884px; top:60px;">join the team</p>
+    <p class="foot-col" style="left:884px; top:96px; width:225px;"><a href="mailto:careers@sixtwentysix.co" style="color:inherit; text-decoration:none; cursor:pointer;">careers@sixtwentysix.co</a></p>
+    <div class="foot-col" style="left:1185px; top:60px; width:166px;">
+      <p class="b">capabilities Deck</p>
+      <p>&#8203;</p>
+      <p><a href="mailto:hello@sixtwentysix.co?subject=SX%20-%20Capabilities%20Deck%20Request&body=Hi!%20I%20am%20requesting%20the%20SixTwentySix%20capabilities%20deck." style="color:inherit; text-decoration:none; cursor:pointer;">request our deck</a></p>
+    </div>
+    <div class="foot-col" style="left:1427px; top:60px; width:130px;">
+      <p class="b">newsletter</p>
+      <p>&#8203;</p>
+      <p><a href="mailto:hello@sixtwentysix.co?subject=Newsletter" style="color:inherit; text-decoration:none; cursor:pointer;">Subscribe</a></p>
+    </div>
+    <div class="foot-col" style="left:1601px; top:60px; width:89px;">
+      <p class="b">follow us</p>
+      <p>&#8203;</p>
+      <p><a href="https://www.instagram.com/sixtwentysixco/" target="_blank" rel="noopener" style="color:inherit; text-decoration:none; cursor:pointer;">ig</a> / <a href="https://www.linkedin.com/company/sixtwentysix" target="_blank" rel="noopener" style="color:inherit; text-decoration:none; cursor:pointer;">li</a></p>
+    </div>
+  </div>
+
+</div><!-- /.page -->
+
+<script>
+if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+window.scrollTo(0, 0);
+
+const io = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    const b = e.boundingClientRect;
+    /* zero-size wrappers (absolute children only) never reach ratio 0.15 —
+       they were permanently invisible (the empty-content bug, 8/19) */
+    if (e.intersectionRatio >= 0.15 || (e.isIntersecting && (b.width < 2 || b.height < 2))) {
+      /* one-shot (8/21): un-revealing on exit made the reveal REPLAY when
+         scrolling back up — tabs/toggles popped in 28px low on staggered
+         delays, overlapping, then jumped to their seats. Seen stays seen. */
+      e.target.classList.add('seen');
+      io.unobserve(e.target);
+    }
+  });
+}, { threshold: [0, 0.15] });
+
+/* ================= Grid (234:1667) =================
+   Tabs FILTER in place; the cluster changes density. 3-up sits on the exact
+   frame xs (62 / 649 / 1214); other densities compute the same rhythm. */
+(() => {
+  /* REAL case-study list transferred from sixtwentysix.co (8/21); the exp
+     tab carries the live experiential slate. Categories per the work ledger
+     (cs = creative studio, live = live action). */
+  const WORKS = [
+    { t: 'PRICELINE',        img: 'assets/live/cs-priceline.jpg',      cats: ['live'] },
+    { t: 'PALMS CASINO',     img: 'assets/live/cs-palms.jpg',          cats: ['live'] },
+    { t: 'EX BY TRUTH INITIATIVE', img: 'assets/live/cs-truth.png',    cats: ['live'] },
+    { t: 'HERA',             img: 'assets/live/cs-hera.jpg',           cats: ['cs'] },
+    { t: 'DUNKIN\u2019',    img: 'assets/live/cs-dunkin-pump.jpg',    cats: ['live'] },
+    { t: 'VISIT LAUDERDALE', img: 'assets/live/cs-lauderdale.jpg',     cats: ['live'] },
+    { t: 'EAT PECANS',       img: 'assets/live/cs-eatpecans.jpg',      cats: ['cs', 'live'] },
+    { t: 'CREDIT KARMA',     img: 'assets/live/cs-creditkarma.jpg',    cats: ['live'] },
+    { t: 'DUNKIN\u2019',    img: 'assets/live/cs-dunkin-affleck.png', cats: ['live'] },
+    { t: 'PACIFICO',         img: 'assets/live/cs-pacifico.jpg',       cats: ['live'] },
+    { t: 'TURO',             img: 'assets/live/cs-turo.jpg',           cats: ['cs'] },
+    { t: 'MEGAN THEE STALLION', img: 'assets/live/cs-megan.jpg',       cats: ['live'] },
+    { t: 'LIQUID I.V.',      img: 'assets/live/cs-liquidiv.jpg',       cats: ['cs', 'live'] },
+    { t: 'HEINEKEN',         img: 'assets/live/exp-heineken.png',      cats: ['exp'] },
+    { t: 'FIVERR',           img: 'assets/live/exp-fiverr.jpg',        cats: ['exp'] },
+    { t: 'TREE HUT',         img: 'assets/live/exp-treehut.jpg',       cats: ['exp'] },
+    { t: 'GOOGLE PLAY',      img: 'assets/live/exp-googleplay.jpg',    cats: ['exp'] },
+    { t: 'NIKE X CONCRETE BOYS', img: 'assets/live/exp-nike.jpg',      cats: ['exp'] },
+    { t: 'REPUBLIC RECORDS', img: 'assets/live/exp-republic.jpg',      cats: ['exp'] },
+    { t: 'EBAY MOTORS',      img: 'assets/live/exp-ebay.jpg',          cats: ['exp'] },
+    { t: 'APEROL',           img: 'assets/live/exp-aperol.jpg',        cats: ['exp'] },
+  ];
+
+  /* Click-through law (Joel 8/24): every tile opens ITS real work page —
+     case-study.html?work=<wordpress-slug>, filled from the CMS. Keyed by
+     still filename, joined from the live site's tile objects. */
+  const SLUGS = {
+    'cs-priceline.jpg': 'priceline-new-negotiator',
+    'cs-palms.jpg': 'palms-casino-resort-this-is-that-vegas',
+    'cs-truth.png': 'ex-program-by-truth-initiative-outsmart-nicotine',
+    'cs-hera.jpg': 'hera-age-your-way',
+    'cs-dunkin-pump.jpg': 'dunkin-dunk-n-pump',
+    'cs-lauderdale.jpg': 'visit-ft-lauderdale-never-lose-your-splash',
+    'cs-eatpecans.jpg': 'eat-pecans-surprisingly-snackable',
+    'cs-creditkarma.jpg': 'credit-karma-card-optimizer',
+    'cs-dunkin-affleck.png': 'dunkin-the-value-affleck',
+    'cs-pacifico.jpg': 'pacifico-find-your-own-way',
+    'cs-turo.jpg': 'turo-open-the-door-to-extraordinary',
+    'cs-megan.jpg': 'megan-thee-stallion-boa',
+    'cs-liquidiv.jpg': 'liquid-iv-ice-cream',
+    'exp-heineken.png': 'heineken-fan-volunteers',
+    'exp-fiverr.jpg': 'fiverr-fiverr-amplify',
+    'exp-treehut.jpg': 'tree-hut-slay-the-cosplay',
+    'exp-googleplay.jpg': 'google-play',
+    'exp-nike.jpg': 'nike-concrete-boys',
+    'exp-republic.jpg': 'republic-records-vma-after-party',
+    'exp-ebay.jpg': 'ebay-motors-snow-summitt',
+    'exp-aperol.jpg': 'aperol-camilas-perfect-day',
+  };
+
+  /* THE LOOP LAW (Joel 8/24): every tile plays its own spot on hover.
+     Signed progressive URLs lifted from sixtwentysix.co's tile objects,
+     same hotlink pattern as the homepage's WORK_LOOPS. If a signature
+     ever 403s, re-pull from the live site. Keyed by still filename. */
+  const LOOPS = {
+    'cs-priceline.jpg': 'https://player.vimeo.com/progressive_redirect/playback/1191279752/rendition/1080p/file.mp4%20%281080p%29.mp4?loc=external&log_user=0&signature=b2a3fce188f6bbd5fb6933419b9d79e6508f6afc3a27cce1d8d9455596710be7',
+    'cs-palms.jpg': 'https://player.vimeo.com/progressive_redirect/playback/1201495653/rendition/1080p/file.mp4%20%281080p%29.mp4?loc=external&log_user=0&signature=43288f8230fc7601951964b3046033e7c02ca670694c8ad9504d5642602dfe38',
+    'cs-truth.png': 'https://player.vimeo.com/progressive_redirect/playback/1181325134/rendition/720p/file.mp4%20%28720p%29.mp4?loc=external&log_user=0&signature=930ee9957ebe89223e718e3aee8530b98aeb58d98f9861f8e468e0226ae186ed',
+    'cs-hera.jpg': 'https://player.vimeo.com/progressive_redirect/playback/1151638122/rendition/1080p/file.mp4%20%281080p%29.mp4?loc=external&log_user=0&signature=6b7991643db1c95ac1e1c985d693ee0f5ba68754f43250516225593eb886c2bd',
+    'cs-dunkin-pump.jpg': 'https://player.vimeo.com/progressive_redirect/playback/1152401903/rendition/1080p/file.mp4%20%281080p%29.mp4?loc=external&log_user=0&signature=308b00f490c2f6e53533b0a02bde34faf2cc1a1505ab749c7e93509bec3862c9',
+    'cs-lauderdale.jpg': 'https://player.vimeo.com/progressive_redirect/playback/1151638269/rendition/1080p/file.mp4%20%281080p%29.mp4?loc=external&log_user=0&signature=c403790375cd79d38091ef38c872436e174833ab4af4f37d5a8a0517509ca6bc',
+    'cs-eatpecans.jpg': 'https://player.vimeo.com/progressive_redirect/playback/996433212/rendition/1080p/file.mp4?loc=external&log_user=0&signature=b1fa4987f20d4f9d170bcfae75826cf6fb124137ac8e2787f799b8eae4a93291',
+    'cs-creditkarma.jpg': 'https://player.vimeo.com/progressive_redirect/playback/1179304184/rendition/1080p/file.mp4%20%281080p%29.mp4?loc=external&log_user=0&signature=5d5d3eac22153ec0e6d6c3f8296c623a147954b9fc3d6b37c1861cfa93457aed',
+    'cs-dunkin-affleck.png': 'https://player.vimeo.com/progressive_redirect/playback/1125246930/rendition/1080p/file.mp4?loc=external&log_user=0&signature=2129a26fac9c81464a0a24faaff8a1522ee90985634b7f89855f5c5eba24da70',
+    'cs-pacifico.jpg': 'https://player.vimeo.com/progressive_redirect/playback/1071467353/rendition/1080p/file.mp4?loc=external&log_user=0&signature=401c49388f5aee0d60c6754b60225dc0459b3c00bc4fa723966b945b3e259914',
+    'cs-turo.jpg': 'https://player.vimeo.com/progressive_redirect/playback/766676269/rendition/1080p/file.mp4?loc=external&log_user=0&signature=99929a4c148e35ce60df8ce7eaec7ae66adc027d6e38cbfbed7b49517c9d0942',
+    'cs-megan.jpg': 'https://player.vimeo.com/progressive_redirect/playback/946016464/rendition/1080p/file.mp4?loc=external&log_user=0&signature=99c30ffec4cf29d294f9bd11f32a5203d2b48a43409f9377f12bac6516ad2322',
+    'cs-liquidiv.jpg': 'https://player.vimeo.com/progressive_redirect/playback/991779444/rendition/1080p/file.mp4?loc=external&log_user=0&signature=c6bc59979b513da2ba84624c3574e96f80b14dfad96e2106f03886802f19f9c2',
+    'exp-heineken.png': 'https://player.vimeo.com/progressive_redirect/playback/1205530282/rendition/1080p/file.mp4%20%281080p%29.mp4?loc=external&log_user=0&signature=1dc278c8b12748672c4216f7966e59430103be21e7d74c2fabe67842a8e65d3a',
+    'exp-fiverr.jpg': 'https://player.vimeo.com/progressive_redirect/playback/1066730689/rendition/1080p/file.mp4?loc=external&log_user=0&signature=38eb2e73d16408e92747a15d6a034267d575024952668be7ac1023cde30ffbd4&user_id=26828343',
+    'exp-treehut.jpg': 'https://player.vimeo.com/progressive_redirect/playback/1065679819/rendition/1080p/file.mp4?loc=external&log_user=0&signature=ed0d1ef6833b7f451e3657029cad1c76ce15edd414401b658b7c54a770748a84',
+    'exp-googleplay.jpg': 'https://player.vimeo.com/progressive_redirect/playback/1065964832/rendition/1080p/file.mp4?loc=external&log_user=0&signature=9a48cdd6ae7aa0b0d84ea1be8c73b7bf458df2582d6cded7cdfb722ff8027284&user_id=26828343',
+    'exp-nike.jpg': 'https://player.vimeo.com/progressive_redirect/playback/1065679815/rendition/1080p/file.mp4?loc=external&log_user=0&signature=7c17e3990ef977b829fc6787800b0bcfe860254d5caa5f65d3eb12cf35058468&user_id=26828343',
+    'exp-republic.jpg': 'https://player.vimeo.com/progressive_redirect/playback/1065679804/rendition/1080p/file.mp4?loc=external&log_user=0&signature=b4e9f026c42f5752c8526546d5d999b7729d21a759bb9f2806fc2d7ac27cf7ea&user_id=26828343',
+    'exp-ebay.jpg': 'https://player.vimeo.com/progressive_redirect/playback/1066025459/rendition/1080p/file.mp4?loc=external&log_user=0&signature=2ea280206dc4ed4e91faa5ac68d117c5f78072b36a726dc4ec7b8b0ef4e0ec8c&user_id=26828343',
+    'exp-aperol.jpg': 'https://player.vimeo.com/progressive_redirect/playback/967113990/rendition/1080p/file.mp4?loc=external&log_user=0&signature=4d45d5c51e1171c42cd5788ee773bc5ba83e250cac5e512214fd19727a4bcdb1',
+  };
+  WORKS.forEach(w => { w.loop = LOOPS[w.img.split('/').pop()] || null; });
+
+  /* Frame geometry: 3-up columns at exact xs; other densities computed. */
+  const LEFT = 62, CONTENT_W = 1584;
+  const X3 = [62, 649, 1214], W3 = 431;
+  const GRID_TOP = 441, LABEL_GAP = 45, ROW_PITCH_EXTRA = 181; // 242+181 = 423 pitch at 3-up
+  const RADIUS = { 4: 5.137, 3: 7.593, 2: 13.051 };
+
+  const host = document.getElementById('csgrid');
+  const under = document.getElementById('cs-under');
+  const tabs = [...document.querySelectorAll('.cs-tab')];
+  let cat = 'cs', cols = 3, userCols = false;
+  /* THE ROW-COUNT LAW (Joel 8/25): small sets read as rows of 2; once the
+     set breaks past two rows of three (7+ works) it goes back to 3-up.
+     Automatic per category; a manual toggle click overrides it. */
+  const autoCols = n => n > 6 ? 3 : 2;
+
+  let tiles = [];
+
+  function layout() {
+    const list = WORKS.filter(w => w.cats.includes(cat));
+    if (!userCols) {
+      cols = autoCols(list.length);
+      document.querySelectorAll('.tbtn').forEach(b =>
+        b.classList.toggle('active', parseInt(b.dataset.cols, 10) === cols));
+    }
+    host.innerHTML = '';
+    tiles = [];
+    const w = cols === 3 ? W3 : (CONTENT_W - (cols - 1) * 145.5) / cols;
+    const h = Math.round(w * 242 / 431);
+    const pitch = h + ROW_PITCH_EXTRA;
+    const rows = Math.ceil(list.length / cols);
+    /* THE SHORT-ROW LAW (Joel 8/22): when the last row can't fill its
+       columns, its tiles center as a group on the content rail. */
+    const lastRowStart = Math.floor((list.length - 1) / cols) * cols;
+    const inLast = list.length - lastRowStart;
+    list.forEach((wk, i) => {
+      const col = i % cols, row = Math.floor(i / cols);
+      let x = cols === 3 ? X3[col] : LEFT + col * (w + 145.5);
+      if (i >= lastRowStart && inLast < cols) {
+        const gap = 145.5;
+        const groupW = inLast * w + (inLast - 1) * gap;
+        x = LEFT + (CONTENT_W - groupW) / 2 + (i - lastRowStart) * (w + gap);
+      }
+      const y = GRID_TOP + row * pitch;
+      const a = document.createElement('a');
+      a.className = 'work-thumb fd seen';
+      const csFile = wk.img.split('/').pop();
+      a.href = 'case-study.html' + (SLUGS[csFile] ? '?work=' + SLUGS[csFile] : '');
+      a.style.cssText = `left:${x}px; top:${y}px; width:${w}px; height:${h}px; border-radius:0;`;
+      a.innerHTML = `<img src="${wk.img}" alt="${wk.t}">`;
+      if (wk.loop) a.dataset.loop = wk.loop; // the engine builds the <video>
+      const cap = document.createElement('p');
+      cap.className = 'wtitle fd seen';
+      cap.textContent = wk.t;
+      cap.style.cssText = `left:${x}px; top:${y + h + LABEL_GAP}px;`;
+      host.append(a, cap);
+      tiles.push({ a, cap, x, y, w, h, row, rows });
+    });
+    const end = GRID_TOP + rows * pitch;
+    document.getElementById('footer').style.top = Math.max(1285, end) + 'px';
+    document.getElementById('page').style.height = (Math.max(1285, end) + 349) + 'px';
+
+    /* THE site hover law — one engine (gridhover.js) for every grid.
+       Re-attached after each relayout since the tiles are rebuilt. */
+    SXGrid.attach({
+      tiles: tiles.map(t => ({ el: t.a, caps: [{ el: t.cap, gap: LABEL_GAP }] })),
+      ghost: { el: document.body, cls: 'ghost' },
+      bounds: { left: LEFT, right: LEFT + CONTENT_W },
+    });
+  }
+
+  tabs.forEach(t => t.addEventListener('click', () => {
+    cat = t.dataset.cat;
+    tabs.forEach(o => o.classList.toggle('on', o === t));
+    under.style.left = t.offsetLeft + 'px';
+    under.style.width = t.getBoundingClientRect().width + 'px';
+    layout();
+  }));
+
+  document.querySelectorAll('.tbtn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.tbtn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      cols = parseInt(btn.dataset.cols, 10);
+      userCols = true;
+      layout();
+    });
+  });
+
+  layout();
+})();
+
+document.querySelectorAll('.fd').forEach(el => io.observe(el));
+</script>
+<script>
+/* Back-to-the-exact-spot law (Joel 8/24): runs HERE — after the grids
+   above have built (the page is at full height, so the seat can't clamp)
+   and BEFORE smoothscroll.js boots (its internal target reads the
+   restored position). */
+(function () {
+  try {
+    var raw = sessionStorage.getItem('sx-return-go');
+    if (!raw) return;
+    sessionStorage.removeItem('sx-return-go');
+    var d = JSON.parse(raw);
+    /* 9/3: stored page may carry a query (?who=<director>) — match path
+       and query separately so per-director returns restore their seat */
+    var curPath = location.pathname.split('/').pop() || 'index.html';
+    var sp2 = new URLSearchParams(location.search); sp2.delete('r');
+    var curQ = sp2.toString();
+    var stored = String(d.page || '').split('?');
+    if (stored[0] !== curPath) return;
+    if (stored[1] && stored[1] !== curQ) return;
+    /* the page reaches full height only after load (footer law stretch),
+       so the seat restores THEN; smoothscroll adopts any external scroll
+       while idle, so this slots straight into its engine */
+    var seat = function () { window.scrollTo(0, d.y || 0); };
+    window.addEventListener('load', function () {
+      seat();
+      setTimeout(seat, 120); /* once more after late layout settles */
+    });
+  } catch (e) {}
+})();
+</script>
+<script src="smoothscroll.js?v=20260819095356"></script>
+<script src="logomorph.js?v=20260824a"></script>
+<script src="menu.js?v=20260824c"></script>
+<script src="hoverlaw.js?v=20260819095356"></script>
+<script>
+/* Safari back-forward cache restores dead builds from memory - always reload */
+window.addEventListener('pageshow', function (e) { if (e.persisted) location.reload(); });
+</script>
+</body>
+</html>

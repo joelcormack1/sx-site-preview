@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1728">
+<script src="footerlaw.js?v=20260825a"></script>
+<title>SIXTWENTYSIX — Priceline: The Negotiator</title>
+<!--
+  CASE STUDY — rebuilt from scratch 2026-08-18 to Full Site frame 89:1711
+  (the round-8 "start fresh" redesign, PRESENT note 216:1010).
+  Full-bleed film hero with player chrome, "Back to work" exit top-left
+  (replaces the X — it could collide with the menu), then a quiet ledger:
+  Big Idea / Challenge / Impact / Insight in HelveticaNeueCyr.
+  NOTE: the frame reads "Back to wok" — corrected to "Back to work" here.
+-->
+<style>
+  @font-face {
+    font-family: 'HelveticaNeueCyr';
+    src: url('fonts/HelveticaNeueCyr-Roman.ttf') format('truetype');
+    font-weight: 400;
+  }
+  @font-face {
+    font-family: 'HelveticaNeueCyr';
+    src: url('fonts/HelveticaNeueCyr-Bold.ttf') format('truetype');
+    font-weight: 700;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #fff; overscroll-behavior: none; }
+  body {
+    overflow-x: clip; /* auto broke position:sticky in Safari */
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  }
+  p { margin: 0; }
+  a { color: inherit; text-decoration: none; }
+  img { display: block; }
+
+  .page {
+    position: relative;
+    width: 1728px;
+    height: 2640px; /* content ends ~1990; +300 rhythm +349 footer (8/21 —
+                       2052 had the footer overlapping Impact/Insight) */
+    margin: 0 auto;
+    background: #fff;
+  }
+
+  /* ---------- Scroll fade-in ---------- */
+  .fd { opacity: 0; transform: translateY(28px); }
+  .fd.seen {
+    opacity: 1; transform: none;
+    transition: opacity 0.9s cubic-bezier(0.16,1,0.3,1), transform 0.9s cubic-bezier(0.16,1,0.3,1);
+    transition-delay: var(--fd, 0s);
+  }
+
+  /* ---------- Header (interior component, transparent over the hero) ---------- */
+  .hdr {
+    /* FIXED, not sticky (Joel 8/21 zero-vibration): sticky repositions
+       asynchronously under scripted per-frame scrolling (the smooth
+       scroll), which reads as a 1px bob. Fixed is compositor-pinned. */
+    position: fixed;
+    top: 0;
+    left: 50%;
+    margin-left: -864px;
+    width: 1728px;
+    height: 118px;
+    background: #fff;
+    z-index: 50;
+    transition: background 0.4s ease;
+  }
+  .hdr-logo { position: absolute; left: 63px; top: 43px; width: 146px; height: 50px; }
+  .hdr-logo .v1 { position: absolute; top: 0.11%; right: 55.69%; bottom: 0; left: 0; }
+  .hdr-logo .v2 { position: absolute; top: 1.81%; right: 8.88%; bottom: 1.81%; left: 42.46%; }
+  .hdr-logo .v3 { position: absolute; top: 0; right: 0; bottom: 82.78%; left: 91.12%; }
+  .hdr-logo img { position: absolute; inset: 0; width: 100%; height: 100%; max-width: none; transition: filter 0.4s ease; }
+  .hdr-menu {
+    position: absolute; left: 1636px; top: 44px; width: 57px; height: 30px;
+    cursor: pointer;
+  }
+  .hdr-menu .l {
+    position: absolute; left: 12px; width: 33px; height: 2px;
+    background: #000; border-radius: 2px; transition: background 0.4s ease;
+  }
+  .nav-sm {
+    position: absolute;
+    font-size: 16px; line-height: 25px; letter-spacing: 0.48px;
+    color: #000; white-space: nowrap; font-weight: 400; transition: color 0.4s ease;
+  }
+  .hdr.dark { background: transparent; }
+  .hdr.dark .nav-sm { color: #fff; }
+  .hdr.dark .hdr-logo img { filter: invert(1); }
+  .hdr.dark #lettermark { filter: invert(1); }
+  .hdr.dark .hdr-menu .l { background: #fff; }
+
+  /* ===================== HERO (film + player chrome) ===================== */
+  .cs-hero {
+    position: absolute; left: 0; top: 0; width: 1728px; height: 980px;
+    overflow: hidden; background: #000;
+  }
+  .cs-hero img.bg {
+    /* asset is the exact 1728x980 visible slice of the frame render */
+    position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
+  }
+  .cs-back {
+    position: absolute; left: 63px; top: 151px; z-index: 5;
+    font-family: 'HelveticaNeueCyr', 'Helvetica Neue', Helvetica, sans-serif;
+    font-weight: 400; font-size: 20px; line-height: 24px; letter-spacing: -0.8px;
+    color: #fff; cursor: pointer;
+  }
+  .cs-back:hover { opacity: 0.7; }
+
+  .cs-play { position: absolute; left: 96px; top: 851px; width: 22px; height: 28px; cursor: pointer; }
+  .cs-audio { position: absolute; left: 142px; top: 851px; width: 26px; height: 29px; cursor: pointer; }
+  .cs-play img, .cs-audio img { width: 100%; height: 100%; }
+  .cs-track {
+    position: absolute; left: 220px; top: 867.5px; width: 1409px; height: 1px;
+    background: rgba(255,255,255,0.85);
+  }
+  .cs-progress {
+    position: absolute; left: 219px; top: 866.5px; width: 261px; height: 3px;
+    background: #fff;
+  }
+  .cs-chev {
+    position: absolute; left: 841px; top: 902px; width: 46px; height: 13px;
+    cursor: pointer; transition: transform 0.3s ease;
+  }
+  .cs-chev:hover { transform: translateY(4px); }
+  .cs-chev img { width: 100%; height: 100%; }
+
+  /* ===================== TITLE ROW ===================== */
+  .cs-title {
+    position: absolute; left: 93px; top: 1198px; width: 800px;
+    font-family: 'HelveticaNeueCyr', 'Helvetica Neue', Helvetica, sans-serif;
+    font-weight: 400; font-size: 38px; line-height: 45.6px; letter-spacing: -0.55px; /* Joel 8/22: was -1.33 — the bold letters were touching */
+    color: #000; white-space: nowrap;
+  }
+  .cs-title b { font-weight: 700; }
+  .cs-badges { position: absolute; left: 900px; top: 1218px; width: 185.7px; height: 20.2px; }
+  .cs-badges img { width: 100%; height: 100%; }
+
+  /* ===================== LEDGER ===================== */
+  .cs-rule { position: absolute; left: 93px; width: 1483px; height: 0; }
+  .cs-rule.black { border-top: 1px solid #000; }
+  .cs-rule.gray { border-top: 1px solid #d9d9d9; }
+  .cs-label {
+    position: absolute; left: 93px;
+    font-family: 'HelveticaNeueCyr', 'Helvetica Neue', Helvetica, sans-serif;
+    /* Joel 8/25: section labels are BOLD across the site */
+    font-weight: 700; font-size: 20px; line-height: 24px; letter-spacing: -0.8px;
+    color: #000; white-space: nowrap;
+  }
+  .cs-copy {
+    position: absolute; left: 900px; width: 686px;
+    font-family: 'HelveticaNeueCyr', 'Helvetica Neue', Helvetica, sans-serif;
+    font-weight: 400; font-size: 17px; line-height: 27px; letter-spacing: -0.26px;
+    color: #5a5a5a;
+  }
+
+  /* ---------- Footer (black, SIX26) — THE FOOTER LAW: on every page ---------- */
+  @font-face {
+    font-family: 'Azeret Mono';
+    src: url('fonts/AzeretMono-VF.woff2') format('woff2-variations');
+    font-weight: 100 900;
+  }
+  .footer {
+    position: absolute; left: 0; width: 1728px; height: 349px;
+    background: #000; overflow: hidden; z-index: 6;
+  }
+  .foot-cta {
+    position: absolute; left: 40px; top: 60px; width: 470px; height: 74px;
+    font-weight: 700; font-size: 24px; line-height: 24px;
+    color: #fff; text-transform: uppercase; word-break: break-word;
+  }
+  .foot-cta a { text-decoration: underline; text-underline-position: from-font; cursor: pointer; color: inherit; }
+  .foot-mark { position: absolute; top: 54.44%; right: 2.23%; bottom: -35.46%; left: 2.29%; }
+  .foot-mark img { position: absolute; inset: 0; width: 100%; height: 100%; max-width: none; }
+  .foot-col {
+    position: absolute;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; /* 9/4 Joel: footers all in Helvetica (was Azeret Mono) */
+    font-weight: 400; font-size: 15px; line-height: 17.5px;
+    color: #fff; text-transform: uppercase; word-break: break-word;
+  }
+  .foot-col .b, .foot-b { font-weight: 700; }
+</style>
+<script>
+/* 9/3 flash fix (Joel: "any time i click on a video, this flashes before
+   the video starts"): the template paints its built-in demo content first,
+   then the CMS fetch swaps the real work in — the wrong film flashed for a
+   beat. A ?work= load now opens under BLACK until the data lands. */
+if (new URLSearchParams(location.search).get('work')) {
+  document.documentElement.classList.add('cs-loading');
+  /* the clicked tile's art (stashed by footerlaw.js on the way in) paints
+     THIS instant as the page background — the work lands immediately
+     instead of a black beat (Joel 9/3) */
+  try {
+    const art = JSON.parse(sessionStorage.getItem('sx-cs-art') || '{}');
+    if (art.src && Date.now() - (art.t || 0) < 15000)
+      document.documentElement.style.background = '#000 url("' + art.src.replace(/"/g, '%22') + '") center / cover no-repeat fixed';
+  } catch (e) {}
+  /* failsafe: a hung CMS fetch must never strand a black page */
+  setTimeout(() => document.documentElement.classList.remove('cs-loading'), 4000);
+}
+</script>
+<style>
+  html.cs-loading, html.cs-loading body { background: #000; }
+  html.cs-loading .page { visibility: hidden; }
+</style>
+</head>
+<body>
+<script>
+(function () {
+  if (window.self === window.top && !location.search.includes('flat=1')) {
+    var page = location.pathname.split('/').pop() || 'index.html';
+    /* keep ?work=<slug> through the shell redirect (WP work pages) */
+    var extra = location.search.replace(/^\?/, '');
+    location.replace('view.html?p=' + encodeURIComponent(page + (extra ? '?' + extra : '')));
+  }
+  if (location.search.includes('reveal=1')) {
+    document.write('<style>.fd{opacity:1 !important; transform:none !important;}' +
+      '.hdr{position:relative !important;}' +
+      '*,*::before,*::after{transition:none !important; animation:none !important;}' +
+      '#menu-overlay{display:none !important;}</style>');
+  }
+})();
+</script>
+
+<div class="page" id="page">
+
+  <!-- ============ HERO ============ -->
+  <div class="cs-hero">
+    <img class="bg" src="assets/cs-hero.png" alt="Priceline — The Negotiator">
+    <div class="cs-play"><img src="assets/cs-play.svg" alt="Play"></div>
+    <div class="cs-audio"><img src="assets/cs-audio.svg" alt="Sound"></div>
+    <div class="cs-track"></div>
+    <div class="cs-progress"></div>
+    <div class="cs-chev" id="chevDown"><img src="assets/cs-chev-down.svg" alt="Scroll"></div>
+  </div>
+
+  <!-- ============ HEADER (painted above the hero) ============ -->
+  <div class="hdr dark">
+    <a href="index.html" id="lettermark" style="left:63px; top:0; width:639px; height:161px; z-index:2;"></a>
+    <p class="nav-sm" style="left:504px; top:43px;">LOS ANGELES, CA</p>
+    <p class="nav-sm" style="left:504px; top:68px;">NEW YORK, NY</p>
+    <div class="hdr-menu" title="Menu">
+      <div class="l" style="top:12px;"></div>
+      <div class="l" style="top:20px;"></div>
+      <div class="l" style="top:28px;"></div>
+    </div>
+  </div>
+
+  <a class="cs-back" href="case-studies.html">Back to work</a>
+
+  <!-- ============ TITLE ROW ============ -->
+  <p class="cs-title fd"><b>Priceline</b> The Negotiator</p>
+  <div class="cs-badges fd" style="--fd:0.15s;"><img src="assets/cs-meta-ctv.svg" alt="Meta / CTV"></div>
+
+  <!-- ============ LEDGER ============ -->
+  <div class="cs-rule black fd" style="top:1526px;"></div>
+
+  <p class="cs-label fd" style="top:1551px;">Big Idea</p>
+  <p class="cs-copy fd" style="top:1551px; width:649px;">Shatner&rsquo;s footage flew to Warsaw and played back for Randall before rolling, so both performances had something to calibrate against.</p>
+  <div class="cs-rule gray fd" style="top:1627px;"></div>
+
+  <p class="cs-label fd" style="top:1649px;">Challenge</p>
+  <p class="cs-copy fd" style="top:1649px;">The Negotiator is one of advertising&rsquo;s most iconic characters. Shatner played him for 25 years. This campaign retires the original and introduces Randall Park as the new face.</p>
+  <div class="cs-rule gray fd" style="top:1725px;"></div>
+
+  <p class="cs-label fd" style="top:1747px;">Impact</p>
+  <p class="cs-copy fd" style="top:1747px; width:664px;">Early screenings are strong, with features in AdAge and Yahoo. A genuine cultural moment, closing a chapter that&rsquo;s run since the late 90s.</p>
+  <div class="cs-rule gray fd" style="top:1823px;"></div>
+
+  <p class="cs-label fd" style="top:1845px;">Insight</p>
+  <p class="cs-copy fd" style="top:1845px; width:676px;">With that much distance between shoots, the question was how to make two productions feel like one world. The answer: treat tone as the one constant everything else has to serve.</p>
+  <div class="cs-rule gray fd" style="top:1921px;"></div>
+
+
+  <!-- THE FOOTER LAW (8/21): the black footer sits at the bottom of every page -->
+  <div class="footer" style="top:2291px;">
+    <div class="foot-cta">
+      <p>Let&rsquo;s get started.&nbsp;</p>
+      <p>Connect with us at <a href="mailto:hello@sixtwentysix.co">hello@sixtwentysix.co</a></p>
+    </div>
+    <div class="foot-mark"><img src="assets/six26-wordmark.svg" alt="SIX26"></div>
+    <p class="foot-col foot-b" style="left:884px; top:60px;">join the team</p>
+    <p class="foot-col" style="left:884px; top:96px; width:225px;"><a href="mailto:careers@sixtwentysix.co" style="color:inherit; text-decoration:none; cursor:pointer;">careers@sixtwentysix.co</a></p>
+    <div class="foot-col" style="left:1185px; top:60px; width:166px;">
+      <p class="b">capabilities Deck</p>
+      <p>&#8203;</p>
+      <p><a href="mailto:hello@sixtwentysix.co?subject=SX%20-%20Capabilities%20Deck%20Request&body=Hi!%20I%20am%20requesting%20the%20SixTwentySix%20capabilities%20deck." style="color:inherit; text-decoration:none; cursor:pointer;">request our deck</a></p>
+    </div>
+    <div class="foot-col" style="left:1427px; top:60px; width:130px;">
+      <p class="b">newsletter</p>
+      <p>&#8203;</p>
+      <p><a href="mailto:hello@sixtwentysix.co?subject=Newsletter" style="color:inherit; text-decoration:none; cursor:pointer;">Subscribe</a></p>
+    </div>
+    <div class="foot-col" style="left:1595px; top:60px; width:80px;">
+      <p class="b">Follow us</p>
+      <p>&#8203;</p>
+      <p><a href="https://www.instagram.com/sixtwentysixco/" target="_blank" rel="noopener" style="color:inherit; text-decoration:none; cursor:pointer;">ig</a> / <a href="https://www.linkedin.com/company/sixtwentysix" target="_blank" rel="noopener" style="color:inherit; text-decoration:none; cursor:pointer;">li</a></p>
+    </div>
+  </div>
+</div><!-- /.page -->
+
+<script>
+if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+window.scrollTo(0, 0);
+
+/* Header flips solid white once the hero is scrolled past. */
+const hdr = document.querySelector('.hdr');
+const HERO_END = 980 - 118;
+const syncHdr = () => hdr.classList.toggle('dark', window.scrollY < HERO_END - 8);
+syncHdr();
+window.addEventListener('scroll', syncHdr, { passive: true });
+
+/* "Back to work" fades once the hero is gone (it lives on the hero). */
+const back = document.querySelector('.cs-back');
+window.addEventListener('scroll', () => {
+  back.style.opacity = window.scrollY > 900 ? '0' : '';
+}, { passive: true });
+
+document.getElementById('chevDown').addEventListener('click', () => {
+  window.scrollTo({ top: HERO_END, behavior: 'smooth' });
+});
+
+const io = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    const b = e.boundingClientRect;
+    /* zero-size wrappers (absolute children only) never reach ratio 0.15 —
+       they were permanently invisible (the empty-content bug, 8/19) */
+    if (e.intersectionRatio >= 0.15 || (e.isIntersecting && (b.width < 2 || b.height < 2))) {
+      /* one-shot (8/21): un-revealing on exit made the reveal REPLAY when
+         scrolling back up — tabs/toggles popped in 28px low on staggered
+         delays, overlapping, then jumped to their seats. Seen stays seen. */
+      e.target.classList.add('seen');
+      io.unobserve(e.target);
+    }
+  });
+}, { threshold: [0, 0.15] });
+document.querySelectorAll('.fd').forEach(el => io.observe(el));
+</script>
+<script src="smoothscroll.js?v=20260819095356"></script>
+<script src="logomorph.js?v=20260824a"></script>
+<script src="menu.js?v=20260824c"></script>
+<script>
+/* ================= THE REAL WORK PAGE (Joel 8/24) =================
+   "when you click on a work ... it needs to be the page for that actual
+   work with the right copy and you need that for all of them."
+   case-study.html is now a TEMPLATE: ?work=<wordpress-slug> fills it from
+   the CMS (public WPGraphQL, same pipe as the press rail) — hero image,
+   title, and the ledger built from the work's real sections (headline,
+   Challenge, The Spark, The Delivery, Results, Awards — only the ones the
+   CMS actually has). No slug = the Priceline demo stays as-is.
+   The hero is sized to EXACTLY one screen (Joel: the old fixed 980 could
+   run past the fold), and Play opens the spot FULL SCREEN in Vimeo's own
+   player — real play/pause/scrub/fullscreen controls. */
+(async () => {
+  const slug = new URLSearchParams(location.search).get('work');
+  if (!slug) return;
+  const esc = t => String(t || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  let cs = null;
+  try {
+    const r = await fetch('https://api.sixtwentysix.co/graphql', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ query:
+        '{ caseStudy(id: ' + JSON.stringify(slug) + ', idType: SLUG) { title pageMeta { headline subHeadline featuredvimeoid services { name } intro { introBlocks { title body } theChallenge theSpark theDelivery results awards } } featuredImage { node { sourceUrl } } } }' })
+    });
+    cs = (await r.json()).data.caseStudy;
+  } catch (e) { /* offline: the demo page stands */ }
+  const reveal = () => {
+    document.documentElement.classList.remove('cs-loading');
+    document.documentElement.style.background = '';
+  };
+  if (!cs) { reveal(); return; }
+
+  const page = document.getElementById('page');
+  const meta = cs.pageMeta || {};
+  const intro = meta.intro || {};
+
+  /* ---- hero = exactly one screen (design units; the iframe runs at 1728) ---- */
+  const heroH = Math.max(700, Math.round(window.innerHeight));
+  const delta = heroH - 980;
+  const hero = document.querySelector('.cs-hero');
+  hero.style.height = heroH + 'px';
+  /* chrome rides the hero bottom (design seats were 851/867/902 on 980) */
+  document.querySelectorAll('.cs-play, .cs-audio, .cs-track, .cs-progress, .cs-chev').forEach(el => {
+    el.style.top = (parseFloat(getComputedStyle(el).top) + delta) + 'px';
+  });
+  /* everything below the hero shifts down (the about.html push-down law) */
+  Array.from(page.children).forEach(el => {
+    if (el.classList.contains('cs-hero')) return;
+    const t = parseFloat(el.style.top || getComputedStyle(el).top);
+    if (isFinite(t) && t >= 980) el.style.top = (t + delta) + 'px';
+  });
+
+  /* ---- hero image + title ---- */
+  const img = hero.querySelector('img.bg');
+  const src = cs.featuredImage && cs.featuredImage.node && cs.featuredImage.node.sourceUrl;
+  if (src) img.src = src;
+  img.alt = cs.title || '';
+  document.title = 'SIXTWENTYSIX \u2014 ' + (cs.title || 'Work');
+  const parts = String(cs.title || '').split(/\s+[\u2013\u2014|]\s+/);
+  document.querySelector('.cs-title').innerHTML = parts.length > 1
+    ? '<b>' + esc(parts[0]) + '</b> ' + esc(parts.slice(1).join(' '))
+    : '<b>' + esc(cs.title) + '</b>';
+  /* 9/3 (Joel): the title also lives UP TOP, above "Back to work" — you
+     always know what you're watching without scrolling (matters most on
+     the no-copy pages, which are film-only now). Fades with the chrome. */
+  const topTitle = document.createElement('p');
+  topTitle.className = 'cs-toptitle';
+  topTitle.style.cssText = 'position:absolute; left:63px; top:124px; z-index:3;' +
+    " font-family:'HelveticaNeueCyr','Helvetica Neue',Helvetica,sans-serif;" +
+    ' font-weight:400; font-size:20px; line-height:24px; letter-spacing:-0.8px;' +
+    ' color:#fff; white-space:nowrap; pointer-events:none;';
+  topTitle.innerHTML = parts.length > 1
+    ? '<b style="font-weight:700;">' + esc(parts[0]) + '</b> ' + esc(parts.slice(1).join(' '))
+    : '<b style="font-weight:700;">' + esc(cs.title) + '</b>';
+  hero.appendChild(topTitle);
+  const backLink = document.querySelector('.cs-back');
+  if (backLink) backLink.style.top = '176px'; /* steps under the new title */
+  const badges = document.querySelector('.cs-badges');
+  if (badges) badges.remove(); /* demo-only asset; no CMS counterpart */
+
+  /* ---- the ledger, rebuilt from the real sections ----
+     The CMS has TWO copy schemes (Joel 8/24 audit): intro.introBlocks —
+     the repeater the live site renders, with the CMS's own section names
+     (Priceline: Challenge/Insight/Big Idea/Impact, HTML bodies) — and
+     the older fixed fields (Pura: theChallenge/theSpark/theDelivery).
+     Blocks win when present; the fixed fields are the fallback; Results/
+     Awards/Services/Director append when they exist so every page shows
+     everything WordPress actually holds. */
+  document.querySelectorAll('.cs-rule, .cs-label, .cs-copy').forEach(el => el.remove());
+  const blocks = ((intro.introBlocks || []).filter(b => b && String(b.body || '').trim()));
+  let rows;
+  if (blocks.length) {
+    rows = blocks.map(b => [b.title || '', b.body, true]);
+    const blockTitles = blocks.map(b => String(b.title || '').toLowerCase());
+    if (intro.results && !blockTitles.some(t => t.includes('result'))) rows.push(['Results', intro.results, false]);
+    if (intro.awards && !blockTitles.some(t => t.includes('award'))) rows.push(['Awards', intro.awards, true]);
+  } else {
+    rows = [
+      ['Big Idea', meta.headline, false],
+      ['Challenge', intro.theChallenge, false],
+      ['The Spark', intro.theSpark, false],
+      ['The Delivery', intro.theDelivery, false],
+      ['Results', intro.results, false],
+      ['Awards', intro.awards, true],
+    ];
+  }
+  const svcNames = (meta.services || []).map(x => x && x.name && x.name.trim()).filter(Boolean);
+  if (svcNames.length) rows.push(['Services', svcNames.join(', '), false]);
+  rows = rows.filter(r => r[1] && String(r[1]).trim());
+  let y = 1526 + delta;
+  let rowCount = 0;
+  const addRow = (label, copy, isHtml, first) => {
+    const rule = document.createElement('div');
+    rule.className = 'cs-rule ' + (first ? 'black' : 'gray') + ' fd seen';
+    rule.style.top = y + 'px';
+    page.appendChild(rule);
+    const lab = document.createElement('p');
+    lab.className = 'cs-label fd seen';
+    lab.style.top = (y + 25) + 'px';
+    lab.textContent = label;
+    page.appendChild(lab);
+    const cop = document.createElement('p');
+    cop.className = 'cs-copy fd seen';
+    cop.style.top = (y + 25) + 'px';
+    if (isHtml) { cop.innerHTML = copy; cop.querySelectorAll('[style]').forEach(n => n.removeAttribute('style')); }
+    else cop.textContent = copy;
+    page.appendChild(cop);
+    y += 25 + Math.max(cop.offsetHeight, 24) + 27;
+    rowCount++;
+  };
+  /* 9/3 (Joel, round 2: "just remove this entirely, like how it is on our
+     current website"): a work with NO copy is the FILM and the FOOTER,
+     nothing between — no white band, no title, no director row. */
+  const hasCopy = rows.length > 0;
+  if (!hasCopy) {
+    document.querySelector('.cs-title').style.display = 'none';
+    /* 9/3: no copy below means nothing to scroll to — the down chevron
+       goes too */
+    const dc = document.getElementById('chevDown') || document.querySelector('.cs-chev');
+    if (dc) dc.style.display = 'none';
+    y = heroH;
+  }
+  rows.forEach(([label, copy, isHtml], i) => addRow(label, copy, isHtml, i === 0));
+  reveal(); /* the right work is on the page — lift the flash guard */
+  const PAD = hasCopy ? 300 : 0;
+  const seatPage = () => {
+    page.style.height = (y + PAD + 349) + 'px'; /* the footer law re-pins from this */
+    const foot = document.querySelector('.footer');
+    if (foot) foot.style.top = (y + PAD) + 'px';
+  };
+  seatPage();
+
+  /* Director credit — the same real credit the grids show, from the
+     roster's own work lists. Appended once resolved; absent if unclaimed. */
+  if (hasCopy) fetch('https://api.sixtwentysix.co/graphql', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ query: '{ creatives(first: 50) { nodes { title creativePageMeta { works { works { nodes { ... on ContentNode { slug } } } } } } } }' })
+  }).then(r => r.json()).then(d => {
+    let director = null;
+    ((d.data && d.data.creatives && d.data.creatives.nodes) || []).forEach(c => {
+      ((c.creativePageMeta || {}).works || []).forEach(g => {
+        ((g.works || {}).nodes || []).forEach(w2 => { if (w2.slug === slug && !director) director = c.title; });
+      });
+    });
+    if (!director) return;
+    addRow('Director', director, false, rowCount === 0);
+    seatPage();
+  }).catch(() => {});
+
+  /* ---- the header/back/chev laws re-seated on the new hero end ---- */
+  const heroEnd = heroH - 118;
+  const hdrEl = document.querySelector('.hdr');
+  const backEl = document.querySelector('.cs-back');
+  /* Back to work returns to the EXACT SPOT you left (Joel 8/24): the
+     source page stored its seat on the outbound click; hand it back and
+     go there. No seat stored (direct link) -> the default case-studies. */
+  try {
+    const ret = sessionStorage.getItem('sx-return');
+    if (ret) {
+      const d = JSON.parse(ret);
+      backEl.href = d.page;
+      backEl.addEventListener('click', () => {
+        try { sessionStorage.setItem('sx-return-go', ret); } catch (e) {}
+      });
+    }
+  } catch (e) {}
+
+
+  window.addEventListener('scroll', () => {
+    hdrEl.classList.toggle('dark', window.scrollY < heroEnd - 8);
+    backEl.style.opacity = window.scrollY > heroH - 80 ? '0' : '';
+  }, { passive: true });
+  hdrEl.classList.toggle('dark', window.scrollY < heroEnd - 8);
+  const chev = document.getElementById('chevDown');
+  const chev2 = chev.cloneNode(true); /* strip the old 980-seat listener */
+  chev.replaceWith(chev2);
+  chev2.addEventListener('click', () => window.scrollTo({ top: heroEnd, behavior: 'smooth' }));
+
+  /* ---- THE HERO IS THE PLAYER (Joel 8/24: "THIS has to be the video
+     ... deadass the exact same as how our current website is, just
+     redesigned icons and the new copy design under it").
+     A chromeless Vimeo embed sits UNDER Joel's designed chrome, and the
+     chrome is the real control surface, driven over Vimeo's postMessage
+     API: the play triangle toggles play/pause, the speaker toggles
+     sound, the hairline is the live progress bar and scrubs on click.
+     While the film plays, chrome (icons + SX header + Back) fades after
+     a still moment and wakes on mouse movement — the live site's law. */
+  const vid = (meta.featuredvimeoid || '').trim();
+  if (vid) {
+    const playBtn = document.querySelector('.cs-play');
+    const audioBtn = document.querySelector('.cs-audio');
+    const track = document.querySelector('.cs-track');
+    const progress = document.querySelector('.cs-progress');
+    const chevEl = document.getElementById('chevDown') || document.querySelector('.cs-chev');
+    progress.style.width = '0px';
+
+    /* the player, chromeless, under the icons — COVER-FIT (Joel 8/24:
+       no black bars): an iframe letterboxes a 16:9 film inside any taller
+       box, so instead of filling the hero it is sized AS 16:9 to cover
+       it — wider than the hero when needed, centered, cropped by the
+       hero's overflow, exactly how the poster's object-fit: cover behaves. */
+    const fr = document.createElement('iframe');
+    /* AUTOPLAY on arrival (Joel 8/24: "the work needs to auto play when
+       you click on it") — browsers only allow it MUTED on a fresh page, so
+       it starts silent with the speaker dimmed; one tap brings sound in
+       (the home hero's law). */
+    fr.src = 'https://player.vimeo.com/video/' + esc(vid) + '?controls=0&title=0&byline=0&portrait=0&dnt=1&autopause=1&autoplay=1&muted=1';
+    const HERO_W = 1728;
+    let cw = HERO_W, ch = Math.round(HERO_W * 9 / 16);
+    if (ch < heroH) { ch = heroH; cw = Math.round(heroH * 16 / 9); }
+    fr.style.cssText = 'position:absolute; border:0; z-index:1; background:#000;' +
+      ' width:' + cw + 'px; height:' + ch + 'px;' +
+      ' left:' + Math.round((HERO_W - cw) / 2) + 'px; top:' + Math.round((heroH - ch) / 2) + 'px;';
+    fr.allow = 'autoplay; fullscreen; picture-in-picture';
+    fr.allowFullscreen = true;
+    hero.insertBefore(fr, hero.firstChild.nextSibling);
+
+    /* 9/3 (Joel, on the Selena Gomez film): mouse moves and clicks over
+       the Vimeo embed die INSIDE the cross-origin iframe, so once the
+       cinema fade slept the chrome, moving the mouse over the playing
+       film could never wake it (and click-to-pause only worked off-film).
+       This transparent catcher sits ABOVE the embed and UNDER the chrome:
+       the page owns the mouse again — moves wake the chrome, clicks
+       bubble to the hero's play/pause toggle. */
+    const catcher = document.createElement('div');
+    catcher.style.cssText = 'position:absolute; inset:0; z-index:3; background:transparent;';
+    hero.appendChild(catcher);
+
+    /* FULLSCREEN control (Joel 8/24): on a vertical/condensed window the
+       cover-fit crops the film's sides — this button opens native
+       fullscreen, where the film fits END TO END of the width. Only shown
+       when the crop is actually happening. */
+    let fsBtn = null;
+    if (heroH > Math.round(HERO_W * 9 / 16) + 24) {
+      fsBtn = document.createElement('div');
+      fsBtn.className = 'cs-fs';
+      fsBtn.style.cssText = 'position:absolute; left:1662px; top:' + (845 + delta) + 'px; width:30px; height:30px; cursor:pointer; z-index:4;';
+      fsBtn.innerHTML = '<img style="width:100%; height:100%;" alt="Full screen" src="data:image/svg+xml,' + encodeURIComponent(
+        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 30" fill="none" stroke="#fff" stroke-width="2"><path d="M11 3H3v8M19 3h8v8M11 27H3v-8M19 27h8v-8"/></svg>') + '">';
+      hero.appendChild(fsBtn);
+      fsBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (document.fullscreenElement) { document.exitFullscreen(); return; }
+        (fr.requestFullscreen ? fr.requestFullscreen() : fr.webkitRequestFullscreen && fr.webkitRequestFullscreen());
+      });
+    }
+    [playBtn, audioBtn, track, progress, chevEl].forEach(el => { if (el) el.style.zIndex = '4'; });
+    img.style.zIndex = '2'; /* the WP still is the poster until first play */
+    img.style.position = 'absolute';
+
+    const post = (method, value) => {
+      try { fr.contentWindow.postMessage(JSON.stringify(value === undefined ? { method } : { method, value }), '*'); } catch (e) {}
+    };
+    let playing = false, muted = true, duration = 0, started = true;
+    /* 9/3 (Joel: "make it so the video lands immediately ... the
+       thumbnail"): the WP still STAYS on top of the embed until Vimeo
+       actually reports playback, then fades — no black beat while the
+       player boots. */
+    img.style.transition = 'opacity 0.35s ease';
+    /* 9/3 (Joel): a loading ring while the film boots or rebuffers — a
+       hairline circle in the site's language, centered over the poster,
+       gone the moment real frames are moving. */
+    const spinCss = document.createElement('style');
+    spinCss.textContent = '@keyframes sx-spin { to { transform: rotate(360deg); } }' +
+      '.cs-spin { position: absolute; left: 50%; top: 50%; width: 44px; height: 44px;' +
+      ' margin: -22px 0 0 -22px; border: 1.5px solid rgba(255,255,255,0.25);' +
+      ' border-top-color: #fff; border-radius: 50%; z-index: 4; pointer-events: none;' +
+      ' animation: sx-spin 0.9s linear infinite; transition: opacity 0.3s ease; }';
+    document.head.appendChild(spinCss);
+    const spinner = document.createElement('div');
+    spinner.className = 'cs-spin';
+    hero.appendChild(spinner);
+    const spin = (on) => { spinner.style.opacity = on ? '1' : '0'; };
+    const posterDown = () => {
+      if (posterDown.done) return;
+      posterDown.done = true;
+      spin(false);
+      img.style.opacity = '0';
+      setTimeout(() => { img.style.display = 'none'; }, 400);
+    };
+
+    /* the pause glyph, drawn to the play triangle's weight */
+    const playImg = playBtn.querySelector('img');
+    const playSrc = playImg.src;
+    const pauseSrc = 'data:image/svg+xml,' + encodeURIComponent(
+      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 22 28"><rect x="2" y="1" width="6" height="26" fill="#fff"/><rect x="14" y="1" width="6" height="26" fill="#fff"/></svg>');
+
+    const setPlayingUi = (on) => {
+      playing = on;
+      if (on) { posterDown(); spin(false); }
+      playImg.src = on ? pauseSrc : playSrc;
+      wake(); /* playing arms the idle fade; paused keeps chrome up */
+    };
+
+    const toggle = () => {
+      started = true;
+      post(playing ? 'pause' : 'play');
+    };
+    playBtn.addEventListener('click', (e) => { e.stopPropagation(); toggle(); });
+    hero.addEventListener('click', (e) => {
+      /* 9/3: #chevDown carries no .cs-chev class — clicking it fell
+         through to the pause toggle (Joel: "when you click it, it pauses
+         the video") */
+      if (e.target.closest('.cs-back, .cs-chev, .cs-audio, .cs-play, .cs-track, .cs-progress, #chevDown, .cs-fs')) return;
+      toggle();
+    });
+    hero.style.cursor = 'pointer';
+    audioBtn.style.opacity = '0.45'; /* arrives muted; the tap-to-sound cue */
+    audioBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      muted = !muted;
+      post('setVolume', muted ? 0 : 1);
+      post('setMuted', muted); /* volume alone does not unmute an autoplay-muted embed */
+      audioBtn.style.opacity = muted ? '0.45' : '';
+      wake();
+    });
+
+    /* the hairline scrubs */
+    const TRACK_W = parseFloat(getComputedStyle(track).width);
+    /* an INVISIBLE strip carries the scrub clicks — padding on the track
+       itself painted its background and fattened the hairline into a
+       thick white slab (Joel 8/24: "that ugly thick white line") */
+    const hit = document.createElement('div');
+    hit.style.cssText = 'position:absolute; left:' + getComputedStyle(track).left +
+      '; top:' + (parseFloat(getComputedStyle(track).top) - 10) + 'px;' +
+      ' width:' + TRACK_W + 'px; height:21px; cursor:pointer; z-index:5; background:transparent;';
+    hero.appendChild(hit);
+    hit.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (!duration) return;
+      const r = hit.getBoundingClientRect();
+      const pct = Math.max(0, Math.min(1, (e.clientX - r.left) / r.width));
+      post('setCurrentTime', pct * duration);
+      progress.style.width = Math.round(pct * TRACK_W) + 'px';
+    });
+
+    /* player events: ready -> subscribe; progress drives the hairline */
+    window.addEventListener('message', (e) => {
+      if (!/player\.vimeo\.com$/.test(new URL(e.origin === 'null' ? 'https://player.vimeo.com' : e.origin).hostname)) return;
+      let d = e.data;
+      if (typeof d === 'string') { try { d = JSON.parse(d); } catch (err) { return; } }
+      if (!d) return;
+      if (d.event === 'ready') {
+        ['play', 'pause', 'finish', 'playProgress', 'bufferstart', 'bufferend'].forEach(ev => post('addEventListener', ev));
+        post('getDuration');
+      } else if (d.method === 'getDuration') {
+        duration = d.value || 0;
+      } else if (d.event === 'play') setPlayingUi(true);
+      else if (d.event === 'bufferstart') spin(true);
+      else if (d.event === 'bufferend') spin(false);
+      else if (d.event === 'pause') { setPlayingUi(false); spin(false); }
+      else if (d.event === 'finish') { setPlayingUi(false); progress.style.width = '0px'; }
+      else if (d.event === 'playProgress' && d.data) {
+        posterDown(); spin(false);
+        if (d.data.duration) duration = d.data.duration;
+        progress.style.width = Math.round((d.data.percent || 0) * TRACK_W) + 'px';
+      }
+    });
+
+    /* cinema fade: while playing, chrome sleeps after 2.2s still,
+       any mouse movement wakes it (the SX reappears on hover — Joel) */
+    const chrome = [playBtn, audioBtn, track, progress, hdrEl, backEl, chevEl, fsBtn, hit, document.querySelector('.cs-toptitle')].filter(Boolean);
+    let idleT = 0;
+    let chromeOn = true; /* 9/3: repaint ONLY on state change — every-move
+       style writes restarted the opacity transitions and made the chrome
+       shimmer under the cursor */
+    const setChrome = (on) => {
+      if (chromeOn === on) return;
+      chromeOn = on;
+      paintChrome(on);
+    };
+    const paintChrome = (on) => chrome.forEach(el => {
+      el.style.transition = 'opacity 0.4s ease';
+      /* the speaker keeps its muted dim when the chrome is awake */
+      el.style.opacity = on ? (el === audioBtn && muted ? '0.45' : '') : '0';
+      el.style.pointerEvents = on ? '' : 'none';
+    });
+    const wake = () => {
+      setChrome(true);
+      clearTimeout(idleT);
+      if (playing) idleT = setTimeout(() => { if (playing) setChrome(false); }, 2200);
+    };
+    window.addEventListener('mousemove', wake);
+  }
+})();
+</script>
+<script>
+/* Safari back-forward cache restores dead builds from memory - always reload */
+window.addEventListener('pageshow', function (e) { if (e.persisted) location.reload(); });
+</script>
+</body>
+</html>

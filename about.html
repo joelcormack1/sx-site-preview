@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1728">
+<script src="footerlaw.js?v=20260825a"></script>
+<title>SIXTWENTYSIX — About</title>
+<!--
+  ABOUT — synced 1:1 to Full Site frame 220:1095 (2026-08-18).
+  Statement (lead sentence black, rest #989595), full-bleed hero still,
+  "Our Core Values" as the chosen strip layout (from the 8/17 options page:
+  justified gray line, active value in #121212, copy below — click to switch),
+  "Meet the core team" press-photo carousel (gradient cells, name + role +
+  hairline overlaid, bottom white fade, chevrons page the rail), black footer.
+  Content notes vs the frame: "Sarah Donenberg" corrected to "Donnenberg"
+  (contacts.json authority, per the 8/10 decision); a stray "06" between the
+  last two values is rendered as the "/" separator (numbers-motif leftover).
+-->
+<style>
+  @font-face {
+    font-family: 'HelveticaNeueCyr';
+    src: url('fonts/HelveticaNeueCyr-Roman.ttf') format('truetype');
+    font-weight: 400;
+  }
+  @font-face {
+    font-family: 'HelveticaNeueCyr';
+    src: url('fonts/HelveticaNeueCyr-Medium.ttf') format('truetype');
+    font-weight: 500;
+  }
+  @font-face {
+    font-family: 'HelveticaNeueCyr';
+    src: url('fonts/HelveticaNeueCyr-Bold.ttf') format('truetype');
+    font-weight: 700;
+  }
+  @font-face {
+    font-family: 'Azeret Mono';
+    src: url('fonts/AzeretMono-VF.woff2') format('woff2-variations');
+    font-weight: 100 900;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #fff; overscroll-behavior: none; }
+  body {
+    overflow-x: clip; /* auto broke position:sticky in Safari */
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  }
+  p { margin: 0; }
+  a { color: inherit; text-decoration: none; }
+  img { display: block; }
+
+  .page {
+    position: relative;
+    width: 1728px;
+    height: 4147px;
+    margin: 0 auto;
+    background: #fff;
+    overflow: clip; /* hidden made .page the sticky container and killed
+                       every pin inside it; clip crops the marquee bleed
+                       without breaking position: sticky */
+  }
+
+  /* ---------- Scroll fade-in ---------- */
+  .fd { opacity: 0; transform: translateY(28px); }
+  .fd.seen {
+    opacity: 1; transform: none;
+    transition: opacity 0.9s cubic-bezier(0.16,1,0.3,1), transform 0.9s cubic-bezier(0.16,1,0.3,1);
+    transition-delay: var(--fd, 0s);
+  }
+
+  /* ---------- Header (interior component 459:3638) ---------- */
+  .hdr {
+    /* FIXED, not sticky (Joel 8/21 zero-vibration): sticky repositions
+       asynchronously under scripted per-frame scrolling (the smooth
+       scroll), which reads as a 1px bob. Fixed is compositor-pinned. */
+    position: fixed;
+    top: 0;
+    left: 50%;
+    margin-left: -864px;
+    width: 1728px;
+    height: 118px;
+    background: #fff;
+    z-index: 50;
+    transition: background 0.4s ease;
+  }
+  /* while the reel holds full screen the header goes TRANSPARENT — the
+     video runs beneath white chrome (Joel 8/21); logomorph's .hdr.dark
+     rule inverts the SX to white */
+  .hdr.dark { background: transparent; }
+  .hdr.dark .nav-sm { color: #fff; }
+  .hdr.dark .hdr-menu .l { background: #fff; }
+  .nav-sm { transition: color 0.4s ease; }
+  .hdr-menu .l { transition: background 0.4s ease; }
+  .hdr-logo { position: absolute; left: 63px; top: 43px; width: 146px; height: 50px; }
+  .hdr-logo .v1 { position: absolute; top: 0.11%; right: 55.69%; bottom: 0; left: 0; }
+  .hdr-logo .v2 { position: absolute; top: 1.81%; right: 8.88%; bottom: 1.81%; left: 42.46%; }
+  .hdr-logo .v3 { position: absolute; top: 0; right: 0; bottom: 82.78%; left: 91.12%; }
+  .hdr-logo img { position: absolute; inset: 0; width: 100%; height: 100%; max-width: none; }
+  .hdr-menu {
+    position: absolute; left: 1636px; top: 44px; width: 57px; height: 30px;
+    cursor: pointer;
+  }
+  .hdr-menu .l {
+    position: absolute; left: 12px; width: 33px; height: 2px;
+    background: #000; border-radius: 2px;
+  }
+  .nav-sm {
+    position: absolute;
+    font-size: 16px; line-height: 25px; letter-spacing: 0.48px;
+    color: #000; white-space: nowrap; font-weight: 400;
+  }
+
+  /* ===================== STATEMENT ===================== */
+  .ab-statement {
+    position: absolute; left: 63px; top: 385px; width: 1585px;
+    font-weight: 500; font-size: 40px; line-height: 50px; letter-spacing: -1.2px;
+    color: #000;
+  }
+  .ab-statement .gray { color: #c7c7c7; } /* Joel 8/22: lighter — more contrast against the lit black */
+  .ab-statement .gray .w { transition: color 0.25s ease; }
+  .ab-statement .gray .w.lit { color: #000; }
+
+  /* ===================== HERO STILL ===================== */
+  .ab-hero {
+    position: absolute; left: -4px; top: 853px; width: 1732px; height: 957px;
+    overflow: hidden; background: #d9d9d9;
+    transform-origin: center center;
+    /* Joel 8/21: the reel fades in AT the content inset (63px margins,
+       matching the SX and the statement), then zooms to full screen ON ITS
+       OWN — the zoom is a clocked play, not scroll-scrubbed */
+    /* Joel 8/22: the arrival is a PLAY, not a scrub — the reel rises and
+       grows into its inset seat while fading in, one clocked gesture on
+       the house curve. The later full-screen zoom is unchanged. */
+    opacity: 0;
+    /* Joel 8/25: the small point read too big — arrive from further back */
+    transform: translateY(44px) scale(0.7);
+    transition: transform 1.2s ease-in-out, opacity 1.2s ease;
+  }
+  .ab-hero.in {
+    opacity: 1;
+    /* Joel 8/25: Apple-style — rests SMALL (0.8), then the scroll itself
+       grows it to full screen (scrubbed in drive(), not a clocked zoom) */
+    transform: translateY(0) scale(0.7);
+    /* Joel 8/22: slow and calm — long soft in-out, gentle travel */
+    transition: transform 1.9s cubic-bezier(0.45, 0.05, 0.15, 1), opacity 1.9s cubic-bezier(0.45, 0.05, 0.15, 1);
+  }
+  /* while the scroll is scrubbing the scale, the transform must track the
+     finger exactly — no transition smear (opacity keeps its fade) */
+  .ab-hero.in.scrub { transition: opacity 1.9s cubic-bezier(0.45, 0.05, 0.15, 1); }
+  .ab-hero img,
+  .ab-hero video { position: absolute; left: -2px; top: -2px; width: calc(100% + 4px); height: calc(100% + 4px); object-fit: cover; /* 9/4: 2px overscan — fractional-pixel scaling let a white sliver peek at full-bleed edges (Joel) */ display: block; }
+
+  /* ===================== HEADINGS ===================== */
+  .ab-h {
+    position: absolute;
+    font-family: 'HelveticaNeueCyr', 'Helvetica Neue', Helvetica, sans-serif;
+    font-weight: 700; font-size: 40px; line-height: 48px; letter-spacing: -1.6px;
+    color: #000; text-transform: capitalize; white-space: nowrap;
+  }
+
+  /* ===================== CORE VALUES (chosen option, 8/17) ===================== */
+  .cv-strip {
+    position: absolute; left: 110px; top: 2258px; width: 1467px;
+    font-family: 'HelveticaNeueCyr', 'Helvetica Neue', Helvetica, sans-serif;
+    font-weight: 700; font-size: 47.213px; line-height: 56.7px; letter-spacing: -1.42px;
+    color: #e0e0e0; text-align: justify; text-transform: capitalize;
+  }
+  .cv-strip .sep { color: #e0e0e0; transition: color 0.35s ease; }
+  /* Joel 8/22: the active value's own slash goes black with it */
+  .cv-strip .sep:has(+ .v.on) { color: #121212; }
+  .cv-strip .v { cursor: pointer; transition: color 0.35s ease; }
+  .cv-strip .v:hover { color: #b9b9b9; }
+  .cv-strip .v.on, .cv-strip .v.on:hover { color: #121212; }
+  /* the copy's 0.25s crossfade must survive the .fd.seen override (the
+     recurring snap bug — hunt 8/21) */
+  .cv-copy.fd.seen { transition: opacity 0.25s ease, transform 0.9s cubic-bezier(0.16,1,0.3,1); }
+  .cv-copy {
+    position: absolute; left: 110px; top: 2485px; width: 1467px;
+    font-family: 'HelveticaNeueCyr', 'Helvetica Neue', Helvetica, sans-serif;
+    font-weight: 500; font-size: 34px; line-height: 47.6px; letter-spacing: -0.68px;
+    color: #000; transition: opacity 0.25s ease;
+  }
+
+  /* ===================== TEAM CAROUSEL ===================== */
+  .tm-chev {
+    position: absolute; top: 2898px; width: 18px; height: 37px; cursor: pointer;
+    transition: opacity 0.3s ease;
+  }
+  .tm-chev:hover { opacity: 0.55; }
+  .tm-chev svg { display: block; }
+  #tmRail {
+    position: absolute; left: 0; top: 3084px; width: 1728px; height: 714.2px;
+  }
+  #tmTrack {
+    position: absolute; left: 0; top: 0; height: 714.2px;
+    transition: transform 0.6s cubic-bezier(0.32, 0.72, 0, 1);
+  }
+  .tm-cell {
+    position: absolute; top: 0; width: 499.2px; height: 709.6px;
+    /* mask the WHOLE cell (photo + grey backdrop together): the stills'
+       baked-in dark bottoms were leaking through the old img-only mask as
+       black blobs, and the grey gradient showed as a band above the footer
+       (Joel 8/21). Everything now dissolves to page white well before the
+       cell's bottom edge. */
+    -webkit-mask-image: linear-gradient(180deg, #000 62%, transparent 92%);
+    mask-image: linear-gradient(180deg, #000 62%, transparent 92%);
+  }
+  .tm-cell .grad {
+    /* the frame's grey gradient panels read as stray grey bars between the
+       photos once the strip dissolved to clean white (Joel 8/21) — gone */
+    display: none;
+  }
+  .tm-cell img { position: absolute; }
+  .tm-rule { position: absolute; width: 0; height: 84.6px; border-left: 0.83px solid #000; }
+  .tm-name {
+    position: absolute; width: 227px;
+    font-weight: 700; font-size: 17.427px; line-height: 21.3px; letter-spacing: -0.52px;
+    color: #000; white-space: nowrap;
+  }
+  .tm-role {
+    position: absolute; width: 227px;
+    font-weight: 400; font-size: 17.427px; line-height: 20.8px; letter-spacing: -0.52px;
+    color: #000; white-space: nowrap;
+  }
+
+  /* ---------- Footer (black, SIX26) ---------- */
+  .footer {
+    position: absolute; left: 0; top: 3798px; width: 1728px; height: 349px;
+    background: #000; overflow: hidden; z-index: 3;
+  }
+  .foot-cta {
+    position: absolute; left: 40px; top: 60px; width: 470px; height: 74px;
+    font-weight: 700; font-size: 24px; line-height: 24px;
+    color: #fff; text-transform: uppercase; word-break: break-word;
+  }
+  .foot-cta a { text-decoration: underline; text-underline-position: from-font; cursor: pointer; }
+  .foot-mark { position: absolute; top: 54.44%; right: 2.23%; bottom: -35.46%; left: 2.29%; }
+  .foot-mark img { position: absolute; inset: 0; width: 100%; height: 100%; max-width: none; }
+  .foot-col {
+    position: absolute;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; /* 9/4 Joel: footers all in Helvetica (was Azeret Mono) */
+    font-weight: 400; font-size: 15px; line-height: 17.5px;
+    color: #fff; text-transform: uppercase; word-break: break-word;
+  }
+  .foot-col .b, .foot-b { font-weight: 700; }
+</style>
+</head>
+<body>
+<script>
+(function () {
+  if (window.self === window.top && !location.search.includes('flat=1')) {
+    var page = location.pathname.split('/').pop() || 'index.html';
+    location.replace('view.html?p=' + encodeURIComponent(page));
+  }
+  if (location.search.includes('reveal=1')) {
+    document.write('<style>.fd{opacity:1 !important; transform:none !important;}' +
+      '.hdr{position:relative !important;}' +
+      '*,*::before,*::after{transition:none !important; animation:none !important;}' +
+      '#menu-overlay{display:none !important;}</style>');
+  }
+})();
+</script>
+
+<div class="page" id="page">
+
+  <!-- ============ HEADER ============ -->
+  <div class="hdr">
+    <a href="index.html" id="lettermark" style="left:63px; top:0; width:639px; height:161px; z-index:2;"></a>
+    <p class="nav-sm" style="left:504px; top:43px;">LOS ANGELES, CA</p>
+    <p class="nav-sm" style="left:504px; top:68px;">NEW YORK, NY</p>
+    <div class="hdr-menu" title="Menu">
+      <div class="l" style="top:12px;"></div>
+      <div class="l" style="top:20px;"></div>
+      <div class="l" style="top:28px;"></div>
+    </div>
+  </div>
+
+  <!-- ============ STATEMENT ============ -->
+  <p class="ab-statement fd">A Full Service Creative Studio Reimagining Storytelling. <span class="gray">Our diverse roster of visionary creatives are rewriting the rules of storytelling and visual expression &mdash; driven by our shared values and unique perspectives. Brands don't come to us for content. They come to us for stories that move.</span></p>
+
+  <!-- ============ HERO STILL ============ -->
+  <!-- The sizzle reel itself (Joel 8/24) — same file the home hero plays;
+       the old still stays on as poster while it buffers. -->
+  <div class="ab-hero" id="abHero"><video src="assets/live/sx-reel.mp4" autoplay muted loop playsinline poster="assets/abt-hero-2.png"></video></div>
+
+  <!-- ============ OUR CORE VALUES ============ -->
+  <p class="ab-h fd" style="left:96px; top:2097px;">Our Core Values</p>
+
+  <p class="cv-strip fd" id="cvStrip"><span class="sep">/&nbsp;&nbsp;</span><span class="v on" data-i="0">Fueled by Passion</span><span class="sep"> / </span><span class="v" data-i="1">Stay Curious</span><span class="sep">&nbsp;&nbsp;/&nbsp;&nbsp;</span><span class="v" data-i="2">If There&rsquo;s A Will, There&rsquo;s A Way</span><br><span class="sep">/&nbsp;&nbsp;</span><span class="v" data-i="3">Your Next Five Moves</span><span class="sep">&nbsp;&nbsp;/&nbsp;&nbsp;</span><span class="v" data-i="4">Do What You Say</span><span class="sep">&nbsp;&nbsp;/&nbsp;&nbsp;</span><span class="v" data-i="5">Make It Count</span></p>
+
+  <p class="cv-copy fd" id="cvCopy" style="--fd:0.15s;">Bring energy & enthusiasm into everything you do. Let your drive inspire others.</p>
+
+  <!-- ============ MEET THE CORE TEAM ============ -->
+  <p class="ab-h fd" style="left:96px; top:2892px;">Meet the core team</p>
+  <div class="tm-chev fd" id="tmPrev" style="left:1545px;" title="Previous">
+    <svg width="18" height="37" viewBox="0 0 18 37" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M16 2 L3 18.5 L16 35" stroke="#000" stroke-width="4"/></svg>
+  </div>
+  <div class="tm-chev fd" id="tmNext" style="left:1624px;" title="Next">
+    <svg width="18" height="37" viewBox="0 0 18 37" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 2 L15 18.5 L2 35" stroke="#000" stroke-width="4"/></svg>
+  </div>
+
+  <div id="tmRail">
+    <div id="tmTrack"></div>
+  </div>
+
+  <!-- ============ FOOTER ============ -->
+  <div class="footer">
+    <div class="foot-cta">
+      <p>Let&rsquo;s get started.&nbsp;</p>
+      <p>Connect with us at <a href="mailto:hello@sixtwentysix.co">hello@sixtwentysix.co</a></p>
+    </div>
+    <div class="foot-mark"><img src="assets/six26-wordmark.svg" alt="SIX26"></div>
+    <p class="foot-col foot-b" style="left:884px; top:60px;">join the team</p>
+    <p class="foot-col" style="left:884px; top:96px; width:225px;"><a href="mailto:careers@sixtwentysix.co" style="color:inherit; text-decoration:none; cursor:pointer;">careers@sixtwentysix.co</a></p>
+    <div class="foot-col" style="left:1185px; top:60px; width:166px;">
+      <p class="b">capabilities Deck</p>
+      <p>&#8203;</p>
+      <p><a href="mailto:hello@sixtwentysix.co?subject=SX%20-%20Capabilities%20Deck%20Request&body=Hi!%20I%20am%20requesting%20the%20SixTwentySix%20capabilities%20deck." style="color:inherit; text-decoration:none; cursor:pointer;">request our deck</a></p>
+    </div>
+    <div class="foot-col" style="left:1427px; top:60px; width:130px;">
+      <p class="b">newsletter</p>
+      <p>&#8203;</p>
+      <p><a href="mailto:hello@sixtwentysix.co?subject=Newsletter" style="color:inherit; text-decoration:none; cursor:pointer;">Subscribe</a></p>
+    </div>
+    <div class="foot-col" style="left:1601px; top:60px; width:89px;">
+      <p class="b">follow us</p>
+      <p>&#8203;</p>
+      <p><a href="https://www.instagram.com/sixtwentysixco/" target="_blank" rel="noopener" style="color:inherit; text-decoration:none; cursor:pointer;">ig</a> / <a href="https://www.linkedin.com/company/sixtwentysix" target="_blank" rel="noopener" style="color:inherit; text-decoration:none; cursor:pointer;">li</a></p>
+    </div>
+  </div>
+
+</div><!-- /.page -->
+
+<script>
+if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+window.scrollTo(0, 0);
+
+const io = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    const b = e.boundingClientRect;
+    /* zero-size wrappers (absolute children only) never reach ratio 0.15 —
+       they were permanently invisible (the empty-content bug, 8/19) */
+    if (e.intersectionRatio >= 0.15 || (e.isIntersecting && (b.width < 2 || b.height < 2))) {
+      /* one-shot (8/21): un-revealing on exit made the reveal REPLAY when
+         scrolling back up — tabs/toggles popped in 28px low on staggered
+         delays, overlapping, then jumped to their seats. Seen stays seen. */
+      e.target.classList.add('seen');
+      io.unobserve(e.target);
+    }
+  });
+}, { threshold: [0, 0.15] });
+
+/* ================= Core values: click to switch ================= */
+(() => {
+  const COPY = [
+    'Bring energy & enthusiasm into everything you do. Let your drive inspire others.',
+    'Embrace new ideas and perspectives. Growth comes from exploring the unexpected.',
+    'No obstacle is too big. Believe in your ability to make it happen.',
+    'Think past the next step. Every choice is made with the bigger picture in mind.',
+    'Trust is built on follow-through. If we commit to it, we deliver it. Every time.',
+    'Every project is a chance to make something that moves people. We never waste one.'
+  ];
+  const copy = document.getElementById('cvCopy');
+  const strip = document.getElementById('cvStrip');
+  const vals = [...document.querySelectorAll('#cvStrip .v')];
+  let cvOn = 0; /* rest on value ONE — resting on the frame's value 3 made the scroll sequence visibly jump back to 1 (Joel 8/21) */
+  function setVal(i) {
+    if (i === cvOn) return;
+    cvOn = i;
+    vals.forEach(o => o.classList.toggle('on', Number(o.dataset.i) === i));
+    copy.style.opacity = '0';
+    setTimeout(() => { copy.textContent = COPY[i]; copy.style.opacity = ''; }, 180);
+  }
+  vals.forEach(v => v.addEventListener('click', () => setVal(Number(v.dataset.i))));
+  /* THE LOCK (Joel 8/19): scroll until the strip sits dead center, the page
+     then holds while continued scrolling steps through each value, and once
+     Make It Count lands the page rolls on. Implemented as a scroll span:
+     everything below the strip is pushed down by SPAN, and during the span
+     the core-values block rides the scroll (translateY) so it stays put. */
+  const CV_SPAN = 1200; // 6 values x 200px of scroll each (Joel 8/21: slower roll)
+  const heading = document.querySelector('.ab-h[style*="2097"]');
+  if (!location.search.includes('reveal=1')) {
+    const pg = document.getElementById('page');
+    window.AB_LOCKS = 0;
+
+    /* REEL LOCK (Joel 8/20): once the sizzle still reaches full screen it
+       holds in place for a beat of scroll before releasing. Native sticky —
+       the same zero-jitter pin as the values below. */
+    const REEL_LOCK = 400;
+    /* Joel 8/20: when the reel locks big it is FULL SCREEN on any aspect —
+       the locked frame is sized to the real viewport (measured at load; the
+       img covers, cropping as needed) instead of the frame's fixed 957. */
+    const REEL_H = Math.max(957, window.innerHeight);
+    const REEL_GROW = REEL_H - 957;
+    const heroEl = document.getElementById('abHero');
+    const rz = document.createElement('div');
+    rz.style.cssText = `position:absolute; left:-4px; top:853px; width:1732px; height:${REEL_H + REEL_LOCK}px;`;
+    const rs = document.createElement('div');
+    rs.style.cssText = `position:sticky; top:0; width:1732px; height:${REEL_H}px;`;
+    rz.appendChild(rs);
+    pg.appendChild(rz);
+    heroEl.style.left = '0px';
+    heroEl.style.top = '0px';
+    heroEl.style.height = REEL_H + 'px';
+    rs.appendChild(heroEl);
+    rs.style.top = Math.min(0, Math.round((window.innerHeight - REEL_H) / 2)) + 'px';
+    window.AB_REEL_PIN = 853; // scrollY where the reel pins (zoom must be done by then)
+    window.AB_REEL_END = 853 + REEL_GROW + REEL_LOCK; // where the lock releases (dark header ends here)
+    // everything below the reel rides down by the lock span
+    pg.querySelectorAll(':scope > *').forEach(el => {
+      if (el === rz) return;
+      const cs = getComputedStyle(el);
+      if (cs.position !== 'absolute') return;
+      const t = parseFloat(cs.top);
+      if (!isNaN(t) && t >= 1810) el.style.top = (t + REEL_GROW + REEL_LOCK) + 'px';
+    });
+
+    /* NATIVE STICKY PIN (8/20). The old translate-chasing pin corrected the
+       block one frame behind the scroll, which read as vibration. position:
+       sticky pins in the compositor — zero lag, same as the services
+       stepper. The cluster (heading / strip / copy) moves into a sticky box
+       inside a pinzone spanning the block + the 720px value ride. */
+    const BLOCK_TOP = 2097 + REEL_GROW + REEL_LOCK, BLOCK_H = 500;
+    const zone = document.createElement('div');
+    zone.style.cssText = `position:absolute; left:0; top:${BLOCK_TOP}px; width:1728px; height:${BLOCK_H + CV_SPAN}px;`;
+    const stickBox = document.createElement('div');
+    stickBox.style.cssText = `position:sticky; top:0; width:1728px; height:${BLOCK_H}px;`;
+    zone.appendChild(stickBox);
+    pg.appendChild(zone);
+    [heading, strip, copy].filter(Boolean).forEach(el => {
+      el.style.top = (parseFloat(getComputedStyle(el).top) - BLOCK_TOP) + 'px';
+      stickBox.appendChild(el);
+    });
+    // push everything below the values block down by the span
+    pg.querySelectorAll(':scope > *').forEach(el => {
+      if (el === zone || el === rz) return;
+      const cs = getComputedStyle(el);
+      if (cs.position !== 'absolute') return;
+      const t = parseFloat(cs.top);
+      if (!isNaN(t) && t >= 2600 + REEL_GROW + REEL_LOCK) el.style.top = (t + CV_SPAN) + 'px';
+    });
+    /* -64: the team photos dissolve ~92% up their cells, which left a dead
+       strip before the footer (Joel 8/21) — the footer law re-pins the
+       footer to the new page bottom automatically */
+    pg.style.height = (parseFloat(getComputedStyle(pg).height) + REEL_GROW + REEL_LOCK + CV_SPAN - 64) + 'px';
+
+    /* center the block in the viewport while pinned */
+    function layoutCv() {
+      stickBox.style.top = Math.max(130, Math.round((window.innerHeight - BLOCK_H) / 2)) + 'px';
+    }
+    layoutCv();
+    window.addEventListener('resize', layoutCv);
+
+    /* the scroll only STEPS the values now — the browser does the pinning */
+    function cvScroll() {
+      const pinStart = BLOCK_TOP - (parseFloat(stickBox.style.top) || 0);
+      const ty = Math.max(0, Math.min(CV_SPAN, window.scrollY - pinStart));
+      if (window.scrollY >= pinStart) {
+        setVal(Math.min(vals.length - 1, Math.floor((ty / CV_SPAN) * vals.length)));
+      }
+    }
+    window.addEventListener('scroll', cvScroll, { passive: true });
+    cvScroll();
+  }
+})();
+
+/* ================= Team carousel (220:1095 exact geometry) =================
+   Cells are placed at the frame's exact xs (the strip bleeds off both edges,
+   mid-scroll, as designed). Chevrons slide the track a cell at a time. */
+(() => {
+  /* 9/4 REBUILT from Joel's Figma "Team" frame (598:814) + the LIVE site's
+     roster and order (sixtwentysix.co/about, "Meet the core team" — 9
+     people; the coded rail had 5, mostly wrong, incl. Sophee who is not on
+     the live team). img: null = headshot not delivered yet (Joel is
+     waiting on Austin, Jay, Sahil) — the slot renders name + rule + role
+     on the gradient cell; drop the file in assets/ and fill `img`/`w`/`h`
+     when it lands. Photos BOTTOM-ALIGN to the 714.2 rail (photoY = 714.2
+     - h, the law Joel's frame follows); labels sit at the fixed top line.
+     Names per contacts.json (Donnenberg), titles per the live site. */
+  const TEAM = [
+    { name: 'Austin Barbera',    role: 'Co-Founder / Managing Director',        img: null, w: 330, h: 689 },
+    { name: 'Jake Krask',        role: 'Co-Founder / Managing Partner',         img: 'assets/abt-team-jake.png',     w: 331, h: 689 },
+    { name: 'Carleigh Finch',    role: 'EP / Head of Business Development',     img: 'assets/abt-team-carleigh.png', w: 347, h: 644 },
+    { name: 'Jonny Edwards',     role: 'Chief Executive Producer',              img: 'assets/abt-team-jonny.png',    w: 339, h: 714 },
+    { name: 'Sarah Donnenberg',  role: 'Executive Producer / Special Projects', img: 'assets/abt-team-sarah.png',    w: 327, h: 690 },
+    { name: 'Jay Wert',          role: 'Executive Producer',                    img: null, w: 330, h: 689 },
+    { name: 'Omeed Boghraty',    role: 'Executive Creative Director',           img: 'assets/abt-team-omeed.png',    w: 373, h: 644 },
+    { name: 'Sahil Mirchandani', role: 'Head of Production',                    img: null, w: 330, h: 689 },
+    { name: 'Alex Ramos',        role: 'Head of Post Production',               img: 'assets/abt-team-alex.png',     w: 304, h: 665 },
+  ];
+  const PITCH = 446.1, RAIL_H = 714.2;
+  const cellHtml = (t, i, lap) => {
+    const cell = -33 + i * PITCH + lap;
+    const photoX = 80, photoY = RAIL_H - t.h;
+    const ruleX = 124, labelX = 153.9;
+    return `
+    <div class="tm-cell" style="left:${cell}px;">
+      <div class="grad"></div>
+      ${t.img ? `<img src="${t.img}" alt="${t.name}" style="left:${photoX}px; top:${photoY.toFixed(1)}px; width:${t.w}px; height:${t.h}px;">` : ''}
+      <div class="tm-rule" style="left:${ruleX}px; top:17.4px;"></div>
+      <p class="tm-name" style="left:${labelX}px; top:12.4px;">${t.name}</p>
+      <p class="tm-role" style="left:${labelX}px; top:34px;">${t.role}</p>
+    </div>`;
+  };
+  const track = document.getElementById('tmTrack');
+  const PERIOD = PITCH * TEAM.length;     /* one full lap of the roster */
+  let drift = 0;                          /* the always-on slow roll */
+  /* two copies, one lap apart, so the slow roll never shows a gap */
+  track.innerHTML = TEAM.map((t, i) => cellHtml(t, i, 0)).join('')
+                  + TEAM.map((t, i) => cellHtml(t, i, PERIOD)).join('');
+  const MIN = -2, MAX = TEAM.length - 3;  /* 9 cells now, chevrons cover the book */
+  let pos = 0;
+  const setPos = () => { track.style.transform = `translateX(${-(pos * PITCH + drift)}px)`; };
+  window.TM_SETPOS = (dt) => { drift = (drift + 44 * dt) % PERIOD; setPos(); }; /* 24 -> 44 px/s: Joel wanted the roll faster (8/21) */
+  document.getElementById('tmNext').addEventListener('click', () => { pos = Math.min(MAX, pos + 1); setPos(); });
+  document.getElementById('tmPrev').addEventListener('click', () => { pos = Math.max(MIN, pos - 1); setPos(); });
+})();
+
+document.querySelectorAll('.fd').forEach(el => io.observe(el));
+</script>
+<script>
+/* ============ About scroll choreography (Joel 8/19 evening) ============ */
+(() => {
+  if (location.search.includes('reveal=1')) return; // captures stay static
+
+  /* statement: the gray words turn black one by one as you scroll */
+  const gray = document.querySelector('.ab-statement .gray');
+  const words = gray.textContent.split(/\s+/).filter(Boolean);
+  gray.innerHTML = words.map(w => `<span class="w">${w}</span>`).join(' ');
+  const wEls = [...gray.querySelectorAll('.w')];
+  const stmt = document.querySelector('.ab-statement');
+
+  /* hero video: 0 -> 100% opacity, small -> full as you scroll over it */
+  const hero = document.getElementById('abHero');
+
+  /* Joel 8/22: the paragraph turns FULLY black BEFORE the page continues —
+     the first scroll intent triggers a clocked lighting play (~1.1s) while
+     the scroll cap holds the page essentially still (the same law as the
+     homepage header: the animation is what lets you continue). When the
+     last word is black, the cap releases and the page scrolls on. Back at
+     the very top it re-arms for a replay. */
+  let litP = 0, litAnim = false, litDone = false, litLast = 0;
+  function applyLit(p) {
+    const lit = Math.floor(p * wEls.length);
+    wEls.forEach((el, i) => el.classList.toggle('lit', i < lit));
+  }
+  function litTick(now) {
+    const dt = Math.min(0.05, (now - litLast) / 1000) || 1 / 60;
+    litLast = now;
+    litP = Math.min(1, litP + dt / 1.1);
+    applyLit(litP);
+    window.SX_SCROLL_CAP = Math.round(12 + litP * 44); // near-still creep
+    if (litP < 1) requestAnimationFrame(litTick);
+    else { litDone = true; litAnim = false; window.SX_SCROLL_CAP = null; }
+  }
+  function drive() {
+    const vh = window.innerHeight;
+    if (!vh) return;
+    if (!litDone && !litAnim && window.scrollY > 2) {
+      litAnim = true; litLast = performance.now();
+      requestAnimationFrame(litTick);
+    }
+    if (litDone && window.scrollY <= 2) { litDone = false; litP = 0; applyLit(0); }
+    const hr = hero.getBoundingClientRect();
+    /* the entrance PLAY: triggered once the reel's zone is reached, undone
+       (for a replay) when you scroll back above it */
+    if (!hero.classList.contains('in')) {
+      if (hr.top < vh * 0.72 && window.scrollY > 2) {
+        hero.classList.add('in');
+        /* Joel 8/25: no glide handover — Apple-style means the scroll
+           stays in the user's hands and the growth tracks it. */
+      }
+    } else if (hr.top > vh * 0.95 || window.scrollY < 160) {
+      /* Joel 8/22: back at the top the reel is GONE — on tall viewports its
+         seat peeks above the fold, so the old threshold never released and
+         the reel stayed visible at rest */
+      hero.classList.remove('in');
+      hero.classList.remove('scrub');
+      hero.style.transform = ''; // clear the scrub's inline write so the replay rises again
+      window.SX_SCROLL_DRIVE = null;
+    }
+    /* Joel 8/25: APPLE-STYLE SCRUB — once the reel pins, scale follows the
+       scroll directly from the small seat (0.7) to full screen, fully
+       reversible; eased so it grows eagerly and settles softly. Dark
+       chrome only while it actually holds full screen (bug hunt 8/21). */
+    const pin = window.AB_REEL_PIN, end = window.AB_REEL_END || 0;
+    if (pin && hero.classList.contains('in')) {
+      const range = Math.max(1, (end - pin) * 0.75);
+      const p = Math.min(1, Math.max(0, (window.scrollY - pin) / range));
+      if (p > 0) {
+        hero.classList.add('scrub');
+        const e = 1 - Math.pow(1 - p, 2);
+        hero.style.transform = 'scale(' + (0.7 + 0.3 * e).toFixed(4) + ')';
+      } else {
+        hero.classList.remove('scrub');
+        hero.style.transform = '';
+      }
+      const zoomed = p >= 0.98 && window.scrollY <= end;
+      if (zoomed !== (drive.zoomed || false)) {
+        drive.zoomed = zoomed;
+        const hd = document.querySelector('.hdr');
+        if (hd) hd.classList.toggle('dark', zoomed);
+      }
+    }
+  }
+  drive();
+  window.addEventListener('scroll', drive, { passive: true });
+
+  /* team: slow roll, but only while it's actually on screen (Joel 8/25:
+     "only start moving once you scroll onto them") — pauses while the
+     cursor is on it, and holds still whenever the rail is out of view */
+  const rail = document.getElementById('tmRail');
+  let paused = false, last = 0, onScreen = false;
+  rail.addEventListener('mouseenter', () => paused = true);
+  rail.addEventListener('mouseleave', () => paused = false);
+  new IntersectionObserver(es => { es.forEach(e => { onScreen = e.isIntersecting; }); },
+    { threshold: 0.1 }).observe(rail);
+  function roll(now) {
+    const dt = Math.min(0.05, (now - last) / 1000) || 0;
+    last = now;
+    if (!paused && onScreen && window.TM_SETPOS) window.TM_SETPOS(dt);
+    requestAnimationFrame(roll);
+  }
+  requestAnimationFrame(roll);
+})();
+</script>
+<script src="smoothscroll.js?v=20260819095356"></script>
+<script src="logomorph.js?v=20260824a"></script>
+<script src="menu.js?v=20260824c"></script>
+<script>
+/* Safari back-forward cache restores dead builds from memory - always reload */
+window.addEventListener('pageshow', function (e) { if (e.persisted) location.reload(); });
+</script>
+</body>
+</html>

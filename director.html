@@ -1,0 +1,1192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1728">
+<script src="footerlaw.js?v=20260825a"></script>
+<script src="gridhover.js?v=20260821a"></script>
+<title>SIXTWENTYSIX &mdash; Evan Bourque</title>
+<!--
+  SIXTWENTYSIX interior-page template.
+  Conventions (established on index.html, keep them):
+  - Fixed 1728px canvas, absolute positioning at exact Figma coordinates.
+  - ENTIRE site is Helvetica Neue (override any HelveticaNeueCyr / Azeret Mono in Figma).
+  - Compact sticky header (SX + cities + MENU). No clocks. Interior pages do NOT
+    use the big SIX26 morph header (homepage only).
+  - Black footer component at the very end of the page; page height ends exactly
+    at the footer bottom (content_end + 349).
+  - .fd class on major blocks = fade-in on scroll; stagger siblings with
+    style="--fd:0.15s" etc.
+  - Slow smooth scrolling included below.
+  - PAGE CONTENT goes between the markers. Set .page height inline.
+  - For dark pages (black bg per Figma): set .page background #000 and use the
+    white footer variant (bg #fff, black text, black wordmark via filter).
+-->
+<style>
+  @font-face {
+    font-family: 'HelveticaNeueCyr';
+    src: url('fonts/HelveticaNeueCyr-Roman.ttf') format('truetype');
+    font-weight: 400;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #fff; overscroll-behavior: none; }
+  body {
+    overflow-x: clip; /* auto broke position:sticky in Safari */
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  }
+  p { margin: 0; }
+  a { color: inherit; text-decoration: none; }
+  img { display: block; }
+
+  .navshadow { text-shadow: 0px 0px 69.529px rgba(0,0,0,0.25); }
+
+  .page {
+    position: relative;
+    width: 1728px;
+    /* height set inline per page: content end + 349 footer */
+    margin: 0 auto;
+    background: #fff;
+  }
+
+  /* ---------- Scroll fade-in ---------- */
+  .fd { opacity: 0; transform: translateY(28px); }
+  .fd.seen {
+    opacity: 1; transform: none;
+    transition: opacity 0.9s cubic-bezier(0.16,1,0.3,1), transform 0.9s cubic-bezier(0.16,1,0.3,1);
+    transition-delay: var(--fd, 0s);
+  }
+
+  /* ---------- Header (compact, sticky) ---------- */
+  .hdr {
+    /* FIXED, not sticky (Joel 8/21 zero-vibration): sticky repositions
+       asynchronously under scripted per-frame scrolling (the smooth
+       scroll), which reads as a 1px bob. Fixed is compositor-pinned. */
+    position: fixed;
+    top: 0;
+    left: 50%;
+    margin-left: -864px;
+    width: 1728px;
+    height: 118px;
+    background: #fff;
+    z-index: 50;
+  }
+  .hdr-logo { position: absolute; left: 63px; top: 43px; width: 146px; height: 50px; }
+  .hdr-logo .v1 { position: absolute; top: 0.11%; right: 55.69%; bottom: 0; left: 0; }
+  .hdr-logo .v2 { position: absolute; top: 1.81%; right: 8.88%; bottom: 1.81%; left: 42.46%; }
+  .hdr-logo .v3 { position: absolute; top: 0; right: 0; bottom: 82.78%; left: 91.12%; }
+  .hdr-logo img { position: absolute; inset: 0; width: 100%; height: 100%; max-width: none; }
+  .hdr-menu {
+    position: absolute; left: 1636px; top: 44px; width: 57px; height: 30px;
+    cursor: pointer;
+  }
+  .hdr-menu .l {
+    position: absolute; left: 12px; width: 33px; height: 2px;
+    background: #000; border-radius: 2px; transition: background 0.4s ease;
+  }
+  .nav-sm {
+    position: absolute;
+    font-size: 16px; line-height: 25px; letter-spacing: 0.48px;
+    color: #000; white-space: nowrap; font-weight: 400;
+  }
+  /* Dark-page header variant: add class "dark" to .hdr */
+  .hdr.dark { background: #000; }
+  .hdr.dark .nav-sm { color: #fff; }
+  .hdr.dark .hdr-logo img { filter: invert(1); }
+  .hdr.dark #lettermark { filter: invert(1); }
+
+  /* ---------- Footer (black, SIX26) ---------- */
+  .footer {
+    position: absolute; left: 0; width: 1728px; height: 349px;
+    background: #000; overflow: hidden;
+    /* set inline: top = page height - 349 */
+  }
+  .foot-cta {
+    position: absolute; left: 40px; top: 60px; width: 470px; height: 74px;
+    font-weight: 700; font-size: 24px; line-height: 24px;
+    color: #fff; text-transform: uppercase; word-break: break-word;
+  }
+  .foot-cta a { text-decoration: underline; text-underline-position: from-font; cursor: pointer; }
+  .foot-mark { position: absolute; top: 54.44%; right: 2.23%; bottom: -35.46%; left: 2.29%; }
+  .foot-mark img { position: absolute; inset: 0; width: 100%; height: 100%; max-width: none; }
+  .foot-col {
+    position: absolute;
+    font-weight: 400; font-size: 15px; line-height: normal;
+    color: #fff; text-transform: uppercase; word-break: break-word;
+  }
+  .foot-col .b, .foot-b { font-weight: 700; }
+  /* White footer variant for dark pages: add class "light" to .footer */
+  .footer.light { background: #fff; }
+  .footer.light .foot-cta, .footer.light .foot-col { color: #000; }
+  .footer.light .foot-mark img { filter: brightness(0); }
+
+  /* same snap bug as the other grids: fd.seen clobbered the hover glide */
+  .g-tile.fd.seen, .fd.seen .g-tile {
+    transition: left 0.7s ease-in-out, top 0.7s ease-in-out,
+                width 0.7s ease-in-out, height 0.7s ease-in-out,
+                opacity 0.5s ease, transform 0.9s cubic-bezier(0.16,1,0.3,1);
+  }
+  .g-cap.fd.seen, .fd.seen .g-cap {
+    transition: left 0.7s ease-in-out, top 0.7s ease-in-out,
+                opacity 0.4s ease, transform 0.9s cubic-bezier(0.16,1,0.3,1);
+  }
+</style>
+<!-- PAGE STYLES START -->
+<style>
+  /* =====================================================================
+     DIRECTOR PAGE — Figma 5WhzL7oOxqyuepi0yLHyiN
+       89:1642  HERO + ABOUT (main page)        -> #hero + #grid
+       89:1780  PERSONALITY VARIANT (hover)     -> .hero.pv
+       220:1535 01 — LEDGER INDEX               -> #ledger
+       89:1814  MENU OPEN -> menu-overlay-spec.md (built by the shared menu)
+     All type Helvetica Neue per the site-wide rule.
+     ===================================================================== */
+
+  /* ---- Header: transparent over the dark hero, solid white after ---- */
+  .hdr { transition: background 0.4s ease; }
+  .hdr.dark { background: transparent; }
+  .hdr .nav-sm { transition: color 0.4s ease; }
+  .hdr .hdr-logo img { transition: filter 0.4s ease; }
+  .hdr.dark .hdr-menu .l { background: #fff; }
+
+  /* ---- Section wrappers ---- */
+  .sec { position: absolute; left: 0; width: 1728px; pointer-events: none; }
+  .sec > * { pointer-events: auto; }
+
+  /* =========================== HERO =========================== */
+  #hero {
+    top: 0; height: 1117px; overflow: hidden; background: #000; pointer-events: auto;
+  }
+  .hero-bg { position: absolute; inset: 0; pointer-events: none; }
+  .hero-bg img, .hero-bg video { position: absolute; left: -2px; top: -2px; width: calc(100% + 4px); height: calc(100% + 4px); object-fit: cover; /* 9/4: 2px overscan — fractional-pixel scaling let a white sliver peek at full-bleed edges (Joel) */ }
+  #heroFeat { opacity: 0; transition: opacity 0.55s cubic-bezier(0.16,1,0.3,1); }
+  .hero.fw #heroFeat { opacity: 1; }
+  .hero-scrim {
+    position: absolute; inset: 0; background: #000; opacity: 0;
+    transition: opacity 0.55s cubic-bezier(0.16,1,0.3,1); pointer-events: none;
+  }
+  .hero.pv .hero-scrim { opacity: 0.79; }
+
+  .h-back {
+    /* z 3: the lettermark's oversized click box (639x161, z 2) covered this
+       link, sending every click home instead of to creatives (Joel 8/22) */
+    position: absolute; left: 63px; top: 151px; z-index: 3;
+    font-family: 'HelveticaNeueCyr', 'Helvetica Neue', Helvetica, sans-serif;
+    font-weight: 400; font-size: 20px; line-height: 24px; letter-spacing: -0.8px;
+    color: #fff; white-space: nowrap; cursor: pointer; text-decoration: none;
+  }
+  .h-back:hover { opacity: 0.7; }
+  .h-name {
+    position: absolute; left: 53px; top: 437px; width: 525px; height: 66px;
+    font-weight: 700; font-size: 25px; line-height: 74px; letter-spacing: -1px;
+    text-transform: uppercase; color: #fff; white-space: nowrap;
+  }
+  #heronav { position: absolute; left: 0; top: 455px; width: 1728px; height: 30px; }
+  .h-nav {
+    position: absolute; top: 8px; height: 14px;
+    font-weight: 400; font-size: 22px; line-height: 12px; letter-spacing: 0.44px;
+    color: #fff; white-space: nowrap; cursor: pointer;
+    transition: opacity 0.4s ease;
+  }
+
+  .h-hint {
+    position: absolute; left: 53px; top: 503px;
+    font-weight: 300; font-size: 16px; line-height: 25px; letter-spacing: 0.48px;
+    color: #fff; white-space: pre;
+  }
+  /* 9/8 (Joel: "hover to view slides up and down when you change the
+     browser scale"): the hint used to EASE its top (a leftover from the
+     frames' hover-state hint travel) while the name snapped, so on every
+     resize it drifted away from the name and eased back. Position now moves
+     with the name instantly; only the reveal (opacity/transform) animates. */
+  .h-hint.seen {
+    transition: opacity 0.9s cubic-bezier(0.16,1,0.3,1),
+                transform 0.9s cubic-bezier(0.16,1,0.3,1);
+    transition-delay: 0s;
+  }
+  /* Joel 8/19: the hint never jumps above the name — it stays parked at the
+     bottom in every hover state (the frames' top position was a mistake). */
+  .hero.fw .h-nav { opacity: 0; pointer-events: none; }
+
+  /* personality layer */
+  .h-pv { opacity: 0; transition: opacity 0.5s ease; pointer-events: none; }
+  .hero.pv .h-pv { opacity: 1; }
+  .h-awards { position: absolute; left: 861px; top: 518px; width: 331px; color: #fff; }
+  .h-awards p { font-size: 14px; line-height: 26px; letter-spacing: -0.42px; }
+  .h-awards .b { font-weight: 700; }
+  .h-awards .r { font-weight: 400; letter-spacing: 0.28px; }
+  .h-about {
+    position: absolute; left: 1256px; top: 518px; width: 412px;
+    font-weight: 400; font-size: 16px; line-height: 21.6px; letter-spacing: -0.32px; color: #fff;
+  }
+
+  /* Featured strip (89:1642): hovering a reel swaps the hero loop (89:1690);
+     clicking opens the full film (case-study). */
+  .h-flabel {
+    position: absolute; left: 53px;
+    font-weight: 300; font-size: 16px; line-height: 25px; letter-spacing: 0.48px;
+    color: #fff; white-space: pre; transition: opacity 0.35s ease;
+  }
+  #fl-reels, #fl-click { opacity: 0; }
+  /* the state labels REPLACE the base label on the same line (Joel 8/19) */
+  .hero.pv #fl-base, .hero.fw #fl-base { opacity: 0; transition: none !important; }
+  .hero.pv #fl-reels { opacity: 1; }
+  .hero.fw #fl-click { opacity: 1; }
+
+  .h-chev { display: none !important; } /* Joel 8/20: no strip arrows anywhere */
+  /* the scroll-down chevron had no positioning and rendered at the hero's
+     top-left as a stray artifact (bug hunt 8/21) */
+  #chevDown { display: none !important; } /* Joel 8/21: kept colliding with the strip - gone, like the other arrows */
+  .h-chev-unused {
+    position: absolute; top: 838px; width: 8px; height: 13px;
+    opacity: 0; transition: opacity 0.35s ease; cursor: pointer;
+  }
+  .hero.pv .h-chev, .hero.fw .h-chev { opacity: 1; }
+  .h-chev img { position: absolute; left: -0.5px; top: -0.5px; width: 9.29292px; height: 14px; }
+  #chevL img { transform: scaleX(-1); }
+
+  #featstrip { position: absolute; left: 0; top: 880px; width: 1728px; height: 200px; }
+  .fitem {
+    position: absolute; left: 0; top: 0; width: 1728px; height: 200px;
+    pointer-events: none; transition: opacity 0.4s ease;
+  }
+  .hero.fw .fitem { opacity: 0.15; } /* same ghost value as every grid */
+  .hero.fw .fitem.on { opacity: 1; }
+  .h-thumb {
+    position: absolute; width: 249px; height: 140px; background: #d9d9d9;
+    overflow: hidden; pointer-events: auto; cursor: pointer; display: block;
+  }
+  .h-thumb img { width: 100%; height: 100%; object-fit: cover; }
+  .h-tt {
+    position: absolute; top: 167px; font-weight: 700; font-size: 11.024px; line-height: 10px;
+    letter-spacing: -0.1102px; color: #fff; white-space: nowrap;
+  }
+  .h-ts {
+    position: absolute; top: 184px; font-weight: 400; font-size: 11.024px; line-height: 10px;
+    letter-spacing: 0.2205px; color: #fff; white-space: nowrap;
+  }
+
+
+  /* =========================== WORK GRID ===========================
+     2-up format (8/7 call), filtered by director category, with the grid/index
+     toggle that moved off the homepage and case-studies page onto this one.
+     Height is set by JS to fit whichever view is showing. */
+  #grid { top: 1117px; height: 1012px; }
+  #gtabs { position: absolute; left: 0; top: 109px; width: 900px; height: 40px; }
+  .g-tab {
+    position: absolute; top: 0; font-size: 17.59px; line-height: 17.6px;
+    letter-spacing: -0.53px; color: #000;
+    white-space: nowrap; cursor: pointer; font-weight: 400;
+    transition: opacity 0.3s ease;
+  }
+  .g-tab:hover { opacity: 0.55; }
+  .g-tab.on { font-weight: 700; opacity: 1; }
+  #gunder {
+    position: absolute; top: 25px; left: 54px; width: 70px; height: 2px;
+    background: #000;
+    transition: left 0.45s cubic-bezier(0.16,1,0.3,1), width 0.45s cubic-bezier(0.16,1,0.3,1);
+  }
+
+  #gtoggle { position: absolute; left: 1507px; top: 109px; width: 171px; height: 28px; }
+  .g-opt { position: absolute; top: 0; opacity: 0.13; cursor: pointer; transition: opacity 0.3s ease; }
+  .g-opt:hover { opacity: 0.35; }
+  .g-opt.on, .g-opt.on:hover { opacity: 0.61; }
+  .g-opt i { position: absolute; display: block; background: #686767; border-radius: 2px; }
+
+  /* Tiles size per density (4/3/2 columns) via inline geometry. */
+  .g-item { position: absolute; left: 0; top: 0; }
+  .g-tile {
+    position: absolute;
+    border-radius: 0; overflow: hidden; /* 9/4 Joel: no rounding on media, ever */ background: #d9d9d9;
+    display: block; cursor: pointer;
+  }
+  .g-tile img { width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
+  .g-cap {
+    position: absolute; height: 22px;
+    display: flex; align-items: center;
+    font-weight: 700; font-size: 14.422px; line-height: 19.263px; letter-spacing: -0.1442px;
+    text-transform: uppercase; color: #000; white-space: nowrap;
+  }
+
+  /* White ghost hover (Full Site frames 174-177): page stays white, other
+     tiles ghost to 15%, the hovered tile enlarges from center. */
+  .g-tile, .g-cap { transition: opacity 0.5s ease; }
+  .g-cap { transition: opacity 0.5s ease, left 0.7s ease-in-out /* Figma component 508:740: 700ms Ease-in-and-out on hover */, top 0.7s ease-in-out /* Figma component 508:740: 700ms Ease-in-and-out on hover */; }
+  .g-tile { transition: left 0.7s ease-in-out /* Figma component 508:740: 700ms Ease-in-and-out on hover */, top 0.7s ease-in-out /* Figma component 508:740: 700ms Ease-in-and-out on hover */, width 0.7s ease-in-out /* Figma component 508:740: 700ms Ease-in-and-out on hover */, height 0.7s ease-in-out /* Figma component 508:740: 700ms Ease-in-and-out on hover */, opacity 0.5s ease; }
+  .g-tile img { transition: transform 0.5s ease; }
+  #grid.ghost .g-item:not(.gh-on) .g-tile { opacity: 0.15 !important; }
+  #grid.ghost .g-item:not(.gh-on) .g-tile img { transform: scale(1.09); }
+  #grid.ghost .g-cap:not(.is-hover) { opacity: 0.17 !important; }
+  .g-cap.is-hover { z-index: 21; opacity: 1 !important; }
+  .g-tile.gh-big {
+    position: absolute; z-index: 20;
+    transition: left 0.7s ease-in-out /* Figma component 508:740: 700ms Ease-in-and-out on hover */, top 0.7s ease-in-out /* Figma component 508:740: 700ms Ease-in-and-out on hover */,
+                width 0.7s ease-in-out /* Figma component 508:740: 700ms Ease-in-and-out on hover */, height 0.7s ease-in-out /* Figma component 508:740: 700ms Ease-in-and-out on hover */;
+  }
+
+  /* =========================== FULL WORK LIST =========================== */
+  #worklist { top: 1852px; height: 1184px; }
+  #wbio { position: absolute; left: 0; top: 430px; width: 1728px; height: 280px; }
+  .w-name {
+    position: absolute; left: 53px; top: 7px; width: 525px; height: 66px;
+    font-weight: 700; font-size: 25px; line-height: 74px; letter-spacing: -1px;
+    text-transform: uppercase; color: #000; white-space: nowrap;
+  }
+  .w-nav {
+    position: absolute; top: 33px; height: 14px;
+    font-weight: 700; font-size: 22px; line-height: 12px; letter-spacing: -0.88px;
+    color: #000; white-space: nowrap;
+  }
+  .w-awards { position: absolute; left: 861px; top: 88px; width: 331px; color: #000; }
+  .w-awards p { font-size: 14px; line-height: 26px; }
+  .w-awards .b { font-weight: 700; }
+  .w-awards .r { font-weight: 400; letter-spacing: 0.28px; }
+  .w-about {
+    position: absolute; left: 1256px; top: 88px; width: 405px;
+    font-weight: 400; font-size: 16px; line-height: 20px; letter-spacing: -0.48px; color: #000;
+  }
+
+  .w-row { position: absolute; left: 0; width: 1728px; }
+  .w-rule { position: absolute; left: 0; width: 1728px; height: 1px; }
+  .w-rule img { width: 1728px; height: 1px; }
+  .w-brand {
+    position: absolute; left: 53px; font-weight: 700; font-size: 22px; line-height: 10px;
+    letter-spacing: -0.22px; color: #000; white-space: nowrap;
+  }
+  .w-meta {
+    position: absolute; font-weight: 400; font-size: 14px; line-height: 10px;
+    letter-spacing: 0.28px; color: #000; white-space: nowrap;
+  }
+
+  /* =========================== LEDGER INDEX =========================== */
+  /* The ledger is the grid's INDEX view: same section slot, toggled. */
+  #ledger { top: 1200px; height: 1258px; display: none; } /* content starts AT the grid line (Joel 8/21); top driven by fitHero */
+  #ledger.on { display: block; }
+  #lprev { position: absolute; left: 0; top: 0; width: 400px; height: 600px; }
+  .l-shot {
+    position: absolute; left: 63px; top: 0px; width: 291.508px; height: 164px;
+    border-radius: 0; overflow: hidden; background: #d9d9d9;
+  }
+  .l-shot img { width: 100%; height: 100%; object-fit: cover; transition: opacity 0.3s ease; }
+  .l-title {
+    position: absolute; left: 63px; top: 178.8px; height: 20px; display: flex; align-items: center;
+    font-weight: 700; font-size: 14.422px; line-height: 19.263px; letter-spacing: -0.144px;
+    text-transform: uppercase; color: #000; white-space: nowrap;
+  }
+  .l-dirname {
+    position: absolute; left: 63px; top: 195.8px;
+    font-weight: 400; font-size: 9.42px; line-height: 19.263px; letter-spacing: 0.5652px;
+    text-transform: uppercase; color: #000; opacity: 0.30; white-space: nowrap;
+  }
+  .l-serv {
+    position: absolute; left: 63px; top: 255px; width: 282px;
+    font-family: 'HelveticaNeueCyr', 'Helvetica Neue', Helvetica, sans-serif;
+    font-weight: 300; font-size: 17px; line-height: 1.197; letter-spacing: 0.17px; color: #7d7d7d;
+  }
+  #lhead { position: absolute; left: 0; top: 8px; width: 1728px; height: 20px; }
+  .l-head {
+    position: absolute; top: 0; font-family: 'HelveticaNeueCyr', 'Helvetica Neue', Helvetica, sans-serif;
+    font-weight: 500; font-size: 17px; line-height: 16.8px;
+    letter-spacing: -0.34px; color: #686868; white-space: nowrap;
+  }
+
+  .l-row {
+    position: absolute; left: 400px; width: 1300px; height: 54px; cursor: pointer;
+    font-family: 'HelveticaNeueCyr', 'Helvetica Neue', Helvetica, sans-serif;
+  }
+  .l-row::after {
+    content: ''; position: absolute; left: 38px; width: 1205px; bottom: 0; height: 0;
+    border-top: 1px solid rgba(0, 0, 0, 0.14);
+  }
+  .l-brand {
+    position: absolute; left: 38px; top: 18px; font-weight: 700; font-size: 18px;
+    line-height: 17.9px; letter-spacing: 0.36px; color: #121212; white-space: nowrap;
+    transition: color 0.25s ease;
+  }
+  .l-proj {
+    position: absolute; left: 411px; top: 20px; font-weight: 700; font-size: 18px;
+    line-height: 17.9px; letter-spacing: -0.54px; color: #000; white-space: nowrap;
+    transition: color 0.25s ease, font-weight 0s;
+  }
+  .l-ddir {
+    position: absolute; left: 801px; top: 22px; font-weight: 700; font-size: 15px;
+    line-height: 14.9px; letter-spacing: -0.45px; color: #000; white-space: nowrap;
+    transition: color 0.25s ease, font-weight 0s;
+  }
+  .l-cat {
+    position: absolute; left: 1151px; top: 25px; font-weight: 700; font-size: 11px;
+    line-height: 10.9px; letter-spacing: -0.33px; color: #000; white-space: nowrap;
+    transition: color 0.25s ease, font-weight 0s;
+  }
+  /* Joel 8/20: every row rests fully ink; hovering one row greys the REST.
+     Class-driven (8/21): the :has(:hover) version glitched hard in Safari —
+     stale hover states during scroll made random row blocks grey out. */
+  #ledger.dim .l-row:not(.hot) .l-brand { color: #bfbfbf; }
+  #ledger.dim .l-row:not(.hot) .l-proj,
+  #ledger.dim .l-row:not(.hot) .l-ddir { color: #bfbfbf; font-weight: 400; }
+  #ledger.dim .l-row:not(.hot) .l-cat  { color: #bfbfbf; font-weight: 500; }
+</style>
+<!-- PAGE STYLES END -->
+</head>
+<body>
+<script>
+/* Fit-to-window: this is a fixed 1728px canvas. If the window is narrower,
+   bounce into the scaling shell so the whole site always shows (Joel, 8/10).
+   Inside the shell (an iframe) this never fires. */
+(function () {
+  if (window.self === window.top && !location.search.includes('flat=1')) {
+    var page = location.pathname.split('/').pop() || 'index.html';
+    /* 9/3: carry the page query (?who=<director>) into the shell — the bare
+       redirect dropped it and every raw deep link landed on the default */
+    var sp = new URLSearchParams(location.search);
+    sp.delete('r');
+    var extra = sp.toString();
+    location.replace('view.html?p=' + encodeURIComponent(page + (extra ? '?' + extra : '')));
+  }
+  if (location.search.includes('reveal=1')) {
+    document.write('<style>.fd{opacity:1 !important; transform:none !important;}' +
+      '.hdr{position:relative !important;}' +
+      '*,*::before,*::after{transition:none !important; animation:none !important;}' +
+      '#menu-overlay{display:none !important;}</style>');
+  }
+})();
+</script>
+
+<div class="page" id="page" style="height: 2129px;">
+
+  <!-- ============ HEADER ============ -->
+  <div class="hdr dark">
+    <a href="index.html" id="lettermark" style="left:63px; top:0; width:639px; height:161px; z-index:2;"></a>
+    <p class="nav-sm" style="left:504px; top:43px;">LOS ANGELES, CA</p>
+    <p class="nav-sm" style="left:504px; top:68px;">NEW YORK, NY</p>
+    <div class="hdr-menu" title="Menu">
+      <div class="l" style="top:12px;"></div>
+      <div class="l" style="top:20px;"></div>
+      <div class="l" style="top:28px;"></div>
+    </div>
+  </div>
+
+  <!-- PAGE CONTENT START -->
+  <!-- ============================ HERO (89:1642 / 89:1780 / 89:1690) ============================ -->
+  <div class="sec hero" id="hero">
+    <!-- 9/3 (Joel): the hero IS the director's web loop — their reel plays
+         as the base layer, and hovering a featured work plays THAT work's
+         loop in the hero instead (video layer, still as fallback). -->
+    <!-- 9/4: no baked-in poster — the old Evan placeholder painted for a
+         beat on every director before the script swapped it. The hero is
+         black until THIS director's poster/reel lands. -->
+    <div class="hero-bg"><video id="heroReel" autoplay muted loop playsinline></video></div>
+    <div class="hero-bg" id="heroFeat">
+      <video id="heroFeatVid" muted loop playsinline preload="none" style="visibility:hidden;"></video>
+      <img id="heroFeatImg" src="" alt="" style="visibility:hidden;">
+    </div>
+    <div class="hero-scrim"></div>
+
+    <a class="h-back fd" href="creatives.html">Back to Directors</a>
+    <p class="h-name fd">Evan Bourque</p>
+    <p class="h-hint fd" id="hhint">[  HOVER TO VIEW   ]</p>
+
+    <div id="heronav" class="fd" style="--fd:0.15s;">
+      <p class="h-nav" style="left:522px; width:380px;">DIRECTOR / EDITOR</p>
+      <p class="h-nav" style="left:860px; width:279px;">AWARDS &amp; ACCOLADES</p>
+      <p class="h-nav" style="left:1258px; width:147px;">ABOUT</p>
+    </div>
+
+    <!-- personality layer (89:1780) -->
+    <div class="h-awards h-pv">
+      <p class="b">SHOTS AWARDS 2025</p>
+      <p class="r">NEW DIRECTOR OF THE YEAR SHORTLIST</p>
+      <p class="r">&#8203;</p>
+      <p class="b">TELLY AWARDS 2025</p>
+      <p class="r">EAT PECANS &ndash; SURPRISINGLY SNACKABLE</p>
+      <p class="r">SILVER WINNER GENERAL &ndash; FOOD &amp; BEVERAGE</p>
+    </div>
+    <p class="h-about h-pv">&ldquo;He makes videos for commercials and stuff.&rdquo; &ndash; Evan&rsquo;s mom. She&rsquo;s not wrong. Evan Bourque is a director who fuses his preternatural skills in performance, dialogue and quirky characters to deliver masterful and unexpected comedic spots. With an emphasis on nuance, Evan mines the humor that lies within offbeat moments of humanity. Hailing from Canada, he draws on his background in cinematography to infuse his films with cinematic visual flair.</p>
+
+    <!-- featured work strip (89:1642): hover plays the reel, click opens the film -->
+    <p class="h-flabel fd" id="fl-base" style="top:839px; --fd:0.45s;">FEATURED WORK</p>
+    <p class="h-flabel" id="fl-reels" style="top:839px;">[  HOVER TO VIEW REELS  ]</p>
+    <p class="h-flabel" id="fl-click" style="top:839px;">[  CLICK TO VIEW FULL WORK  ]</p>
+    <div class="h-chev" id="chevL" style="left:1638px;"><img src="assets/dir-chev-left.svg" alt="Previous"></div>
+    <div class="h-chev" id="chevR" style="left:1668px;"><img src="assets/dir-chev-right.svg" alt="Next"></div>
+    <div id="chevDown"><img src="assets/dir-chev-down.svg" alt="Scroll down"></div>
+
+    <div id="featstrip" class="fd" style="--fd:0.6s;"></div>
+
+  </div><!-- /#hero -->
+
+  <!-- ============================ WORK GRID (89:1642 lower half) ============================
+       Rebuilt 2026-08-10 to the 8/7 direction: the director's work lives here,
+       filtered by category, in the 2-up format, with a grid/index toggle. Tabs
+       and tiles are painted from WORKS[] in the page script — a category with no
+       work does not get a tab, so nothing renders empty. -->
+  <div class="sec" id="grid">
+    <div id="gtabs" class="fd"></div>
+    <!-- Standardized cluster (4/3/2/1), right-aligned, no words (Joel 8/10).
+         On director pages the single block is the ledger INDEX view. -->
+    <div id="gtoggle" class="fd" style="--fd:0.15s;">
+            <div class="g-opt on" data-mode="3" style="left:0px; width:38px; height:28px;">
+        <i style="left:0px; top:0; width:11px; height:12px;"></i>
+        <i style="left:0px; top:15px; width:11px; height:13px;"></i>
+        <i style="left:13px; top:0; width:12px; height:12px;"></i>
+        <i style="left:13px; top:15px; width:12px; height:13px;"></i>
+        <i style="left:27px; top:0; width:11px; height:12px;"></i>
+        <i style="left:27px; top:15px; width:11px; height:13px;"></i>
+      </div>
+      <div class="g-opt" data-mode="2" style="left:47px; width:33px; height:28px;">
+        <i style="left:0px; top:0; width:15px; height:12px;"></i>
+        <i style="left:0px; top:15px; width:15px; height:13px;"></i>
+        <i style="left:17px; top:0; width:16px; height:12px;"></i>
+        <i style="left:17px; top:15px; width:16px; height:13px;"></i>
+      </div>
+      <div class="g-opt" data-mode="index" style="left:90px; width:33px; height:28px;">
+        <i style="left:0; top:0; width:33px; height:4px;"></i>
+        <i style="left:0; top:8px; width:33px; height:4px;"></i>
+        <i style="left:0; top:16px; width:33px; height:4px;"></i>
+        <i style="left:0; top:24px; width:33px; height:4px;"></i>
+      </div>
+    </div>
+    <div id="gitems"></div>
+  </div><!-- /#grid -->
+
+  <!-- The FULL WORK LIST frame (89:1857) was removed on 2026-08-10.
+       Two reasons, both from the 8/7 call:
+       - its bio block was the second copy of the director bio on one page, and
+         the decision was to ship the overlaid hero version;
+       - its rows carried a year column, and years come off the work everywhere.
+       The work it listed now lives in the category grid above and the index
+       view below. -->
+
+
+  <!-- ============================ 01 — LEDGER INDEX (220:1535) ============================ -->
+  <div class="sec" id="ledger">
+        <div id="lprev" class="fd">
+      <div class="l-shot"><img id="lshot" src="assets/live/cs-pura.jpg" alt=""></div>
+      <p class="l-title" id="ltitle">PURA</p>
+      <p class="l-dirname" id="ldirname">Director name</p>
+      <p class="l-serv">VIDEO PRODUCTION / CASTING / EDITORIAL / VFX / SOUND DESIGN &amp; MIX / ORIGINAL MUSIC / COLOR / MOTION GRAPHICS</p>
+    </div>
+    <div id="lhead" class="fd" style="--fd:0.1s;">
+      <p class="l-head" style="left:438px;">Brand</p>
+      <p class="l-head" style="left:811px;">Project</p>
+      <p class="l-head" style="left:1201px;">Director</p>
+      <p class="l-head" style="left:1551px;">Category</p>
+    </div>
+    <div class="l-row fd on" style="top:64px; --fd:0.0s;" data-title="PRICELINE" data-dir="Evan Bourque" data-shot="assets/live/cs-priceline.jpg">
+      <p class="l-brand">PRICELINE</p>
+      <p class="l-proj">New Negotiator</p>
+      <p class="l-ddir">Evan Bourque</p>
+      <p class="l-cat">LIVE ACTION</p>
+    </div>
+    <div class="l-row fd" style="top:118px; --fd:0.03s;" data-title="TURO" data-dir="Miles &amp; AJ" data-shot="assets/live/cs-turo.jpg">
+      <p class="l-brand">TURO</p>
+      <p class="l-proj">Open the Door to Extraordinary</p>
+      <p class="l-ddir">Miles &amp; AJ</p>
+      <p class="l-cat">CREATIVE STUDIO</p>
+    </div>
+    <div class="l-row fd" style="top:172px; --fd:0.06s;" data-title="PURA" data-dir="Nolan Goff" data-shot="assets/live/cs-pura.jpg">
+      <p class="l-brand">PURA</p>
+      <p class="l-proj">Hands On</p>
+      <p class="l-ddir">Nolan Goff</p>
+      <p class="l-cat">CREATIVE STUDIO</p>
+    </div>
+    <div class="l-row fd" style="top:226px; --fd:0.09s;" data-title="HERA" data-dir="Savannah O&rsquo;Leary" data-shot="assets/live/cs-hera.jpg">
+      <p class="l-brand">HERA</p>
+      <p class="l-proj">Age Your Way</p>
+      <p class="l-ddir">Savannah O&rsquo;Leary</p>
+      <p class="l-cat">CREATIVE STUDIO</p>
+    </div>
+    <div class="l-row fd" style="top:280px; --fd:0.12s;" data-title="DUNKIN&rsquo;" data-dir="Luke Orlando" data-shot="assets/live/cs-dunkin-pump.jpg">
+      <p class="l-brand">DUNKIN&rsquo;</p>
+      <p class="l-proj">Dunk N&rsquo; Pump</p>
+      <p class="l-ddir">Luke Orlando</p>
+      <p class="l-cat">LIVE ACTION</p>
+    </div>
+    <div class="l-row fd" style="top:334px; --fd:0.15s;" data-title="EAT PECANS" data-dir="Evan Bourque" data-shot="assets/live/cs-eatpecans.jpg">
+      <p class="l-brand">EAT PECANS</p>
+      <p class="l-proj">Surprisingly Snackable</p>
+      <p class="l-ddir">Evan Bourque</p>
+      <p class="l-cat">LIVE ACTION</p>
+    </div>
+    <div class="l-row fd" style="top:388px; --fd:0.18s;" data-title="PALMS CASINO" data-dir="Nolan Goff" data-shot="assets/live/cs-palms.jpg">
+      <p class="l-brand">PALMS CASINO</p>
+      <p class="l-proj">This Is That Vegas</p>
+      <p class="l-ddir">Nolan Goff</p>
+      <p class="l-cat">LIVE ACTION</p>
+    </div>
+    <div class="l-row fd" style="top:442px; --fd:0.21s;" data-title="PACIFICO" data-dir="Nolan Goff" data-shot="assets/live/cs-pacifico.jpg">
+      <p class="l-brand">PACIFICO</p>
+      <p class="l-proj">Find Your Own Way</p>
+      <p class="l-ddir">Nolan Goff</p>
+      <p class="l-cat">LIVE ACTION</p>
+    </div>
+    <div class="l-row fd" style="top:496px; --fd:0.24s;" data-title="CREDIT KARMA" data-dir="Miles &amp; AJ" data-shot="assets/live/cs-creditkarma.jpg">
+      <p class="l-brand">CREDIT KARMA</p>
+      <p class="l-proj">Card Optimizer</p>
+      <p class="l-ddir">Miles &amp; AJ</p>
+      <p class="l-cat">LIVE ACTION</p>
+    </div>
+    <div class="l-row fd" style="top:550px; --fd:0.27s;" data-title="SQUARESPACE" data-dir="Miles &amp; AJ" data-shot="assets/live/cs-squarespace.jpg">
+      <p class="l-brand">SQUARESPACE</p>
+      <p class="l-proj">Courses</p>
+      <p class="l-ddir">Miles &amp; AJ</p>
+      <p class="l-cat">LIVE ACTION</p>
+    </div>
+    <div class="l-row fd" style="top:604px; --fd:0.3s;" data-title="SNICKERS" data-dir="Tom Morris">
+      <p class="l-brand">SNICKERS</p>
+      <p class="l-proj">Can&rsquo;t Chill</p>
+      <p class="l-ddir">Tom Morris</p>
+      <p class="l-cat">LIVE ACTION</p>
+    </div>
+    <div class="l-row fd" style="top:658px; --fd:0.33s;" data-title="PIZZA HUT" data-dir="Tom Morris">
+      <p class="l-brand">PIZZA HUT</p>
+      <p class="l-proj">The New Yorker</p>
+      <p class="l-ddir">Tom Morris</p>
+      <p class="l-cat">LIVE ACTION</p>
+    </div>
+    <div class="l-row fd" style="top:712px; --fd:0.36s;" data-title="EA SPORTS" data-dir="Gianluigi Carella">
+      <p class="l-brand">EA SPORTS</p>
+      <p class="l-proj">Madden 24 Trailer</p>
+      <p class="l-ddir">Gianluigi Carella</p>
+      <p class="l-cat">LIVE ACTION</p>
+    </div>
+    <div class="l-row fd" style="top:766px; --fd:0.39s;" data-title="STARBUCKS" data-dir="Julia Pitch">
+      <p class="l-brand">STARBUCKS</p>
+      <p class="l-proj">Hug</p>
+      <p class="l-ddir">Julia Pitch</p>
+      <p class="l-cat">LIVE ACTION</p>
+    </div>
+    <div class="l-row fd" style="top:820px; --fd:0.42s;" data-title="PAYPAL" data-dir="Plummer/Strauss">
+      <p class="l-brand">PAYPAL</p>
+      <p class="l-proj">Noise Cancel</p>
+      <p class="l-ddir">Plummer/Strauss</p>
+      <p class="l-cat">LIVE ACTION</p>
+    </div>
+    <div class="l-row fd" style="top:874px; --fd:0.45s;" data-title="DOJA CAT" data-dir="Miles &amp; AJ">
+      <p class="l-brand">DOJA CAT</p>
+      <p class="l-proj">Need to Know</p>
+      <p class="l-ddir">Miles &amp; AJ</p>
+      <p class="l-cat">MUSIC VIDEO</p>
+    </div>
+    <div class="l-row fd" style="top:928px; --fd:0.48s;" data-title="SELENA GOMEZ" data-dir="Luke Orlando">
+      <p class="l-brand">SELENA GOMEZ</p>
+      <p class="l-proj">In the Dark</p>
+      <p class="l-ddir">Luke Orlando</p>
+      <p class="l-cat">MUSIC VIDEO</p>
+    </div>
+    <div class="l-row fd" style="top:982px; --fd:0.51s;" data-title="ANYMA &amp; LISA" data-dir="Gianluigi Carella">
+      <p class="l-brand">ANYMA &amp; LISA</p>
+      <p class="l-proj">Bad Angel</p>
+      <p class="l-ddir">Gianluigi Carella</p>
+      <p class="l-cat">MUSIC VIDEO</p>
+    </div>
+    <div class="l-row fd" style="top:1036px; --fd:0.54s;" data-title="NIKE" data-dir="SixTwentySix" data-shot="assets/live/exp-nike.jpg">
+      <p class="l-brand">NIKE</p>
+      <p class="l-proj">Concrete Boys</p>
+      <p class="l-ddir">SixTwentySix</p>
+      <p class="l-cat">EXPERIENTIAL</p>
+    </div>
+    <div class="l-row fd" style="top:1090px; --fd:0.57s;" data-title="HEINEKEN" data-dir="SixTwentySix" data-shot="assets/live/exp-heineken.png">
+      <p class="l-brand">HEINEKEN</p>
+      <p class="l-proj">Fan Volunteers</p>
+      <p class="l-ddir">SixTwentySix</p>
+      <p class="l-cat">EXPERIENTIAL</p>
+    </div>
+  </div><!-- /#ledger -->
+
+  <!-- PAGE CONTENT END -->
+
+
+  <!-- THE FOOTER LAW (8/21): the black footer sits at the bottom of every page -->
+  <div class="footer" style="top:1780px;">
+    <div class="foot-cta">
+      <p>Let&rsquo;s get started.&nbsp;</p>
+      <p>Connect with us at <a href="mailto:hello@sixtwentysix.co">hello@sixtwentysix.co</a></p>
+    </div>
+    <div class="foot-mark"><img src="assets/six26-wordmark.svg" alt="SIX26"></div>
+    <p class="foot-col foot-b" style="left:884px; top:60px;">join the team</p>
+    <p class="foot-col" style="left:884px; top:96px; width:225px;"><a href="mailto:careers@sixtwentysix.co" style="color:inherit; text-decoration:none; cursor:pointer;">careers@sixtwentysix.co</a></p>
+    <div class="foot-col" style="left:1185px; top:60px; width:166px;">
+      <p class="b">capabilities Deck</p>
+      <p>&#8203;</p>
+      <p><a href="mailto:hello@sixtwentysix.co?subject=SX%20-%20Capabilities%20Deck%20Request&body=Hi!%20I%20am%20requesting%20the%20SixTwentySix%20capabilities%20deck." style="color:inherit; text-decoration:none; cursor:pointer;">request our deck</a></p>
+    </div>
+    <div class="foot-col" style="left:1427px; top:60px; width:130px;">
+      <p class="b">newsletter</p>
+      <p>&#8203;</p>
+      <p><a href="mailto:hello@sixtwentysix.co?subject=Newsletter" style="color:inherit; text-decoration:none; cursor:pointer;">Subscribe</a></p>
+    </div>
+    <div class="foot-col" style="left:1595px; top:60px; width:80px;">
+      <p class="b">Follow us</p>
+      <p>&#8203;</p>
+      <p><a href="https://www.instagram.com/sixtwentysixco/" target="_blank" rel="noopener" style="color:inherit; text-decoration:none; cursor:pointer;">ig</a> / <a href="https://www.linkedin.com/company/sixtwentysix" target="_blank" rel="noopener" style="color:inherit; text-decoration:none; cursor:pointer;">li</a></p>
+    </div>
+  </div>
+</div><!-- /.page -->
+
+<script src="directors.js?v=20260903a"></script>
+<script>
+/* Always open at the top (scroll restoration breaks fade-ins) */
+if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+window.scrollTo(0, 0);
+
+/* Native scrolling (slow-scroll hijack removed 2026-08-10). */
+
+/* ================= Scroll fade-ins (replay every time) =================
+   Elements fade in when they enter the viewport and re-arm once they fully
+   leave, so every scroll-past fades again. Hysteresis between 0% and 15%
+   visibility prevents edge flicker. */
+const io = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    const b = e.boundingClientRect;
+    /* zero-size wrappers (absolute children only) never reach ratio 0.15 —
+       they were permanently invisible (the empty-content bug, 8/19) */
+    if (e.intersectionRatio >= 0.15 || (e.isIntersecting && (b.width < 2 || b.height < 2))) {
+      /* one-shot (8/21): un-revealing on exit made the reveal REPLAY when
+         scrolling back up — tabs/toggles popped in 28px low on staggered
+         delays, overlapping, then jumped to their seats. Seen stays seen. */
+      e.target.classList.add('seen');
+      io.unobserve(e.target);
+    }
+  });
+}, { threshold: [0, 0.15] });
+document.querySelectorAll('.fd').forEach(el => io.observe(el));
+
+/* PAGE SCRIPTS START */
+/* ================= DIRECTOR PAGE ================= */
+(() => {
+  const hero    = document.getElementById('hero');
+  const hdr     = document.querySelector('.hdr');
+
+  /* ============ PER-DIRECTOR (9/3): one page, every director ============
+     ?who=<slug> picks the director; data harvested from the live site by
+     harvest-directors.py into directors.js (window.SX_DIRECTORS). Evan is
+     the default so old links keep working. */
+  const WHO = new URLSearchParams(location.search).get('who') || 'evan-bourque';
+  const DIR = (window.SX_DIRECTORS || {})[WHO] || (window.SX_DIRECTORS || {})['evan-bourque'];
+  const esc = s => String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  /* section names arrive as the live site writes them (FEATURED, Music
+     Video, Unreal Engine ...) — normalize to Title Case for tabs */
+  const secNorm = n => n.trim().toLowerCase().replace(/(^|\s)\S/g, c => c.toUpperCase());
+  const SECTIONS = (DIR.sections || []).map(x => ({ name: secNorm(x.name), works: x.works }));
+  /* "Brand – Project" titles split on the dash; a dashless title is all brand */
+  const splitT = t => {
+    const parts = String(t || '').split(/\s+[–—-]\s+/);
+    return { brand: (parts[0] || '').toUpperCase(), proj: parts.slice(1).join(' – ').toUpperCase() };
+  };
+
+  document.title = 'SIXTWENTYSIX — ' + DIR.name;
+  document.querySelector('.h-name').textContent = DIR.name;
+  const navs = [...document.querySelectorAll('#heronav .h-nav')];
+  navs[0].textContent = (DIR.roles || 'DIRECTOR').toUpperCase().replace(/,\s*/g, ' / ');
+  /* awards: b lines are the bold award names, r lines the detail; a spacer
+     row between award groups like the design. No awards -> no nav word. */
+  const awEl = document.querySelector('.h-awards');
+  if (DIR.awards && DIR.awards.length) {
+    awEl.innerHTML = DIR.awards.map((a, i) =>
+      (a.b && i > 0 ? '<p class="r">&#8203;</p>' : '') +
+      `<p class="${a.b ? 'b' : 'r'}">${esc(a.t)}</p>`).join('');
+  } else { awEl.innerHTML = ''; navs[1].style.display = 'none'; }
+  const aboutEl = document.querySelector('.h-about');
+  if (DIR.bio) aboutEl.textContent = DIR.bio;
+  else { aboutEl.textContent = ''; navs[2].style.display = 'none'; }
+
+  /* the hero IS the director's web loop (Joel 9/3) */
+  const heroReel = document.getElementById('heroReel');
+  if (DIR.poster) heroReel.poster = DIR.poster;
+  if (DIR.reel) {
+    heroReel.src = DIR.reel;
+    const kick = () => { if (heroReel.paused) heroReel.play().catch(() => {}); };
+    kick();
+    heroReel.addEventListener('loadeddata', kick, { once: true });
+    /* muted autoplay can still be deferred until the tab is truly active —
+       any first input re-kicks it */
+    window.addEventListener('pointermove', kick, { once: true });
+    window.addEventListener('scroll', kick, { once: true, passive: true });
+  }
+
+  /* featured strip: the live page's Featured section first, then the rest
+     of the slate until all six seats fill (Joel 9/3: several directors mark
+     only 4 works Featured and the short strip read as "not enough work").
+     Six seats at the frame pitch (53 + i*272). */
+  const featSec = SECTIONS.find(x => x.name === 'Featured') || SECTIONS[0] || { works: [] };
+  const FEAT = featSec.works.filter(w => w.still || w.loop).slice(0, 6);
+  const inStrip = new Set(FEAT.map(w => w.slug));
+  SECTIONS.forEach(sec => sec.works.forEach(w => {
+    if (FEAT.length < 6 && (w.still || w.loop) && !inStrip.has(w.slug)) {
+      FEAT.push(w);
+      inStrip.add(w.slug);
+    }
+  }));
+  /* END-TO-END LAW (Joel 9/3: "the works need to go end to end of the
+     page, that's the whole design thing"): the strip always spans the
+     design row (53 -> 1662) — N thumbs share the width with the frame's
+     23px gap, height stays 140 (cover-crop widens instead). At N=6 this
+     is exactly the frame's 249px/272 pitch. */
+  const S_L = 53, S_R = 1662, S_GAP = 23, N = FEAT.length || 1;
+  const S_W = (S_R - S_L - (N - 1) * S_GAP) / N;
+  document.getElementById('featstrip').innerHTML = FEAT.map((w, i) => {
+    const t = splitT(w.title), x = Math.round(S_L + i * (S_W + S_GAP));
+    return `<div class="fitem" data-i="${i}">
+      <a class="h-thumb" href="case-study.html?work=${esc(w.slug)}" style="left:${x}px; top:11px; width:${Math.round(S_W)}px;"
+         data-feat="${esc(w.still)}" data-loop="${esc(w.loop)}"><img src="${esc(w.still || DIR.poster)}" alt="${esc(t.brand)}"></a>
+      <p class="h-tt" style="left:${x}px;">${esc(t.brand)}</p>
+      <p class="h-ts" style="left:${x}px;">${esc(t.proj)}</p>
+    </div>`;
+  }).join('');
+
+  /* ---- header: transparent white-on-image over the hero, solid after ---- */
+  let HERO_END = 1117 - 118;
+  const syncHdr = () => hdr.classList.toggle('dark', window.scrollY < HERO_END - 8);
+  syncHdr();
+  window.addEventListener('scroll', syncHdr, { passive: true });
+
+  /* ---- hero fills the first screen at ANY aspect (Joel, 8/10): the featured
+     strip pins to the bottom edge, so name + info + featured work are all
+     visible on open. Everything below rides the hero's height. ---- */
+  let HERO_H = 1117;
+  const REVEAL = location.search.includes('reveal=1');
+  function fitHero() {
+    HERO_H = REVEAL ? 1117 : Math.max(680, window.innerHeight);
+    HERO_END = HERO_H - 118;
+    hero.style.height = HERO_H + 'px';
+    /* the featured block keeps its design proportions off the BOTTOM edge */
+    const flTop = HERO_H - 278;
+    document.getElementById('featstrip').style.top = (HERO_H - 237) + 'px';
+    document.getElementById('fl-base').style.top = flTop + 'px';
+    document.getElementById('fl-reels').style.top = flTop + 'px';
+    document.getElementById('fl-click').style.top = flTop + 'px';
+
+    document.getElementById('chevL').style.top = (HERO_H - 279) + 'px';
+    document.getElementById('chevR').style.top = (HERO_H - 279) + 'px';
+    document.getElementById('chevDown').style.top = (HERO_H - 282) + 'px'; /* above the strip: captions run to HERO_H-43, so the old bottom seat overlapped them (Joel 8/21) */
+    /* name + info row stays CENTERED between the header (158) and the
+       featured block (Joel, 8/10). Design center is 482 at name-top 437;
+       the whole row (and the hover layers anchored to it) shifts together. */
+    const d = Math.round((118 + flTop) / 2 - 482);
+    document.querySelector('.h-name').style.top = (437 + d) + 'px';
+    document.getElementById('heronav').style.top = (455 + d) + 'px';
+    document.getElementById('hhint').style.top = (503 + d) + 'px';
+    document.querySelector('.h-awards').style.top = (518 + d) + 'px';
+    document.querySelector('.h-about').style.top = (518 + d) + 'px';
+    document.getElementById('grid').style.top = HERO_H + 'px';
+    document.getElementById('ledger').style.top = (HERO_H + 183) + 'px';
+  }
+  fitHero();
+
+  /* ---- personality variant: shows while the cursor is on a role word,
+     the director's NAME, or the [HOVER TO VIEW] hint (Joel 8/22) — awards +
+     about fade open. Exit still tracks the element, never an invisible zone. ---- */
+  document.querySelectorAll('#heronav .h-nav, .h-name, #hhint').forEach(el => {
+    el.addEventListener('mouseenter', () => { if (!hero.classList.contains('fw')) hero.classList.add('pv'); });
+    el.addEventListener('mouseleave', () => hero.classList.remove('pv'));
+  });
+
+  /* ---- featured work strip (89:1690): hovering a reel plays it in the hero;
+     clicking the thumb opens the full film. Chevrons step the reels. ---- */
+  const featImg = document.getElementById('heroFeatImg');
+  const featVid = document.getElementById('heroFeatVid');
+  /* a slow loop that finishes buffering after the hover began still plays */
+  featVid.addEventListener('loadeddata', () => {
+    if (hero.classList.contains('fw')) featVid.play().catch(() => {});
+  });
+  const fitems = [...document.querySelectorAll('#featstrip .fitem')];
+  let featOn = 0;
+  function playFeat(i) {
+    if (!fitems.length) return;
+    featOn = (i + fitems.length) % fitems.length;
+    const item = fitems[featOn];
+    hero.classList.remove('pv');
+    /* 9/3 (Joel): the hovered work's LOOP plays in the hero; a work with
+       no loop falls back to its still */
+    const th = item.querySelector('.h-thumb');
+    if (th.dataset.loop) {
+      featImg.style.visibility = 'hidden';
+      if (featVid.getAttribute('src') !== th.dataset.loop) featVid.src = th.dataset.loop;
+      featVid.style.visibility = 'visible';
+      featVid.play().catch(() => {});
+    } else {
+      featVid.pause();
+      featVid.style.visibility = 'hidden';
+      featImg.src = th.dataset.feat;
+      featImg.style.visibility = th.dataset.feat ? 'visible' : 'hidden';
+    }
+    fitems.forEach(f => f.classList.toggle('on', f === item));
+    hero.classList.add('fw');
+  }
+  document.querySelectorAll('#featstrip .h-thumb').forEach((th, i) => {
+    th.addEventListener('mouseenter', () => playFeat(i));
+  });
+  document.getElementById('featstrip').addEventListener('mouseleave', () => {
+    hero.classList.remove('fw');
+    featVid.pause();
+    fitems.forEach(f => f.classList.remove('on'));
+  });
+  document.getElementById('chevL').addEventListener('click', () => playFeat(featOn - 1));
+  document.getElementById('chevR').addEventListener('click', () => playFeat(featOn + 1));
+
+  /* ---- down chevron scrolls into the work grid ---- */
+  document.getElementById('chevDown').addEventListener('click', () => {
+    window.scrollTo({ top: HERO_END, behavior: 'smooth' });
+  });
+
+  /* ================= CATEGORY GRID =================
+     One source of truth for this director's work. `cats` drives which tabs
+     exist — a category with nothing in it never gets a tab, so the filter can
+     never land on an empty grid. Featured is a flag, not a category, so a piece
+     can be both featured and a commercial. */
+  /* Grid works, tagged with the frame's categories (89:1642). The featured
+     strip in the hero is separate; the grid is the browsable body of work. */
+  /* 9/3: the slate comes from directors.js (harvest-directors.py) — the
+     live page's sections, deduped by slug. Featured is a flag; a work's
+     category is the first non-Featured section it appears in. */
+  const seen = new Map();
+  SECTIONS.forEach(sec => sec.works.forEach(w => {
+    const key = w.slug || w.title;
+    if (!seen.has(key)) {
+      const t = splitT(w.title);
+      seen.set(key, { brand: t.brand, proj: t.proj, cat: null, feat: false,
+                      img: w.still, loop: w.loop || null, slug: w.slug });
+    }
+    const e = seen.get(key);
+    if (sec.name === 'Featured') e.feat = true;
+    else if (!e.cat) e.cat = sec.name;
+  }));
+  const WORKS = [...seen.values()].filter(w => w.img);
+  WORKS.forEach(w => { if (!w.cat) w.cat = 'Commercial'; });
+
+  /* Featured is a flag, the rest filter by category. Tabs render only for
+     categories this director actually has, in the live page's order, and
+     reflow to measured widths (some directors carry 4+ categories). */
+  const inCat = (w, c) => c === 'Featured' ? !!w.feat : w.cat === c;
+  const CATS = ['Featured', ...SECTIONS.map(x => x.name).filter(n => n !== 'Featured')]
+    .filter(c => WORKS.some(w => inCat(w, c)));
+  const TAB_X = CATS.map((c, i) => 53 + i * 145); /* provisional; reflowed after paint */
+
+  /* Geometry (89:1642): 53px margins, 99px gutter -> 476px tiles at 3-up. */
+  const LEFT = 53, RIGHT = 1678, CONTENT = RIGHT - LEFT, GUT = 99, TOP_0 = 183;
+  const CAP_BLOCK = 122; // caption + row padding under each tile
+
+  const tabsEl  = document.getElementById('gtabs');
+  const itemsEl = document.getElementById('gitems');
+  const ledger  = document.getElementById('ledger');
+  const gridSec = document.getElementById('grid');
+
+
+  let cat = CATS[0], mode = '3', userMode = false;
+  /* THE ROW-COUNT LAW (Joel 8/25): <=6 works -> rows of 2, 7+ -> 3-up.
+     Automatic per category; a manual toggle click overrides it. */
+  const autoCols = n => n > 6 ? 3 : 2;
+
+  /* Tabs, measured after paint so the underline matches the real text width. */
+  tabsEl.innerHTML = CATS.map((c, i) =>
+    `<p class="g-tab${i === 0 ? ' on' : ''}" data-cat="${c}" style="left:${TAB_X[i]}px;">${c}</p>`
+  ).join('') + '<div id="gunder"></div>';
+
+  const tabs = [...tabsEl.querySelectorAll('.g-tab')];
+  const under = document.getElementById('gunder');
+  function moveUnder(t) {
+    under.style.left = t.offsetLeft + 'px';
+    under.style.width = t.getBoundingClientRect().width + 'px';
+  }
+  /* 9/3: tab seats reflow to real text widths (dynamic category sets) —
+     re-measured on load in case the webfont settles late */
+  function reflowTabs() {
+    let tx = 53;
+    tabs.forEach(t => {
+      t.style.left = tx + 'px';
+      tx += t.getBoundingClientRect().width + 46;
+    });
+    moveUnder(tabs.find(t => t.classList.contains('on')) || tabs[0]);
+  }
+  reflowTabs();
+  window.addEventListener('load', reflowTabs);
+
+  function renderGrid() {
+    const list = WORKS.filter(w => inCat(w, cat));
+    if (!userMode) {
+      mode = String(autoCols(list.length));
+      document.querySelectorAll('.g-opt').forEach(o =>
+        o.classList.toggle('on', o.dataset.mode === mode));
+    }
+    const cols = parseInt(mode, 10);
+    const w = (CONTENT - (cols - 1) * GUT) / cols;
+    const h = Math.round(w * 9 / 16);
+    const rowH = h + CAP_BLOCK;
+    const rows = Math.ceil(list.length / cols);
+    /* homepage law: relayouts GLIDE. Same category -> move the existing
+       tiles to the new grid; the .fd.seen transitions animate the shuffle. */
+    if (renderGrid.lastCat === cat && itemsEl.children.length === list.length && list.length) {
+      [...itemsEl.children].forEach((item, i) => {
+        const col = i % cols, row = Math.floor(i / cols);
+        const xx = LEFT + col * (w + GUT);
+        const yy = TOP_0 + row * rowH;
+        Object.assign(item.querySelector('.g-tile').style,
+          { left: xx + 'px', top: yy + 'px', width: w + 'px', height: h + 'px' });
+        Object.assign(item.querySelector('.g-cap').style,
+          { left: xx + 'px', top: (yy + h + 19) + 'px' });
+      });
+      return TOP_0 + rows * rowH;
+    }
+    renderGrid.lastCat = cat;
+    itemsEl.innerHTML = '';
+    const tiles = [];
+    list.forEach((wk, i) => {
+      const col = i % cols, row = Math.floor(i / cols);
+      const xx = LEFT + col * (w + GUT);
+      const yy = TOP_0 + row * rowH;
+      const item = document.createElement('div');
+      item.className = 'g-item fd seen';
+      item.style.cssText = `left:0; top:0; width:0; height:0;`;
+      item.innerHTML =
+        `<a class="g-tile" href="case-study.html${wk.slug ? `?work=${wk.slug}` : ''}"${wk.loop ? ` data-loop="${wk.loop}"` : ''} style="left:${xx}px; top:${yy}px; width:${w}px; height:${h}px;">
+           <img src="${wk.img}" alt="${wk.brand}"></a>
+         <p class="g-cap" style="left:${xx}px; top:${yy + h + 19}px;">${wk.brand}</p>`;
+      itemsEl.appendChild(item);
+      const tile = item.querySelector('.g-tile');
+      tiles.push({ el: tile, caps: [{ el: item.querySelector('.g-cap'), gap: 19 }], item });
+    });
+    /* THE site hover law — one engine (gridhover.js) for every grid.
+       Director's extra ghost classes ride the engine's enter/leave hooks. */
+    SXGrid.attach({
+      tiles: tiles,
+      ghost: { el: gridSec, cls: 'ghost' },
+      bounds: { left: LEFT, right: RIGHT },
+      onEnter(t) { t.item.classList.add('gh-on'); t.el.classList.add('gh-big'); },
+      onLeave(t) { t.item.classList.remove('gh-on'); setTimeout(() => t.el.classList.remove('gh-big'), 720); },
+    });
+    return TOP_0 + rows * rowH;
+  }
+
+  /* Height of the section follows whichever view is on, so the footer never
+     collides with the grid or floats a screen below it. */
+  function resize(gridEnd, ledgerRows) {
+    const end = mode === 'index'
+      ? 183 + 64 + (ledgerRows || 0) * 54 + 60  // ledger top + rows + breathing room
+      : gridEnd;
+    gridSec.style.height = end + 'px';
+    document.getElementById('page').style.height = (HERO_H + end + 210 + 349) + 'px'; /* caption -> footer lands on the ~300 rhythm: rowH already pads 91 under the caption (Joel 8/21: the old +300 doubled up into a hole) */
+  }
+
+  /* the ledger filters by the row's own category column: Featured shows the
+     whole book; Commercial = live action + creative studio; the rest match
+     their own label. Visible rows re-stack so no gaps open up. */
+  function filterLedger() {
+    let n = 0;
+    document.querySelectorAll('.l-row').forEach(row => {
+      const c = (row.querySelector('.l-cat') || { textContent: '' }).textContent;
+      const show = cat === 'Featured' ? true
+        : cat === 'Commercial' ? /LIVE ACTION|CREATIVE STUDIO/i.test(c)
+        : cat === 'Music Video' ? /MUSIC VIDEO/i.test(c)
+        : cat === 'Photography' ? /PHOTO/i.test(c)
+        : true;
+      row.style.display = show ? '' : 'none';
+      if (show) { row.style.top = (64 + n * 54) + 'px'; n++; }
+    });
+    return n;
+  }
+  function apply() {
+    let gridEnd = 0;
+    if (mode !== 'index') gridEnd = renderGrid();
+    itemsEl.style.display = mode === 'index' ? 'none' : '';
+    ledger.classList.toggle('on', mode === 'index');
+    if (mode === 'index') resize(0, filterLedger());
+    else resize(gridEnd, 0);
+  }
+
+  tabs.forEach(t => t.addEventListener('click', () => {
+    /* Joel 8/21: the filters JUST filter — whichever view is on. In the
+       ledger they filter the rows; in the grid, the tiles. No view switch. */
+    cat = t.dataset.cat;
+    tabs.forEach(o => o.classList.toggle('on', o === t));
+    moveUnder(t);
+    apply();
+  }));
+
+  document.querySelectorAll('.g-opt').forEach(opt => {
+    opt.addEventListener('click', () => {
+      mode = opt.dataset.mode;
+      userMode = true;
+      document.querySelectorAll('.g-opt').forEach(o => o.classList.toggle('on', o === opt));
+      apply();
+    });
+  });
+
+  moveUnder(tabs[0]);
+  apply();
+  window.addEventListener('resize', () => { fitHero(); apply(); syncHdr(); });
+
+  /* ---- index: hovering a row drives the left preview ----
+     The Figma frame shipped with the active row on PRICELINE but the preview
+     still showing PURA under a "DIRECTOR NAME" placeholder. The preview is now
+     seeded from whichever row is actually active, so the two cannot disagree. */
+  const lshot = document.getElementById('lshot');
+  const ltitle = document.getElementById('ltitle');
+  const ldirname = document.getElementById('ldirname');
+  function preview(row) {
+    document.querySelectorAll('.l-row').forEach(r => r.classList.toggle('on', r === row));
+    ltitle.innerHTML = row.dataset.title;
+    ldirname.innerHTML = row.dataset.dir;
+    /* Joel 8/25: the thumbnail must be OF the hovered work — a row with
+       no still hides the slot rather than showing the previous work */
+    if (row.dataset.shot) { lshot.src = row.dataset.shot; lshot.style.visibility = 'visible'; }
+    else lshot.style.visibility = 'hidden';
+  }
+  document.querySelectorAll('.l-row').forEach(row => {
+    row.addEventListener('mouseenter', () => {
+      preview(row);
+      ledger.classList.add('dim');
+      document.querySelectorAll('.l-row.hot').forEach(r => r.classList.remove('hot'));
+      row.classList.add('hot');
+    });
+  });
+  const clearDim = () => {
+    ledger.classList.remove('dim');
+    document.querySelectorAll('.l-row.hot').forEach(r => r.classList.remove('hot'));
+  };
+  ledger.addEventListener('mouseleave', clearDim);
+  window.addEventListener('scroll', clearDim, { passive: true }); // scroll never strands a stale dim
+  preview(document.querySelector('.l-row.on') || document.querySelector('.l-row'));
+})();
+/* PAGE SCRIPTS END */
+</script>
+<script>
+/* Back-to-the-exact-spot law (Joel 8/24): runs HERE — after the grids
+   above have built (the page is at full height, so the seat can't clamp)
+   and BEFORE smoothscroll.js boots (its internal target reads the
+   restored position). */
+(function () {
+  try {
+    var raw = sessionStorage.getItem('sx-return-go');
+    if (!raw) return;
+    sessionStorage.removeItem('sx-return-go');
+    var d = JSON.parse(raw);
+    /* 9/3: stored page may carry a query (?who=<director>) — match path
+       and query separately so per-director returns restore their seat */
+    var curPath = location.pathname.split('/').pop() || 'index.html';
+    var sp2 = new URLSearchParams(location.search); sp2.delete('r');
+    var curQ = sp2.toString();
+    var stored = String(d.page || '').split('?');
+    if (stored[0] !== curPath) return;
+    if (stored[1] && stored[1] !== curQ) return;
+    /* the page reaches full height only after load (footer law stretch),
+       so the seat restores THEN; smoothscroll adopts any external scroll
+       while idle, so this slots straight into its engine */
+    var seat = function () { window.scrollTo(0, d.y || 0); };
+    window.addEventListener('load', function () {
+      seat();
+      setTimeout(seat, 120); /* once more after late layout settles */
+    });
+  } catch (e) {}
+})();
+</script>
+<script src="smoothscroll.js?v=20260819095356"></script>
+<script src="logomorph.js?v=20260824a"></script>
+<script src="menu.js?v=20260824c"></script>
+<script src="hoverlaw.js?v=20260819095356"></script>
+<script>
+/* Safari back-forward cache restores dead builds from memory - always reload */
+window.addEventListener('pageshow', function (e) { if (e.persisted) location.reload(); });
+</script>
+</body>
+</html>

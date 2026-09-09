@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1728">
+<script src="footerlaw.js?v=20260825a"></script>
+<title>SIXTWENTYSIX — Careers</title>
+<!--
+  CAREERS — synced 1:1 to Full Site frame 220:1165 "04 — Role cards" (2026-08-18).
+  White page: Careers + statement row, "Open roles (02)" ledger (Art Director,
+  Treatment Designer), "Don't see your role?" block, black footer.
+-->
+<style>
+  @font-face {
+    font-family: 'HelveticaNeueCyr';
+    src: url('fonts/HelveticaNeueCyr-Roman.ttf') format('truetype');
+    font-weight: 400;
+  }
+  @font-face {
+    font-family: 'HelveticaNeueCyr';
+    src: url('fonts/HelveticaNeueCyr-Medium.ttf') format('truetype');
+    font-weight: 500;
+  }
+  @font-face {
+    font-family: 'HelveticaNeueCyr';
+    src: url('fonts/HelveticaNeueCyr-Bold.ttf') format('truetype');
+    font-weight: 700;
+  }
+  @font-face {
+    font-family: 'Azeret Mono';
+    src: url('fonts/AzeretMono-VF.woff2') format('woff2-variations');
+    font-weight: 100 900;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #fff; overscroll-behavior: none; }
+  body {
+    overflow-x: clip; /* auto broke position:sticky in Safari */
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  }
+  p { margin: 0; }
+  a { color: inherit; text-decoration: none; }
+  img { display: block; }
+  .cyr { font-family: 'HelveticaNeueCyr', 'Helvetica Neue', Helvetica, sans-serif; }
+
+  .page {
+    position: relative;
+    width: 1728px;
+    height: 1249px;
+    margin: 0 auto;
+    background: #fff;
+  }
+
+  /* ---------- Scroll fade-in ---------- */
+  .fd { opacity: 0; transform: translateY(28px); }
+  .fd.seen {
+    opacity: 1; transform: none;
+    transition: opacity 0.9s cubic-bezier(0.16,1,0.3,1), transform 0.9s cubic-bezier(0.16,1,0.3,1);
+    transition-delay: var(--fd, 0s);
+  }
+
+  /* ---------- Header (interior component 459:3638) ---------- */
+  .hdr {
+    /* FIXED, not sticky (Joel 8/21 zero-vibration): sticky repositions
+       asynchronously under scripted per-frame scrolling (the smooth
+       scroll), which reads as a 1px bob. Fixed is compositor-pinned. */
+    position: fixed;
+    top: 0;
+    left: 50%;
+    margin-left: -864px;
+    width: 1728px;
+    height: 118px;
+    background: #fff;
+    z-index: 50;
+  }
+  .hdr-logo { position: absolute; left: 63px; top: 43px; width: 146px; height: 50px; }
+  .hdr-logo .v1 { position: absolute; top: 0.11%; right: 55.69%; bottom: 0; left: 0; }
+  .hdr-logo .v2 { position: absolute; top: 1.81%; right: 8.88%; bottom: 1.81%; left: 42.46%; }
+  .hdr-logo .v3 { position: absolute; top: 0; right: 0; bottom: 82.78%; left: 91.12%; }
+  .hdr-logo img { position: absolute; inset: 0; width: 100%; height: 100%; max-width: none; }
+  .hdr-menu {
+    position: absolute; left: 1636px; top: 44px; width: 57px; height: 30px;
+    cursor: pointer;
+  }
+  .hdr-menu .l {
+    position: absolute; left: 12px; width: 33px; height: 2px;
+    background: #000; border-radius: 2px;
+  }
+  .nav-sm {
+    position: absolute;
+    font-size: 16px; line-height: 25px; letter-spacing: 0.48px;
+    color: #000; white-space: nowrap; font-weight: 400;
+  }
+
+  /* ===================== TITLE ROW ===================== */
+  .cr-title {
+    position: absolute; left: 63px; top: 200px;
+    font-family: 'HelveticaNeueCyr', 'Helvetica Neue', Helvetica, sans-serif;
+    font-weight: 700; font-size: 40px; line-height: 48px; letter-spacing: -1.6px;
+    color: #000; text-transform: capitalize;
+  }
+  .cr-statement {
+    position: absolute; left: 991px; top: 200px; width: 625px;
+    font-weight: 500; font-size: 40px; line-height: 50px; letter-spacing: -1.2px;
+    color: #000; white-space: pre-line;
+  }
+
+  /* ===================== OPEN ROLES ===================== */
+  .cr-open {
+    position: absolute; left: 63px; top: 340px;
+    font-family: 'HelveticaNeueCyr', 'Helvetica Neue', Helvetica, sans-serif;
+    font-weight: 700; font-size: 34px; line-height: 33.8px; letter-spacing: -0.34px;
+    color: #737373; white-space: nowrap;
+  }
+  .cr-open .count { font-weight: 400; margin-left: 26px; }
+  .cr-line { position: absolute; left: 64px; width: 1590px; height: 0; }
+  .cr-line.black { border-top: 1px solid #000; }
+  .cr-line.gray { border-top: 1px solid #d9d9d9; }
+  .cr-role {
+    position: absolute; left: 64px;
+    font-family: 'HelveticaNeueCyr', 'Helvetica Neue', Helvetica, sans-serif;
+    font-weight: 500; font-size: 32px; line-height: 31.6px; letter-spacing: -0.32px;
+    color: #000; white-space: nowrap;
+  }
+  .cr-meta {
+    position: absolute;
+    font-family: 'HelveticaNeueCyr', 'Helvetica Neue', Helvetica, sans-serif;
+    font-weight: 400; font-size: 17px; line-height: 16.9px; letter-spacing: -0.17px;
+    color: #737373; white-space: nowrap;
+  }
+  .cr-apply {
+    position: absolute; left: 1604px;
+    font-family: 'HelveticaNeueCyr', 'Helvetica Neue', Helvetica, sans-serif;
+    font-weight: 500; font-size: 19px; line-height: 18.8px; letter-spacing: -0.19px;
+    color: #000; white-space: nowrap; cursor: pointer;
+  }
+  .cr-apply:hover { opacity: 0.6; }
+  /* THE PRESS GHOST LAW, applied to open roles (Joel 8/25): hovering one
+     role ghosts the other rows to the same 15% read as the work grids. */
+  .cr-row { position: absolute; left: 0; top: 0; width: 1728px; height: 104px; transition: opacity 0.4s ease; }
+  #openroles:has(.cr-row:hover) .cr-row:not(:hover) { opacity: 0.15; }
+
+  /* ===================== DON'T SEE YOUR ROLE ===================== */
+  .cr-nsr {
+    position: absolute; left: 64px; top: 664px;
+    font-family: 'HelveticaNeueCyr', 'Helvetica Neue', Helvetica, sans-serif;
+    font-weight: 700; font-size: 34px; line-height: 33.8px; letter-spacing: -1.02px;
+    color: #000; white-space: nowrap;
+  }
+  .cr-nsr-copy {
+    position: absolute; left: 64px; top: 724px; width: 582px;
+    font-weight: 400; font-size: 16px; line-height: 21.6px; letter-spacing: -0.32px;
+    color: #000;
+  }
+  .cr-mail {
+    position: absolute; left: 984px; top: 653px;
+    font-family: 'HelveticaNeueCyr', 'Helvetica Neue', Helvetica, sans-serif;
+    font-weight: 500; font-size: 22px; line-height: 21.7px; letter-spacing: -0.22px;
+    color: #000; white-space: nowrap; cursor: pointer;
+  }
+  .cr-mail:hover { opacity: 0.6; }
+
+  /* ---------- Footer (black, SIX26) ---------- */
+  .footer {
+    position: absolute; left: 0; top: 900px; width: 1728px; height: 349px;
+    background: #000; overflow: hidden;
+  }
+  .foot-cta {
+    position: absolute; left: 40px; top: 60px; width: 470px; height: 74px;
+    font-weight: 700; font-size: 24px; line-height: 24px;
+    color: #fff; text-transform: uppercase; word-break: break-word;
+  }
+  .foot-cta a { text-decoration: underline; text-underline-position: from-font; cursor: pointer; }
+  .foot-mark { position: absolute; top: 54.44%; right: 2.23%; bottom: -35.46%; left: 2.29%; }
+  .foot-mark img { position: absolute; inset: 0; width: 100%; height: 100%; max-width: none; }
+  .foot-col {
+    position: absolute;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; /* 9/4 Joel: footers all in Helvetica (was Azeret Mono) */
+    font-weight: 400; font-size: 15px; line-height: 17.5px;
+    color: #fff; text-transform: uppercase; word-break: break-word;
+  }
+  .foot-col .b, .foot-b { font-weight: 700; }
+</style>
+</head>
+<body>
+<script>
+(function () {
+  if (window.self === window.top && !location.search.includes('flat=1')) {
+    var page = location.pathname.split('/').pop() || 'index.html';
+    location.replace('view.html?p=' + encodeURIComponent(page));
+  }
+  if (location.search.includes('reveal=1')) {
+    document.write('<style>.fd{opacity:1 !important; transform:none !important;}' +
+      '.hdr{position:relative !important;}' +
+      '*,*::before,*::after{transition:none !important; animation:none !important;}' +
+      '#menu-overlay{display:none !important;}</style>');
+  }
+})();
+</script>
+
+<div class="page" id="page">
+
+  <!-- ============ HEADER ============ -->
+  <div class="hdr">
+    <a href="index.html" id="lettermark" style="left:63px; top:0; width:639px; height:161px; z-index:2;"></a>
+    <p class="nav-sm" style="left:504px; top:43px;">LOS ANGELES, CA</p>
+    <p class="nav-sm" style="left:504px; top:68px;">NEW YORK, NY</p>
+    <div class="hdr-menu" title="Menu">
+      <div class="l" style="top:12px;"></div>
+      <div class="l" style="top:20px;"></div>
+      <div class="l" style="top:28px;"></div>
+    </div>
+  </div>
+
+  <!-- ============ TITLE ROW ============ -->
+  <p class="cr-title fd">Careers</p>
+  <p class="cr-statement fd" style="--fd:0.1s;">We create stories that grow.
+And careers that do too.</p>
+
+  <!-- ============ OPEN ROLES ============ -->
+  <p class="cr-open fd">Open roles<span class="count">(02)</span></p>
+
+  <div id="openroles">
+  <div class="cr-line black fd" style="top:400px;"></div>
+
+  <div class="cr-row" style="top:400px;">
+    <p class="cr-role fd" style="top:36px;">Art Director</p>
+    <p class="cr-meta fd" style="left:984px; top:44px;">Culver City, CA</p>
+    <p class="cr-meta fd" style="left:1324px; top:44px;">Full-time</p>
+    <a class="cr-apply fd" style="top:43px;" href="mailto:careers@sixtwentysix.co?subject=Art%20Director">Apply</a>
+  </div>
+  <div class="cr-line gray fd" style="top:504px;"></div>
+
+  <div class="cr-row" style="top:504px;">
+    <p class="cr-role fd" style="top:36px;">Treatment Designer</p>
+    <p class="cr-meta fd" style="left:984px; top:44px;">Culver City, CA</p>
+    <p class="cr-meta fd" style="left:1324px; top:44px;">Full-time</p>
+    <a class="cr-apply fd" style="top:43px;" href="mailto:careers@sixtwentysix.co?subject=Treatment%20Designer">Apply</a>
+  </div>
+  <div class="cr-line gray fd" style="top:608px;"></div>
+  </div>
+
+  <!-- ============ DON'T SEE YOUR ROLE ============ -->
+  <p class="cr-nsr fd">Don't see your role?</p>
+  <p class="cr-nsr-copy fd" style="--fd:0.1s;">We're always looking for exceptional people. Send your resume or reel, the job title, and the role you'd propose to careers@sixtwentysix.co and tell us what you'd bring.</p>
+  <a class="cr-mail fd" style="--fd:0.15s;" href="mailto:careers@sixtwentysix.co">careers@sixtwentysix.co</a>
+
+  <!-- ============ FOOTER ============ -->
+  <div class="footer">
+    <div class="foot-cta">
+      <p>Let&rsquo;s get started.&nbsp;</p>
+      <p>Connect with us at <a href="mailto:hello@sixtwentysix.co">hello@sixtwentysix.co</a></p>
+    </div>
+    <div class="foot-mark"><img src="assets/six26-wordmark.svg" alt="SIX26"></div>
+    <p class="foot-col foot-b" style="left:884px; top:60px;">join the team</p>
+    <p class="foot-col" style="left:884px; top:96px; width:225px;"><a href="mailto:careers@sixtwentysix.co" style="color:inherit; text-decoration:none; cursor:pointer;">careers@sixtwentysix.co</a></p>
+    <div class="foot-col" style="left:1185px; top:60px; width:166px;">
+      <p class="b">capabilities Deck</p>
+      <p>&#8203;</p>
+      <p><a href="mailto:hello@sixtwentysix.co?subject=SX%20-%20Capabilities%20Deck%20Request&body=Hi!%20I%20am%20requesting%20the%20SixTwentySix%20capabilities%20deck." style="color:inherit; text-decoration:none; cursor:pointer;">request our deck</a></p>
+    </div>
+    <div class="foot-col" style="left:1427px; top:60px; width:130px;">
+      <p class="b">newsletter</p>
+      <p>&#8203;</p>
+      <p><a href="mailto:hello@sixtwentysix.co?subject=Newsletter" style="color:inherit; text-decoration:none; cursor:pointer;">Subscribe</a></p>
+    </div>
+    <div class="foot-col" style="left:1601px; top:60px; width:89px;">
+      <p class="b">follow us</p>
+      <p>&#8203;</p>
+      <p><a href="https://www.instagram.com/sixtwentysixco/" target="_blank" rel="noopener" style="color:inherit; text-decoration:none; cursor:pointer;">ig</a> / <a href="https://www.linkedin.com/company/sixtwentysix" target="_blank" rel="noopener" style="color:inherit; text-decoration:none; cursor:pointer;">li</a></p>
+    </div>
+  </div>
+
+</div><!-- /.page -->
+
+<script>
+if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+window.scrollTo(0, 0);
+
+const io = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    const b = e.boundingClientRect;
+    /* zero-size wrappers (absolute children only) never reach ratio 0.15 —
+       they were permanently invisible (the empty-content bug, 8/19) */
+    if (e.intersectionRatio >= 0.15 || (e.isIntersecting && (b.width < 2 || b.height < 2))) {
+      /* one-shot (8/21): un-revealing on exit made the reveal REPLAY when
+         scrolling back up — tabs/toggles popped in 28px low on staggered
+         delays, overlapping, then jumped to their seats. Seen stays seen. */
+      e.target.classList.add('seen');
+      io.unobserve(e.target);
+    }
+  });
+}, { threshold: [0, 0.15] });
+document.querySelectorAll('.fd').forEach(el => io.observe(el));
+</script>
+<script src="fitpage.js?v=20260820a"></script>
+<script>SXFit(1249, 349);</script>
+<script src="smoothscroll.js?v=20260819095356"></script>
+<script src="logomorph.js?v=20260824a"></script>
+<script src="menu.js?v=20260824c"></script>
+<script>
+/* Safari back-forward cache restores dead builds from memory - always reload */
+window.addEventListener('pageshow', function (e) { if (e.persisted) location.reload(); });
+</script>
+</body>
+</html>

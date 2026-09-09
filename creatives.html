@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1728">
+<script src="footerlaw.js?v=20260825a"></script>
+<script>
+/* creatives was built as a 100vh live-site port with no footer — size the
+   page to the real roster end so the footer law pins BELOW the content
+   (8/21: it was landing mid-roster). */
+document.addEventListener('DOMContentLoaded', () => {
+  const pg = document.getElementById('page');
+  const rows = document.getElementById('rows');
+  if (!pg || !rows) return;
+  const need = rows.getBoundingClientRect().bottom - pg.getBoundingClientRect().top + 300 + 349;
+  pg.style.height = Math.max(window.innerHeight, Math.ceil(need)) + 'px';
+});
+</script>
+<title>SIXTWENTYSIX — Creatives</title>
+<!--
+  CREATIVES — rebuilt 2026-08-19 as a 1:1 port of the LIVE sixtwentysix.co
+  /creatives page (Joel: "identical to the creatives page on our current
+  website"). Full-viewport light section; left column "Our/Creatives" (71px,
+  regular/bold) with a Capabilities block that appears on hover carrying the
+  hovered creative's roles; right side two columns (8+7) of bordered rows —
+  33px Medium names, arrows that rotate 90deg on hover; hovering fades that
+  creative's REEL in full-bleed behind everything (500ms, scale 1.01) and the
+  page ink flips white. Poster stills paint instantly while video buffers.
+  Reels hotlink the live site's signed Vimeo renditions (they expire
+  eventually — re-pull from sixtwentysix.co/creatives or wire the WP feed).
+  No footer here, same as live. No numbers, no ghost-dim: not in the live page.
+-->
+<script src="logomorph.js?v=20260824a"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #fff; overscroll-behavior: none; }
+  body { overflow-x: clip; /* auto broke position:sticky in Safari */ font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; }
+  p { margin: 0; }
+  a { color: inherit; text-decoration: none; }
+  img { display: block; }
+
+  .page {
+    position: relative; width: 1728px; height: 100vh; min-height: 820px;
+    margin: 0 auto; background: #fff;
+    --ink: #000; --rule: rgba(0, 0, 0, 0.2);
+    color: var(--ink);
+  }
+  .page.hov { --ink: #fff; --rule: rgba(255, 255, 255, 0.35); }
+
+  /* full-bleed reels: live spec — 500ms opacity, scale 1.01 */
+  /* Joel 8/22: pinned to the SCREEN, not the page — the old inset:0 box
+     spanned the full 1511px page, so 16:9 reels were cover-cropped ~36%.
+     Viewport-fixed the box is exact 16:9 at canvas width: zero crop. */
+  #reels { position: fixed; top: 0; left: 50%; margin-left: -864px; width: 1728px; height: 100vh; overflow: hidden; background: #fff; }
+  #reels .slot { position: absolute; inset: 0; opacity: 0; transition: opacity 0.5s ease; transform: scale(1.01); }
+  #reels .slot.on { opacity: 1; }
+  #reels img, #reels video { position: absolute; left: -2px; top: -2px; width: calc(100% + 4px); height: calc(100% + 4px); object-fit: cover; /* 9/4: 2px overscan — fractional-pixel scaling let a white sliver peek at full-bleed edges (Joel) */ }
+
+  .hdr { position: fixed; top: 0; left: 50%; margin-left: -864px; width: 1728px; height: 118px; z-index: 50; } /* fixed = compositor-pinned, zero bob (8/21) */
+  .hdr-menu { position: absolute; left: 1636px; top: 44px; width: 57px; height: 30px; cursor: pointer; }
+  .hdr-menu .l { position: absolute; left: 12px; width: 33px; height: 2px; background: var(--ink); border-radius: 2px; transition: background 0.4s ease; }
+  .nav-sm { position: absolute; font-size: 16px; line-height: 25px; letter-spacing: 0.48px; color: var(--ink); white-space: nowrap; font-weight: 400; transition: color 0.4s ease; }
+  #lettermark { position: absolute; transition: filter 0.4s ease; }
+  .page.hov .hdr #lettermark { filter: invert(1); }
+
+  .cre-head {
+    /* Joel 8/22: same size as every other page header (40px bold) and on
+       the SX rail (left 63) so the two are directly in line. */
+    position: absolute; left: 63px; top: 150px; width: 560px;
+    font-size: 40px; line-height: 48px; letter-spacing: -1.6px;
+    color: var(--ink); text-transform: capitalize; transition: color 0.4s ease;
+  }
+  .cre-head .thin { font-weight: 400; }
+  .cre-head .bold { font-weight: 700; }
+  /* Joel 8/22: the info block ANIMATES in — house entrance (rise + fade),
+     Capabilities first, the roles a beat behind. Exit is a quick clean fade. */
+  #caps { position: absolute; left: 63px; top: 330px; width: 430px; color: var(--ink); pointer-events: none; }
+  #caps .cap-t, #caps .cap-r {
+    opacity: 0; transform: translateY(16px);
+    transition: opacity 0.22s ease, transform 0.22s ease;
+  }
+  .page.hov #caps .cap-t, .page.hov #caps .cap-r {
+    opacity: 1; transform: none;
+    transition: opacity 0.7s cubic-bezier(0.16,1,0.3,1), transform 0.7s cubic-bezier(0.16,1,0.3,1);
+  }
+  .page.hov #caps .cap-r { transition-delay: 0.09s; }
+  #caps .cap-t { font-weight: 700; font-size: 17px; line-height: 21px; }
+  #caps .cap-r {
+    font-size: 12px; line-height: 1.7; letter-spacing: 0.03em; text-transform: uppercase;
+    border-top: 1px solid var(--rule); padding-top: 16px; margin-top: 16px; min-height: 50px;
+    transition: border-color 0.4s ease;
+  }
+
+  #rows { position: absolute; left: 660px; top: 118px; width: 1028px; display: flex; }
+  #rows .col { flex: 1; }
+  .cre-row {
+    display: flex; align-items: flex-end; gap: 12px;
+    padding: 40px 27px 19px 0; border-bottom: 1px solid var(--rule);
+    cursor: pointer; transition: border-color 0.4s ease;
+  }
+  .cre-row .nm {
+    flex: 1; font-weight: 500; font-size: 33px; line-height: 1;
+    letter-spacing: -0.99px; color: var(--ink); white-space: nowrap;
+    transition: color 0.4s ease;
+  }
+  .cre-row .ar { flex-shrink: 0; align-self: center; display: block; transition: transform 0.3s ease; color: var(--ink); }
+  .cre-row:hover .ar { transform: rotate(90deg); }
+  .cre-row .ar svg { display: block; stroke: currentColor; fill: none; }
+  /* Joel 8/22: hovering one name fades all the OTHER names out — only the
+     hovered director stays full strength. Text and arrow dim; the rule
+     lines hold the grid. */
+  #rows:hover .cre-row .nm, #rows:hover .cre-row .ar { opacity: 0.15; }
+  #rows:hover .cre-row:hover .nm, #rows:hover .cre-row:hover .ar { opacity: 1; }
+  .cre-row .nm { transition: color 0.4s ease, opacity 0.35s ease; }
+  .cre-row .ar { transition: transform 0.3s ease, color 0.4s ease, opacity 0.35s ease; }
+
+  /* ---------- Footer (black, SIX26) — THE FOOTER LAW: on every page ---------- */
+  @font-face {
+    font-family: 'Azeret Mono';
+    src: url('fonts/AzeretMono-VF.woff2') format('woff2-variations');
+    font-weight: 100 900;
+  }
+  .footer {
+    position: absolute; left: 0; width: 1728px; height: 349px;
+    background: #000; overflow: hidden; z-index: 6;
+  }
+  .foot-cta {
+    position: absolute; left: 40px; top: 60px; width: 470px; height: 74px;
+    font-weight: 700; font-size: 24px; line-height: 24px;
+    color: #fff; text-transform: uppercase; word-break: break-word;
+  }
+  .foot-cta a { text-decoration: underline; text-underline-position: from-font; cursor: pointer; color: inherit; }
+  .foot-mark { position: absolute; top: 54.44%; right: 2.23%; bottom: -35.46%; left: 2.29%; }
+  .foot-mark img { position: absolute; inset: 0; width: 100%; height: 100%; max-width: none; }
+  .foot-col {
+    position: absolute;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; /* 9/4 Joel: footers all in Helvetica (was Azeret Mono) */
+    font-weight: 400; font-size: 15px; line-height: 17.5px;
+    color: #fff; text-transform: uppercase; word-break: break-word;
+  }
+  .foot-col .b, .foot-b { font-weight: 700; }
+</style>
+</head>
+<body>
+<script>
+(function () {
+  if (window.self === window.top && !location.search.includes('flat=1')) {
+    var page = location.pathname.split('/').pop() || 'index.html';
+    location.replace('view.html?p=' + encodeURIComponent(page));
+  }
+  if (location.search.includes('reveal=1')) {
+    document.write('<style>#reels{display:none !important;}</style>');
+  }
+})();
+</script>
+
+<div class="page" id="page">
+  <div id="reels"></div>
+
+  <div class="hdr">
+    <a href="index.html" id="lettermark" style="left:63px; top:0; width:639px; height:161px; z-index:2;"></a>
+    <p class="nav-sm" style="left:504px; top:43px;">LOS ANGELES, CA</p>
+    <p class="nav-sm" style="left:504px; top:68px;">NEW YORK, NY</p>
+    <div class="hdr-menu" title="Menu">
+      <div class="l" style="top:12px;"></div>
+      <div class="l" style="top:20px;"></div>
+      <div class="l" style="top:28px;"></div>
+    </div>
+  </div>
+
+  <div class="cre-head">
+    <p class="thin">Our</p>
+    <p class="bold">Creatives</p>
+  </div>
+  <div id="caps">
+    <p class="cap-t">Capabilities</p>
+    <p class="cap-r" id="capRoles"></p>
+  </div>
+
+  <div id="rows"><div class="col" id="colA"></div><div class="col" id="colB"></div></div>
+
+  <!-- THE FOOTER LAW (8/21): the black footer sits at the bottom of every page -->
+  <div class="footer" style="top:100vh;">
+    <div class="foot-cta">
+      <p>Let&rsquo;s get started.&nbsp;</p>
+      <p>Connect with us at <a href="mailto:hello@sixtwentysix.co">hello@sixtwentysix.co</a></p>
+    </div>
+    <div class="foot-mark"><img src="assets/six26-wordmark.svg" alt="SIX26"></div>
+    <p class="foot-col foot-b" style="left:884px; top:60px;">join the team</p>
+    <p class="foot-col" style="left:884px; top:96px; width:225px;"><a href="mailto:careers@sixtwentysix.co" style="color:inherit; text-decoration:none; cursor:pointer;">careers@sixtwentysix.co</a></p>
+    <div class="foot-col" style="left:1185px; top:60px; width:166px;">
+      <p class="b">capabilities Deck</p>
+      <p>&#8203;</p>
+      <p><a href="mailto:hello@sixtwentysix.co?subject=SX%20-%20Capabilities%20Deck%20Request&body=Hi!%20I%20am%20requesting%20the%20SixTwentySix%20capabilities%20deck." style="color:inherit; text-decoration:none; cursor:pointer;">request our deck</a></p>
+    </div>
+    <div class="foot-col" style="left:1427px; top:60px; width:130px;">
+      <p class="b">newsletter</p>
+      <p>&#8203;</p>
+      <p><a href="mailto:hello@sixtwentysix.co?subject=Newsletter" style="color:inherit; text-decoration:none; cursor:pointer;">Subscribe</a></p>
+    </div>
+    <div class="foot-col" style="left:1595px; top:60px; width:80px;">
+      <p class="b">Follow us</p>
+      <p>&#8203;</p>
+      <p><a href="https://www.instagram.com/sixtwentysixco/" target="_blank" rel="noopener" style="color:inherit; text-decoration:none; cursor:pointer;">ig</a> / <a href="https://www.linkedin.com/company/sixtwentysix" target="_blank" rel="noopener" style="color:inherit; text-decoration:none; cursor:pointer;">li</a></p>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ================= Roster (pulled from the live site 2026-08-19) ================= */
+(() => {
+  const ROSTER = [
+    { slug:'evan-bourque', name:"Evan Bourque", roles:"DIRECTOR, EDITOR", video:"https://player.vimeo.com/progressive_redirect/playback/1193771274/rendition/1080p/file.mp4%20%281080p%29.mp4?loc=external&log_user=0&signature=c1e80de7f8cbafd20fa0c5d6e8abeb8d91876c4b132d1fe34f0752bad1867365", poster:"https://api.sixtwentysix.co/wp-content/uploads/2024/08/Evan.jpg" },
+    { slug:'gianluigi-carella', name:"Gianluigi Carella", roles:"DIRECTOR, VFX ARTIST, EDITOR", video:"https://player.vimeo.com/progressive_redirect/playback/1108218187/rendition/1080p/file.mp4?loc=external&log_user=0&signature=457a3b05e1e26ebf922f6222becd8e3b08001fca8a19a93a44d4d71f150a3569", poster:"https://api.sixtwentysix.co/wp-content/uploads/2025/08/EA-Sports-Madden-24-Trailer-Thumbnail-1.png" },
+    { slug:'ivan-jurado', name:"Ivan Jurado", roles:"DIRECTOR, PHOTOGRAPHER", video:"https://player.vimeo.com/progressive_redirect/playback/1162268826/rendition/1080p/file.mp4%20%281080p%29.mp4?loc=external&log_user=0&signature=af0f4ac5066e2e71a8a7df92f1bf005ff52bc0c5656fe5ff0c8c0bf4a2199e50", poster:"https://api.sixtwentysix.co/wp-content/uploads/2026/02/Ivan-Jurado-Director-Reel.00_00_00_00.Still002.png" },
+    { slug:'jimmy-tatro', name:"Jimmy Tatro", roles:"DIRECTOR, CREATIVE DIRECTOR", video:"https://player.vimeo.com/progressive_redirect/playback/1215555783/rendition/1080p/file.mp4%20%281080p%29.mp4?loc=external&log_user=0&signature=03ff0b21a74d4d5011ad220026d1b485d378815e4a0cad11e300cb989e75d0ad", poster:"https://api.sixtwentysix.co/wp-content/uploads/2026/06/JIMMY_REEL.png" },
+    { slug:'julia-pitch', name:"Julia Pitch", roles:"DIRECTOR, CREATIVE DIRECTOR, PHOTOGRAPHER", video:"https://player.vimeo.com/progressive_redirect/playback/1194428621/rendition/1080p/file.mp4%20%281080p%29.mp4?loc=external&log_user=0&signature=251541c4421fb5fb74df8900456249b68c1ad7d88e780668051482bbe449d4af", poster:"https://api.sixtwentysix.co/wp-content/uploads/2026/05/Julia-Pitch_Director-Reel.00_00_00_00.Still005-1.jpg" },
+    { slug:'kate-adams', name:"Kate Adams", roles:"DIRECTOR, PHOTOGRAPHER, CINEMATOGRAPHER", video:"https://player.vimeo.com/progressive_redirect/playback/1082703479/rendition/1080p/file.mp4?loc=external&log_user=0&signature=0eb24a7ab1ea9118a3b0b0002278b3458a5f08d4449404221157c9e6ae2a9d0a", poster:"https://api.sixtwentysix.co/wp-content/uploads/2024/06/KATE-ADAMS-THUMBNAIL-768x432-2.jpg" },
+    { slug:'luke-orlando', name:"Luke Orlando", roles:"DIRECTOR, CREATIVE DIRECTOR", video:"https://player.vimeo.com/progressive_redirect/playback/1179403918/rendition/1080p/file.mp4%20%281080p%29.mp4?loc=external&log_user=0&signature=402cf15490927f27e901c3e4d300802ccb6836ccac1d56224d1acafc54766e67", poster:"https://api.sixtwentysix.co/wp-content/uploads/2026/03/LUKE-ORLANDO.00_00_00_00.Still004-1.png" },
+    { slug:'marysia-makowska', name:"Marysia Makowska", roles:"DIRECTOR", video:"https://player.vimeo.com/progressive_redirect/playback/1128949306/rendition/1080p/file.mp4?loc=external&log_user=0&signature=cbf48be3ddf54644d95c505a21fcc17cb4f21835cd9190620d9d91b1d8e4b53b", poster:"https://api.sixtwentysix.co/wp-content/uploads/2024/06/MARYSIA_MAKOWSKA_REEL_YS_v5_2025-10-14.00_00_00_00.Still003.png" },
+    { slug:'michael-j-murphy', name:"Michael J. Murphy", roles:"DIRECTOR, CREATIVE DIRECTOR", video:"https://player.vimeo.com/progressive_redirect/playback/1143242714/rendition/1080p/file.mp4?loc=external&log_user=0&signature=025de184aa4185d43e49b39bb00efd4828a8a38dc5f7b09a00f9a2778104040a", poster:"https://api.sixtwentysix.co/wp-content/uploads/2025/12/Michael-J.-Murphy_Reel_251203.00_00_00_00.Still003-1.jpg" },
+    { slug:'miles-aj', name:"Miles & AJ", roles:"DIRECTOR DUO, CREATIVE DIRECTORS, PHOTOGRAPHERS, EDITOR, AI ARTIST", video:"https://player.vimeo.com/progressive_redirect/playback/1078058577/rendition/1080p/file.mp4?loc=external&log_user=0&signature=c43a610b08530f7be2744dbd43c5b3933487adf2cdc6a22c8c0ea9f91d49904b", poster:"https://api.sixtwentysix.co/wp-content/uploads/2024/06/MAJ-THUMBNAIL-300x169-1.jpg" },
+    { slug:'nolan-goff', name:"Nolan Goff", roles:"DIRECTOR, CREATIVE DIRECTOR", video:"https://player.vimeo.com/progressive_redirect/playback/1099832399/rendition/1080p/file.mp4?loc=external&log_user=0&signature=8db5bb53e5ef124dc8fd82d1061859b6c5325a0d91aa63501c6f0a9073710169", poster:"https://api.sixtwentysix.co/wp-content/uploads/2024/06/NOLAN-GOFF-THUMBANIL-300x169-1.jpg" },
+    { slug:'plummer-strauss', name:"Plummer/Strauss", roles:"DIRECTOR DUO", video:"https://player.vimeo.com/progressive_redirect/playback/1193771273/rendition/1080p/file.mp4%20%281080p%29.mp4?loc=external&log_user=0&signature=3619bfe3775800ae454252cb4c8da2fd9d204b28d033b10819fa501e2d9407c2", poster:"https://api.sixtwentysix.co/wp-content/uploads/2024/06/PS.jpg" },
+    { slug:'savannah-oleary', name:"Savannah O’Leary", roles:"DIRECTOR, CREATIVE DIRECTOR", video:"https://player.vimeo.com/progressive_redirect/playback/1129309736/rendition/1080p/file.mp4%20%281080p%29.mp4?loc=external&log_user=0&signature=877acbe4647bc824478b3c6a1836ec5218ca835b62b8e45e66bd36c1ad7918d9", poster:"https://api.sixtwentysix.co/wp-content/uploads/2025/10/SX-Reel-Savannah-Still-Fxn-2.png" },
+    { slug:'sharon-chetrit', name:"Sharon Chetrit", roles:"DIRECTOR", video:"https://player.vimeo.com/progressive_redirect/playback/1219031832/rendition/1080p/file.mp4%20%281080p%29.mp4?loc=external&log_user=0&signature=618f37636e50b8a215339bed1866944d4b2112408e5ad9790a1eaf17334fcfdd", poster:"https://api.sixtwentysix.co/wp-content/uploads/2026/07/Sharon-still0.jpg" },
+    { slug:'tom-morris', name:"Tom Morris", roles:"DIRECTOR, CREATIVE DIRECTOR, PHOTOGRAPHER, EDITOR", video:"https://player.vimeo.com/progressive_redirect/playback/1128949273/rendition/1080p/file.mp4?loc=external&log_user=0&signature=3c020de8d881a8e9f0a239872434389dc6337ab1e91e9a0f3eee8e4a664d1838", poster:"https://api.sixtwentysix.co/wp-content/uploads/2025/05/TOM-MORRIS_REEL_YS_v2_2025-10-14.00_00_00_00.Still003.png" }
+  ];
+  const SPLIT = 8; /* live DOM: 8 rows in the left column, 7 in the right */
+
+  const reels = document.getElementById('reels');
+  const colA = document.getElementById('colA');
+  const colB = document.getElementById('colB');
+  const capRoles = document.getElementById('capRoles');
+  const page = document.getElementById('page');
+
+  const slots = ROSTER.map(d => {
+    const slot = document.createElement('div');
+    slot.className = 'slot';
+    slot.innerHTML = '<img src="' + d.poster + '" alt="" loading="lazy">' +
+      '<video muted loop playsinline preload="none" src="' + d.video + '"></video>';
+    reels.appendChild(slot);
+    return slot;
+  });
+
+  let leaveTimer = null;
+  const clear = () => {
+    page.classList.remove('hov');
+    slots.forEach(sl => {
+      sl.classList.remove('on');
+      const v = sl.querySelector('video');
+      if (v && !v.paused) v.pause();
+    });
+  };
+
+  ROSTER.forEach((d, i) => {
+    const row = document.createElement('a');
+    row.className = 'cre-row';
+    row.href = 'director.html?who=' + encodeURIComponent(d.slug); /* 9/3: each creative opens THEIR page */
+    row.innerHTML = '<span class="nm">' + d.name.replace('&', '&amp;') + '</span>' +
+      '<span class="ar"><svg width="17" height="14" viewBox="0 0 17 14" xmlns="http://www.w3.org/2000/svg"><path d="M9.16666 12.4136L15.0333 6.91357L9.16666 1.41358" stroke-width="2" stroke-linecap="square"/><path d="M15.0333 6.91357L0 6.91363" stroke-width="2"/></svg></span>';
+    (i < SPLIT ? colA : colB).appendChild(row);
+
+    row.addEventListener('mouseenter', () => {
+      clearTimeout(leaveTimer);
+      page.classList.add('hov');
+      slots.forEach((sl, k) => sl.classList.toggle('on', k === i));
+      const v = slots[i].querySelector('video');
+      if (v) v.play().catch(() => {});
+      capRoles.textContent = d.roles;
+    });
+    row.addEventListener('mouseleave', () => {
+      clearTimeout(leaveTimer);
+      leaveTimer = setTimeout(clear, 90);
+    });
+  });
+})();
+</script>
+<script src="smoothscroll.js?v=20260819095356"></script>
+<script src="menu.js?v=20260824c"></script>
+<script>
+/* Safari back-forward cache restores dead builds from memory - always reload */
+window.addEventListener('pageshow', function (e) { if (e.persisted) location.reload(); });
+</script>
+</body>
+</html>

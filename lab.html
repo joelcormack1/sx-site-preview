@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Cache-Control" content="no-store">
+<title>SIXTWENTYSIX — Entrance Lab</title>
+<!-- ENTRANCE LAB (2026-08-23, per Joel: "test a ton of options").
+     Seven self-contained models of the home entrance on identical content:
+     the real letter morph, the real reel, a dummy featured-work sheet.
+     Number keys 1-7 (or the panel) switch models; switching resets to top.
+     This page has its OWN tiny scroll engine so every model is free to do
+     anything — nothing here touches the real site files. -->
+<style>
+  html, body { margin: 0; background: #fff; overflow: hidden; font-family: 'HelveticaNeueCyr', 'Helvetica Neue', Helvetica, sans-serif; }
+  #stage { position: fixed; left: 50%; top: 0; margin-left: -864px; width: 1728px; height: 100vh; }
+
+  #reel { position: absolute; inset: 0; overflow: hidden; background: #111; }
+  #reel video { width: 100%; height: 100%; object-fit: cover; transform-origin: center; }
+
+  #band { position: absolute; left: 0; top: 0; width: 1728px; height: 185px; background: #fff; }
+  #lm { position: absolute; left: 63px; top: 0; width: 639px; height: 161px; z-index: 3; }
+  .city { position: absolute; left: 745px; font-size: 16px; letter-spacing: 0.48px; color: #000; z-index: 3; }
+  .burger { position: absolute; left: 1648px; width: 33px; height: 2px; background: #000; border-radius: 2px; z-index: 3; }
+  .dark #lm { filter: invert(1); }
+  .dark .city { color: #fff; }
+  .dark .burger { background: #fff; }
+
+  #sheet { position: absolute; left: 0; top: 0; width: 1728px; height: 200vh; background: #fff; z-index: 2; }
+  #sheet .fw { margin: 120px 63px 0; font-weight: 700; font-size: 40px; letter-spacing: -1.6px; }
+  #sheet .row { margin: 40px 63px 0; display: flex; gap: 24px; }
+  #sheet .tile { flex: 1; aspect-ratio: 16/9; background: #d9d9d9; }
+
+  #panel {
+    position: fixed; right: 18px; top: 18px; z-index: 99; width: 300px;
+    background: rgba(0,0,0,0.82); color: #fff; border-radius: 10px;
+    padding: 14px 16px; font-size: 12.5px; line-height: 1.5;
+    backdrop-filter: blur(8px);
+  }
+  #panel h1 { font-size: 13px; margin: 0 0 8px; letter-spacing: 0.4px; }
+  #panel .opt { padding: 5px 8px; border-radius: 6px; cursor: pointer; opacity: 0.65; }
+  #panel .opt.on { background: rgba(255,255,255,0.16); opacity: 1; }
+  #panel .opt b { display: inline-block; width: 16px; }
+  #panel .desc { margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.2); opacity: 0.85; min-height: 54px; }
+  #panel .reset { margin-top: 10px; text-align: center; padding: 6px; border: 1px solid rgba(255,255,255,0.35); border-radius: 6px; cursor: pointer; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="reel"><video src="assets/live/reel.mp4" autoplay muted loop playsinline></video></div>
+  <div id="band"></div>
+  <div id="lm" data-selfdriven="1"></div>
+  <p class="city" id="cityLa">LOS ANGELES, CA</p>
+  <p class="city" id="cityNy">NEW YORK, NY</p>
+  <div class="burger" id="b1"></div><div class="burger" id="b2"></div><div class="burger" id="b3"></div>
+  <div id="sheet">
+    <p class="fw">Featured Work</p>
+    <div class="row"><div class="tile"></div><div class="tile"></div><div class="tile"></div></div>
+    <div class="row"><div class="tile"></div><div class="tile"></div><div class="tile"></div></div>
+  </div>
+</div>
+<div id="panel">
+  <h1>ENTRANCE LAB — keys 1-7</h1>
+  <div id="opts"></div>
+  <div class="desc" id="desc"></div>
+  <div class="reset" id="reset">RESET TO TOP (0)</div>
+</div>
+
+<script src="logomorph.js?v=20260824a"></script>
+<script>
+/* ---------- shared paint: one look, seven drivers ---------- */
+const lm = document.getElementById('lm');
+const render = SXLogo.build(lm);
+const els = {
+  band: document.getElementById('band'),
+  la: document.getElementById('cityLa'), ny: document.getElementById('cityNy'),
+  b: [document.getElementById('b1'), document.getElementById('b2'), document.getElementById('b3')],
+  vid: document.querySelector('#reel video'),
+  sheet: document.getElementById('sheet'),
+};
+const lerp = (a, b, t) => a + (b - a) * t;
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const smooth = t => { t = clamp(t, 0, 1); return t * t * (3 - 2 * t); };
+const VH = () => window.innerHeight;
+
+/* o = { q: 0 big..1 small, fade: 0 white..1 clear, zoom: 0 cropped..1 true,
+         sheet: px the content has risen } */
+function paint(o) {
+  const kc = smooth((o.q - 0.8) / 0.2);
+  render(o.q);
+  els.band.style.height = Math.round(lerp(185, 118, kc)) + 'px';
+  els.band.style.opacity = (1 - o.fade).toFixed(3);
+  els.la.style.top = Math.round(lerp(111, 43, kc)) + 'px';
+  els.ny.style.top = Math.round(lerp(136, 68, kc)) + 'px';
+  els.b[0].style.top = Math.round(lerp(133, 56, kc)) + 'px';
+  els.b[1].style.top = Math.round(lerp(144, 64, kc)) + 'px';
+  els.b[2].style.top = Math.round(lerp(155, 72, kc)) + 'px';
+  els.vid.style.transform = 'scale(' + (1.35 - 0.35 * o.zoom).toFixed(4) + ')';
+  document.body.classList.toggle('dark', o.fade > 0.55);
+  els.sheet.style.transform = 'translateY(' + (VH() + 80 - o.sheet) + 'px)';
+}
+
+/* ---------- the lab's scroll intent ---------- */
+let W = 0;          // damped virtual scroll (px)
+let Wt = 0;         // raw intent
+let lastWheel = 0, wheelDir = 0;
+window.addEventListener('wheel', e => {
+  e.preventDefault();
+  const dy = (e.deltaMode === 1 ? e.deltaY * 40 : e.deltaY) * 0.6;
+  wheelDir = dy < 0 ? -1 : 1;
+  Wt = clamp(Wt + dy, 0, 4200);
+  lastWheel = performance.now();
+  if (V.onWheel) V.onWheel(dy);
+}, { passive: false });
+
+/* ---------- the variants ---------- */
+function clockPlay(state, to, speeds, dt) {
+  // advance state.q toward `to` at banded tempos
+  const d = to - state.q;
+  const sp = state.q < 0.35 ? speeds[0] : (state.q < 0.8 ? speeds[1] : speeds[2]);
+  if (d > 0) state.q = Math.min(to, state.q + sp * dt);
+  else state.q = Math.max(to, state.q - sp * dt);
+}
+const VARIANTS = [
+  {
+    name: 'Two-scroll detents (current site)',
+    desc: 'Scroll 1: shrink plays, park. Scroll 2: page glides itself through dissolve+zoom to the star, park. Scroll 3: content.',
+    init: s => { s.q = 0; s.stage = 0; s.parkAt = 0; s.glide = 0; },
+    tick(s, dt) {
+      const intent = Wt > 8;
+      if (s.stage === 0 && intent) s.stage = 1;
+      if (s.stage === 1) { clockPlay(s, 1, [0.9, 1.15, 0.5], dt); if (s.q >= 1) { s.stage = 2; s.parkAt = performance.now(); Wt = 0; } }
+      if (s.stage === 2 && Wt > 8 && performance.now() - s.parkAt > 200) { s.stage = 3; s.glide = 0; }
+      if (s.stage === 3) { s.glide = Math.min(1, s.glide + dt / 1.1); if (s.glide >= 1) { s.stage = 4; s.parkAt = performance.now(); Wt = 0; } }
+      if (s.stage === 4 && Wt > 8 && performance.now() - s.parkAt > 200) s.stage = 5;
+      const fade = s.stage >= 4 ? 1 : (s.stage === 3 ? smooth(s.glide) : 0);
+      const sheet = s.stage === 5 ? clamp(Wt, 0, 1400) : 0;
+      // reverse: strong up intent rewinds a stage
+      if (wheelDir < 0 && Wt <= 0) { if (s.stage >= 4) { s.stage = 3; s.glide = 1; } if (s.stage === 3) { s.glide = Math.max(0, s.glide - dt / 0.8); if (s.glide <= 0) s.stage = 2; } else if (s.stage === 2) { s.stage = 1; } if (s.stage === 1 && s.q <= 0) s.stage = 0; if (s.stage === 1) clockPlay(s, 0, [0.9, 1.15, 0.55], dt); }
+      return { q: s.q, fade, zoom: fade, sheet };
+    },
+  },
+  {
+    name: 'Pure scrub — everything on the wheel',
+    desc: 'No plays, no holds. Slow runway: shrink over 900px, dissolve+zoom over 700 more, content after. Fully reversible at any pixel.',
+    init: s => {},
+    tick(s, dt) {
+      W += (Wt - W) * (1 - Math.exp(-4.6 * dt));
+      const q = clamp(W / 1300, 0, 1);
+      const fade = clamp((W - 1300) / 1000, 0, 1);
+      return { q, fade, zoom: fade, sheet: clamp(W - 2400, 0, 1400) };
+    },
+  },
+  {
+    name: 'One-shot film',
+    desc: 'First wheel tick fires the WHOLE sequence as one 2.4s film — shrink, dissolve, zoom — page locked while it plays. Then scroll is free for content.',
+    init: s => { s.T = 0; s.armed = false; },
+    tick(s, dt) {
+      if (!s.armed && Wt > 8) { s.armed = true; Wt = 0; }
+      if (s.armed && s.T < 1) { s.T = Math.min(1, s.T + dt / 2.4); Wt = 0; }
+      if (wheelDir < 0 && s.T >= 1 && Wt <= 0) { s.T = Math.max(0, s.T - dt / 1.6); if (s.T <= 0) s.armed = false; }
+      const q = smooth(clamp(s.T / 0.55, 0, 1));
+      const fade = smooth(clamp((s.T - 0.55) / 0.45, 0, 1));
+      return { q, fade, zoom: fade, sheet: s.T >= 1 ? clamp(Wt, 0, 1400) : 0 };
+    },
+  },
+  {
+    name: 'Scrub + magnetic snap',
+    desc: 'Scrubbed like #2, but let go and it eases to the nearest resting point: big / small+white / star. Control plus always-composed frames.',
+    init: s => {},
+    tick(s, dt) {
+      const idle = performance.now() - lastWheel > 160;
+      if (idle) {
+        const stops = [0, 480, 860];
+        let best = stops[0];
+        for (const p of stops) if (Math.abs(Wt - p) < Math.abs(Wt - best)) best = p;
+        if (Wt <= 880) Wt += (best - Wt) * (1 - Math.exp(-6 * dt));
+      }
+      W += (Wt - W) * (1 - Math.exp(-4.6 * dt));
+      const q = clamp(W / 480, 0, 1);
+      const fade = clamp((W - 480) / 380, 0, 1);
+      return { q, fade, zoom: fade, sheet: clamp(W - 900, 0, 1400) };
+    },
+  },
+  {
+    name: 'Play the shrink, scrub the reveal',
+    desc: 'First scroll plays the shrink (clocked, snappy). After that the dissolve+zoom ride your fingers with no holds; content arrives whenever you get there.',
+    init: s => { s.q = 0; s.armed = false; },
+    tick(s, dt) {
+      if (!s.armed && Wt > 8) { s.armed = true; }
+      if (s.armed) clockPlay(s, 1, [0.9, 1.15, 0.5], dt);
+      if (wheelDir < 0 && Wt < 60) { s.armed = false; clockPlay(s, 0, [0.9, 1.15, 0.55], dt); }
+      const fade = s.q >= 1 ? clamp((Wt - 300) / 380, 0, 1) : 0;
+      return { q: s.q, fade, zoom: fade, sheet: clamp(Wt - 800, 0, 1400) };
+    },
+  },
+  {
+    name: 'Zoom leads',
+    desc: 'Different order: the reel zooms out FIRST (scrubbed) while the big header holds; then shrink + dissolve happen together as one late move.',
+    init: s => {},
+    tick(s, dt) {
+      W += (Wt - W) * (1 - Math.exp(-4.6 * dt));
+      const zoom = clamp(W / 420, 0, 1);
+      const late = clamp((W - 420) / 420, 0, 1);
+      return { q: late, fade: smooth(late), zoom, sheet: clamp(W - 900, 0, 1400) };
+    },
+  },
+  {
+    name: 'Luxe limiter',
+    desc: 'Pure scrub, but the page cannot exceed a slow cruise no matter how hard you flick — every arrival is automatically cinematic.',
+    init: s => { s.Wl = 0; },
+    tick(s, dt) {
+      s.Wl = clamp(s.Wl + clamp(Wt - s.Wl, -900 * dt, 900 * dt), 0, 2600);
+      W += (s.Wl - W) * (1 - Math.exp(-4.6 * dt));
+      const q = clamp(W / 480, 0, 1);
+      const fade = clamp((W - 480) / 380, 0, 1);
+      return { q, fade, zoom: fade, sheet: clamp(W - 900, 0, 1400) };
+    },
+  },
+];
+
+/* ---------- runner ---------- */
+let V = null, vs = {}, vi = 0;
+function setVariant(i) {
+  vi = i;
+  V = VARIANTS[i];
+  vs = {};
+  V.init(vs);
+  W = 0; Wt = 0; wheelDir = 0;
+  document.querySelectorAll('#panel .opt').forEach((el, k) => el.classList.toggle('on', k === i));
+  document.getElementById('desc').textContent = V.desc;
+}
+const opts = document.getElementById('opts');
+VARIANTS.forEach((v, i) => {
+  const d = document.createElement('div');
+  d.className = 'opt';
+  d.innerHTML = '<b>' + (i + 1) + '</b>' + v.name;
+  d.onclick = () => setVariant(i);
+  opts.appendChild(d);
+});
+document.getElementById('reset').onclick = () => setVariant(vi);
+window.addEventListener('keydown', e => {
+  const n = parseInt(e.key, 10);
+  if (n >= 1 && n <= VARIANTS.length) setVariant(n - 1);
+  if (e.key === '0') setVariant(vi);
+});
+setVariant(0);
+let last = performance.now();
+(function loop(now) {
+  const dt = Math.min(0.05, (now - last) / 1000) || 1 / 60;
+  last = now;
+  paint(V.tick(vs, dt));
+  requestAnimationFrame(loop);
+})(performance.now());
+</script>
+</body>
+</html>

@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1728">
+<title>SIXTWENTYSIX</title>
+<!--
+  SIXTWENTYSIX interior-page template.
+  Conventions (established on index.html, keep them):
+  - Fixed 1728px canvas, absolute positioning at exact Figma coordinates.
+  - ENTIRE site is Helvetica Neue (override any HelveticaNeueCyr / Azeret Mono in Figma).
+  - Compact sticky header (SX + cities + MENU). No clocks. Interior pages do NOT
+    use the big SIX26 morph header (homepage only).
+  - Black footer component at the very end of the page; page height ends exactly
+    at the footer bottom (content_end + 349).
+  - .fd class on major blocks = fade-in on scroll; stagger siblings with
+    style="--fd:0.15s" etc.
+  - Slow smooth scrolling included below.
+  - PAGE CONTENT goes between the markers. Set .page height inline.
+  - For dark pages (black bg per Figma): set .page background #000 and use the
+    white footer variant (bg #fff, black text, black wordmark via filter).
+-->
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #fff; overscroll-behavior: none; }
+  body {
+    overflow-x: auto;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  }
+  p { margin: 0; }
+  a { color: inherit; text-decoration: none; }
+  img { display: block; }
+
+  .navshadow { text-shadow: 0px 0px 69.529px rgba(0,0,0,0.25); }
+
+  .page {
+    position: relative;
+    width: 1728px;
+    /* height set inline per page: content end + 349 footer */
+    margin: 0 auto;
+    background: #fff;
+  }
+
+  /* ---------- Scroll fade-in ---------- */
+  .fd { opacity: 0; transform: translateY(28px); }
+  .fd.seen {
+    opacity: 1; transform: none;
+    transition: opacity 0.9s cubic-bezier(0.16,1,0.3,1), transform 0.9s cubic-bezier(0.16,1,0.3,1);
+    transition-delay: var(--fd, 0s);
+  }
+
+  /* ---------- Header (compact, sticky) ---------- */
+  .hdr {
+    position: sticky;
+    top: 0;
+    width: 1728px;
+    height: 158px;
+    background: #fff;
+    z-index: 50;
+  }
+  .hdr-logo { position: absolute; left: 63px; top: 83px; width: 146px; height: 50px; }
+  .hdr-logo .v1 { position: absolute; top: 0.11%; right: 55.69%; bottom: 0; left: 0; }
+  .hdr-logo .v2 { position: absolute; top: 1.81%; right: 8.88%; bottom: 1.81%; left: 42.46%; }
+  .hdr-logo .v3 { position: absolute; top: 0; right: 0; bottom: 82.78%; left: 91.12%; }
+  .hdr-logo img { position: absolute; inset: 0; width: 100%; height: 100%; max-width: none; }
+  .hdr-menu {
+    position: absolute; left: 1600px; top: 83px;
+    font-weight: 500; font-size: 18.53px; line-height: 10.176px;
+    letter-spacing: -0.5559px; color: #000; white-space: nowrap;
+    cursor: pointer;
+  }
+  .nav-sm {
+    position: absolute;
+    font-size: 16px; line-height: 25px; letter-spacing: 0.48px;
+    color: #000; white-space: nowrap; font-weight: 400;
+  }
+  /* Dark-page header variant: add class "dark" to .hdr */
+  .hdr.dark { background: #000; }
+  .hdr.dark .hdr-menu, .hdr.dark .nav-sm { color: #fff; }
+  .hdr.dark .hdr-logo img { filter: invert(1); }
+
+  /* ---------- Footer (black, SIX26) ---------- */
+  .footer {
+    position: absolute; left: 0; width: 1728px; height: 349px;
+    background: #000; overflow: hidden;
+    /* set inline: top = page height - 349 */
+  }
+  .foot-cta {
+    position: absolute; left: 40px; top: 60px; width: 470px; height: 74px;
+    font-weight: 700; font-size: 24px; line-height: 24px;
+    color: #646464; text-transform: uppercase; word-break: break-word;
+  }
+  .foot-cta a { text-decoration: underline; text-underline-position: from-font; cursor: pointer; }
+  .foot-mark { position: absolute; top: 54.44%; right: 2.23%; bottom: -35.46%; left: 2.29%; }
+  .foot-mark img { position: absolute; inset: 0; width: 100%; height: 100%; max-width: none; }
+  .foot-col {
+    position: absolute;
+    font-weight: 400; font-size: 15px; line-height: normal;
+    color: #646464; text-transform: uppercase; word-break: break-word;
+  }
+  .foot-col .b, .foot-b { font-weight: 700; }
+  /* White footer variant for dark pages: add class "light" to .footer */
+  .footer.light { background: #fff; }
+  .footer.light .foot-cta, .footer.light .foot-col { color: #000; }
+  .footer.light .foot-mark img { filter: brightness(0); }
+</style>
+<!-- PAGE STYLES START -->
+<!-- PAGE STYLES END -->
+</head>
+<body>
+<div class="page" id="page" style="height: 2000px;"><!-- set real height -->
+
+  <!-- ============ HEADER ============ -->
+  <div class="hdr">
+    <a href="index.html">
+      <div class="hdr-logo">
+        <div class="v1"><img src="assets/logo-sx-1.svg" alt=""></div>
+        <div class="v2"><img src="assets/logo-sx-2.svg" alt=""></div>
+        <div class="v3"><img src="assets/logo-sx-3.svg" alt="SX"></div>
+      </div>
+    </a>
+    <p class="nav-sm navshadow" style="left:432px; top:83px;">LOS ANGELES, CA</p>
+    <p class="nav-sm navshadow" style="left:432px; top:108px;">NEW YORK, NY</p>
+    <p class="hdr-menu">MENU</p>
+  </div>
+
+  <!-- PAGE CONTENT START -->
+  <!-- PAGE CONTENT END -->
+
+  <!-- ============ FOOTER ============ -->
+  <div class="footer" style="top: 1651px;"><!-- set top = page height - 349 -->
+    <div class="foot-cta">
+      <p>Let&rsquo;s get started.&nbsp;</p>
+      <p>Connect with us at <a href="mailto:hello@sixtwentysix.co">hello@sixtwentysix.co</a></p>
+    </div>
+    <div class="foot-mark"><img src="assets/six26-wordmark.svg" alt="SIX26"></div>
+    <p class="foot-col foot-b" style="left:884px; top:60px;">join the team</p>
+    <p class="foot-col" style="left:884px; top:96px; width:225px;">careers@sixtwentysix.co</p>
+    <div class="foot-col" style="left:1185px; top:60px; width:166px;">
+      <p class="b">capabilities Deck</p>
+      <p>&#8203;</p>
+      <p>request our deck</p>
+    </div>
+    <div class="foot-col" style="left:1427px; top:60px; width:130px;">
+      <p class="b">newsletter</p>
+      <p>&#8203;</p>
+      <p>Subscribe</p>
+    </div>
+    <div class="foot-col" style="left:1601px; top:60px; width:89px;">
+      <p class="b">follow us</p>
+      <p>&#8203;</p>
+      <p>ig / li</p>
+    </div>
+  </div>
+
+</div><!-- /.page -->
+
+<script>
+/* Always open at the top (scroll restoration breaks fade-ins) */
+if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+window.scrollTo(0, 0);
+
+/* ================= Slow, fancy smooth scrolling ================= */
+(() => {
+  let target = window.scrollY, current = window.scrollY, rafId = null;
+  const maxScroll = () => document.documentElement.scrollHeight - window.innerHeight;
+  function loop() {
+    target = Math.min(target, maxScroll());
+    current += (target - current) * 0.075;
+    if (Math.abs(target - current) < 0.5) {
+      current = target;
+      window.scrollTo(0, current);
+      rafId = null;
+      return;
+    }
+    window.scrollTo(0, current);
+    rafId = requestAnimationFrame(loop);
+  }
+  window.addEventListener('wheel', e => {
+    if (e.ctrlKey) return;
+    e.preventDefault();
+    target = Math.max(0, Math.min(maxScroll(), target + e.deltaY));
+    if (!rafId) rafId = requestAnimationFrame(loop);
+  }, { passive: false });
+  window.addEventListener('scroll', () => {
+    if (!rafId) { target = window.scrollY; current = window.scrollY; }
+  });
+})();
+
+/* ================= Scroll fade-ins (replay every time) =================
+   Elements fade in when they enter the viewport and re-arm once they fully
+   leave, so every scroll-past fades again. Hysteresis between 0% and 15%
+   visibility prevents edge flicker. */
+const io = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.intersectionRatio >= 0.15) e.target.classList.add('seen');
+    else if (!e.isIntersecting) e.target.classList.remove('seen');
+  });
+}, { threshold: [0, 0.15] });
+document.querySelectorAll('.fd').forEach(el => io.observe(el));
+
+/* PAGE SCRIPTS START */
+/* PAGE SCRIPTS END */
+</script>
+<script src="menu.js"></script>
+</body>
+</html>

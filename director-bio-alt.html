@@ -1,0 +1,51 @@
+<!--
+  DIRECTOR BIO — ALT VERSION (bio below the work)
+  ================================================
+  Per the 2026-08-07 call: the site SHIPS the overlaid hero bio (hover the role
+  words on the reel), but this alt stays ready to swap in during dev
+  prototyping. Jake's note behind it: "about" should never be the first thing
+  you hit on scroll — so if the overlay tests badly, this block goes UNDER the
+  category grid instead (it was frame 89:1857's top half).
+
+  To swap in: paste the block into director.html after #grid, give it a .sec
+  wrapper with a top below the grid's computed height, restore the styles
+  below, and push the footer down by ~710px.
+-->
+
+<style>
+  #wbio { position: absolute; left: 0; top: 430px; width: 1728px; height: 280px; }
+  .w-name {
+    position: absolute; left: 53px; top: 7px; width: 525px; height: 66px;
+    font-weight: 700; font-size: 25px; line-height: 74px; letter-spacing: -1px;
+    text-transform: uppercase; color: #000; white-space: nowrap;
+  }
+  .w-nav {
+    position: absolute; top: 33px; height: 14px;
+    font-weight: 700; font-size: 22px; line-height: 12px; letter-spacing: -0.88px;
+    color: #000; white-space: nowrap;
+  }
+  .w-awards { position: absolute; left: 861px; top: 88px; width: 331px; color: #000; }
+  .w-awards p { font-size: 14px; line-height: 26px; }
+  .w-awards .b { font-weight: 700; }
+  .w-awards .r { font-weight: 400; letter-spacing: 0.28px; }
+  .w-about {
+    position: absolute; left: 1256px; top: 88px; width: 405px;
+    font-weight: 400; font-size: 16px; line-height: 20px; letter-spacing: -0.48px; color: #000;
+  }
+</style>
+
+<div id="wbio" class="fd">
+  <p class="w-name">Evan Bourque</p>
+  <p class="w-nav" style="left:522px; width:380px;">DIRECTOR / EDITOR</p>
+  <p class="w-nav" style="left:860px; width:279px;">AWARDS &amp; ACCOLADES</p>
+  <p class="w-nav" style="left:1258px; width:147px;">ABOUT</p>
+  <div class="w-awards">
+    <p class="b">SHOTS AWARDS 2025</p>
+    <p class="r">NEW DIRECTOR OF THE YEAR SHORTLIST</p>
+    <p class="r">&#8203;</p>
+    <p class="b">TELLY AWARDS 2025</p>
+    <p class="r">EAT PECANS &ndash; SURPRISINGLY SNACKABLE</p>
+    <p class="r">SILVER WINNER GENERAL &ndash; FOOD &amp; BEVERAGE</p>
+  </div>
+  <p class="w-about">&ldquo;He makes videos for commercials and stuff.&rdquo; &ndash; Evan&rsquo;s mom. She&rsquo;s not wrong. Evan Bourque is a director who fuses his preternatural skills in performance, dialogue and quirky characters to deliver masterful and unexpected comedic spots. With an emphasis on nuance, Evan mines the humor that lies within offbeat moments of humanity. Hailing from Canada, he draws on his background in cinematography to infuse his films with cinematic visual flair.</p>
+</div>

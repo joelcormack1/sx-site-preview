@@ -1,0 +1,1214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1728">
+<script src="footerlaw.js?v=20260825a"></script>
+<script src="gridhover.js?v=20260821a"></script>
+<title>SIXTWENTYSIX</title>
+<script>
+/* SX-wipe arrival guard (Joel 8/22): when landing from an interior SX
+   click, the screen must be white from the VERY FIRST PAINT — the arrival
+   script at the end of the body ran too late and the page flashed through.
+   This synchronous head check paints the cover before anything renders;
+   the arrival script swaps it for the real retracting wash. */
+try {
+  if (sessionStorage.getItem('sx_wipe') || sessionStorage.getItem('sx_white'))
+    document.documentElement.classList.add('sx-arriving');
+} catch (e) {}
+</script>
+<style>
+html.sx-arriving::before {
+  content: ''; position: fixed; left: 50%; margin-left: -864px;
+  width: 1728px; top: 0; height: 100vh; background: #fff; z-index: 60;
+}
+</style>
+<script src="logomorph.js?v=20260824a"></script>
+<style>
+  /* Full Site re-sync (2026-08-18, Figma page 89:1055): type follows the frames
+     exactly — Helvetica Neue for body/UI, HelveticaNeueCyr Bold for section
+     headings, Azeret Mono for the footer columns. (Joel's earlier all-Helvetica
+     rule is superseded by his Full Site pass.) */
+  @font-face {
+    font-family: 'HelveticaNeueCyr';
+    src: url('fonts/HelveticaNeueCyr-Roman.ttf') format('truetype');
+    font-weight: 400;
+  }
+  @font-face {
+    font-family: 'HelveticaNeueCyr';
+    src: url('fonts/HelveticaNeueCyr-Medium.ttf') format('truetype');
+    font-weight: 500;
+  }
+  @font-face {
+    font-family: 'HelveticaNeueCyr';
+    src: url('fonts/HelveticaNeueCyr-Bold.ttf') format('truetype');
+    font-weight: 700;
+  }
+  @font-face {
+    font-family: 'Azeret Mono';
+    src: url('fonts/AzeretMono-VF.woff2') format('woff2-variations');
+    font-weight: 100 900;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #fff; overscroll-behavior: none; }
+  body {
+    overflow-x: clip; /* auto broke position:sticky in Safari */
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    transition: background 0.6s ease;
+  }
+  p { margin: 0; }
+  a { color: inherit; }
+  img { display: block; }
+
+  .navshadow { text-shadow: 0px 0px 69.529px rgba(0,0,0,0.25); }
+
+  /* ---------- Page canvas ---------- */
+  .page {
+    position: relative;
+    width: 1728px;
+    height: 3873px;
+    margin: 0 auto;
+    background: #fff;
+    transition: background 0.6s ease;
+  }
+
+  /* ---------- Scroll fade-in ---------- */
+  .fd { opacity: 0; transform: translateY(28px); }
+  .fd.seen {
+    opacity: 1; transform: none;
+    transition: opacity 0.9s cubic-bezier(0.16,1,0.3,1), transform 0.9s cubic-bezier(0.16,1,0.3,1);
+    transition-delay: var(--fd, 0s);
+  }
+
+  /* ---------- Header (sticky; morphs big SIX26 → SX on scroll) ---------- */
+  .hdr {
+    /* FIXED, not sticky (Joel 8/21 zero-vibration): sticky repositions
+       asynchronously under scripted per-frame scrolling (the smooth
+       scroll), which reads as a 1px bob. Fixed is compositor-pinned. */
+    position: fixed;
+    top: 0;
+    left: 50%;
+    margin-left: -864px;
+    width: 1728px;
+    height: 118px;
+    z-index: 50;
+  }
+  .hdr-bg {
+    position: absolute; left: 0; top: 0; width: 1728px; height: 210px;
+    background: #fff; transition: background 0.6s ease; /* opacity is scroll-scrubbed inline (Joel 8/23) */
+  }
+  /* THE REEL MOMENT (Joel 8/21): while the shrunk header floats over the
+     full-screen sizzle, its white goes to ZERO — just the mark and white
+     chrome over the reel, like the director page. The white returns the
+     instant the featured-work sheet slides up underneath it. */
+  .hdr.dark .nav-sm { color: #fff; }
+  .hdr.dark .hdr-menu .l { background: #fff; }
+  .hdr.dark .hdr-tagline { color: #fff; }
+  /* mid-WIPE state flips snap instantly — the sheet's line already wiped
+     the color in, so no soft transition may run on top of it */
+  .hdr.snap .hdr-bg, .hdr.snap .nav-sm, .hdr.snap .hdr-menu .l,
+  .hdr.snap .hdr-tagline, .hdr.snap img { transition: none !important; }
+  .hdr-logo { position: absolute; left: 63px; top: 52px; width: 318px; height: 109px; }
+  .hdr-logo .v1 { position: absolute; top: 0.11%; right: 55.69%; bottom: 0; left: 0; }
+  .hdr-logo .v2 { position: absolute; top: 1.81%; right: 8.88%; bottom: 1.81%; left: 42.46%; }
+  .hdr-logo .v3 { position: absolute; top: 0; right: 0; bottom: 82.78%; left: 91.12%; }
+  .hdr-logo img, .hdr-mark6 img { position: absolute; inset: 0; width: 100%; height: 100%; max-width: none; transition: filter 0.6s ease; }
+
+  .hdr-mark6 { position: absolute; left: 63px; top: 52px; width: 639px; height: 109px; }
+  .hdr-mark6 .w1 { position: absolute; top: 0.1%; right: 77.7%; bottom: 0.16%; left: 0; }
+  .hdr-mark6 .w2 { position: absolute; top: 4.19%; right: 1.02%; bottom: 87.04%; left: 96.67%; }
+  .hdr-mark6 .w3 { position: absolute; top: 0.03%; right: 0; bottom: 82.78%; left: 95.53%; }
+  .hdr-mark6 .w4 { position: absolute; top: 0; right: 26.21%; bottom: 1.95%; left: 23.52%; }
+  .hdr-mark6 .w5 { position: absolute; top: 0.01%; right: 3.34%; bottom: 0; left: 74.48%; }
+
+  .hdr-tagline {
+    /* 8/24: top 91 — the two-line block ends flush with the big word's
+       base (y141), the datum everything on the line hangs from */
+    position: absolute; left: 1140px; top: 91px; width: 374px;
+    font-weight: 500; font-size: 22px; line-height: 25px;
+    letter-spacing: -0.66px; color: #000;
+    transition: color 0.9s ease;
+  }
+
+  /* Hamburger (Figma Group 901 expanded / header component collapsed):
+     three 33x2 black lines. Replaces the MENU word — the word exists in the
+     frame but is painted under the header white, i.e. hidden by design. */
+  .hdr-menu {
+    position: absolute; left: 1636px; top: 0; width: 57px; height: 210px;
+    cursor: pointer;
+  }
+  .hdr-menu .l {
+    position: absolute; left: 12px; width: 33px; height: 2px;
+    background: #000; border-radius: 2px; transition: background 0.9s ease;
+  }
+  .nav-sm {
+    position: absolute;
+    font-size: 16px; line-height: 25px; letter-spacing: 0.48px;
+    color: #000; white-space: nowrap; transition: color 0.9s ease;
+  }
+  .nav-city { font-weight: 400; }
+  .nav-time { font-weight: 300; }
+
+  /* ---------- Hero ----------
+     Per the header motion diagram: the reel stays in place and the
+     white page scrolls overtop, so the hero is fixed behind a white sheet. */
+  .hero {
+    position: fixed;
+    left: 50%;
+    margin-left: -864px;
+    top: 118px;
+    width: 1730px;
+    height: 1011px;
+    background: #d9d9d9;
+    overflow: hidden;
+    overflow: hidden;
+    z-index: 0;
+  }
+  /* Joel 8/23 (STATE B, see Header Animation States.md): the reel sits
+     FULL WIDTH in its compressed fill-frame but ZOOMED IN; when the header
+     shrinks and its white dissolves, the video ZOOMS OUT to true scale as
+     the frame goes full screen. */
+  /* 9/4 (Joel: "thin white line on the bottom of the footer"): the sheet's
+     entrance drift translates it up to 160px DOWN, and transformed overflow
+     extends the scrollable document, so white showed below the black footer
+     until the drift resolved. Clip the page (fixed elements escape clip;
+     this page has no position:sticky). */
+  .page { overflow: clip; }
+  .hero img, .hero video {
+    position: absolute; left: -2px; top: -2px; width: calc(100% + 4px); height: calc(100% + 4px); object-fit: cover; /* 9/4: 2px overscan — fractional-pixel scaling let a white sliver peek at full-bleed edges (Joel) */
+    transform: scale(1.35); /* 35% crop at rest; the scroll scrub zooms it out (inline) */
+    transform-origin: center center;
+  }
+
+  /* Phase offset: the first 260px of scroll shrink the header while the reel
+     and page hold still; content is shifted down by that amount so it starts
+     revealing only after the header has fully collapsed. */
+  .content-shift {
+    position: absolute; left: 0; top: 260px; width: 100%; height: 100%;
+    pointer-events: none;
+  }
+  .content-shift > * { pointer-events: auto; }
+
+  /* White sheet that scrolls over the pinned reel */
+  .sheet {
+    position: absolute; left: 0; top: 1129px; right: 0; bottom: 0;
+    background: #fff; z-index: 1; transition: background 0.6s ease;
+  }
+
+  /* All page content sits above the sheet */
+  .statement,
+  .work-thumb, .wtitle, .wdir, .below { z-index: 2; }
+
+  /* ---------- Statement (Figma 278:3354: 40px, bold lead + medium tail) ---------- */
+  .statement {
+    position: absolute; left: 75px; top: 1389px; width: 829px;
+    font-weight: 500; font-size: 40px; line-height: 50px;
+    letter-spacing: -1.2px; color: #000;
+    word-break: break-word; transition: color 0.5s ease;
+  }
+  .statement b { font-weight: 700; }
+
+  /* Black ink artwork (lines, arrows, press logos) */
+  .ink { transition: filter 0.6s ease; }
+
+  /* ---------- Grid toggle cluster ----------
+     Restored 2026-08-10: the deck's standardized cluster (4 / 3 / 2 / 1
+     columns) lives on every grid page, right-aligned, with no text label
+     (Joel killed the GRID/INDEX words in the 8/10 review). */
+  .tbtn { position: absolute; cursor: pointer; z-index: 2; }
+  .gt {
+    position: absolute; background: #686767; border-radius: 2px;
+    opacity: 0.13; transition: background 0.6s ease, opacity 0.3s ease;
+  }
+  .tbtn:hover .gt { opacity: 0.35; }
+  .tbtn.active .gt, .tbtn.active:hover .gt { opacity: 0.61; }
+
+  /* ---------- Work grid ---------- */
+  /* Hover motion: one clean deceleration, no bounce (Joel 8/10 — "a nice
+     expansion"). The old curve braked so hard it read as a pop. */
+  .work-thumb {
+    position: absolute; border-radius: 0; overflow: hidden; /* 9/4 Joel: no rounding on media, ever */ cursor: pointer;
+    transform-origin: top left;
+    transition: left 0.7s ease-in-out /* Figma component 508:740: 700ms Ease-in-and-out on hover */, top 0.7s ease-in-out /* Figma component 508:740: 700ms Ease-in-and-out on hover */,
+                width 0.7s ease-in-out /* Figma component 508:740: 700ms Ease-in-and-out on hover */, height 0.7s ease-in-out /* Figma component 508:740: 700ms Ease-in-and-out on hover */,
+                transform 0.7s ease-in-out /* Figma component 508:740: 700ms Ease-in-and-out on hover */,
+                opacity 0.5s ease;
+  }
+  .work-thumb { display: block; } /* tiles are <a> now (8/24) */
+  .work-thumb img {
+    width: 100%; height: 100%; object-fit: cover; pointer-events: none;
+    transition: transform 0.7s ease-in-out;
+  }
+  /* 8/24: hovering a tile plays THAT project's loop over its still */
+  .work-thumb video {
+    position: absolute; inset: 0; width: 100%; height: 100%;
+    object-fit: cover; pointer-events: none;
+    opacity: 0; transition: opacity 0.35s ease;
+  }
+  .work-thumb:hover video { opacity: 1; }
+
+  .wtitle {
+    position: absolute;
+    font-weight: 700; font-size: 14.422px; line-height: 19.263px;
+    letter-spacing: -0.1442px; text-transform: uppercase; color: #000;
+    white-space: nowrap;
+    transition: opacity 0.3s ease, left 0.7s ease-in-out /* Figma component 508:740: 700ms Ease-in-and-out on hover */, top 0.7s ease-in-out /* Figma component 508:740: 700ms Ease-in-and-out on hover */;
+  }
+  .wdir {
+    position: absolute;
+    font-weight: 400; font-size: 9.42px; line-height: 19.263px;
+    letter-spacing: 0.5652px; text-transform: uppercase; color: rgba(0,0,0,0.3);
+    white-space: nowrap;
+    transition: opacity 0.3s ease, left 0.7s ease-in-out /* Figma component 508:740: 700ms Ease-in-and-out on hover */, top 0.7s ease-in-out /* Figma component 508:740: 700ms Ease-in-and-out on hover */;
+  }
+
+  /* ---------- White ghost hover (Full Site frames 174-177) ----------
+     The black takeover is retired: the page stays white, every other tile
+     ghosts to 15% with a 14px radius and a slight inset zoom, and the hovered
+     tile enlarges in place — no shadow (Sophee 8/12). */
+  body.ghost .work-thumb:not(.is-hover) { opacity: 0.15 !important; }
+  body.ghost .work-thumb:not(.is-hover) img { transform: scale(1.09); }
+  body.ghost .work-thumb.is-hover { z-index: 20; }
+  body.ghost .wtitle:not(.is-hover), body.ghost .wdir:not(.is-hover) { opacity: 0.17 !important; }
+  .wtitle.is-hover, .wdir.is-hover { z-index: 21; opacity: 1 !important; }
+
+  /* ---------- News and Features ----------
+     Deck-exact (89:1055 "add press"): 70px heading, three columns per page,
+     right chevron pages to the next set of three. Rows paint from PRESS[] so
+     the next real hit is a data edit. Only real press ships — no placeholder
+     outlets in a partner-facing build. */
+  .news-h {
+    position: absolute; left: 75px; top: 2699.6px; width: 1000px;
+    font-family: 'HelveticaNeueCyr', 'Helvetica Neue', Helvetica, sans-serif;
+    font-weight: 700; font-size: 40px; line-height: 48px;
+    letter-spacing: -1.6px; color: #000; text-transform: capitalize;
+    transition: color 0.5s ease;
+  }
+  .press {
+    position: absolute; width: 375px;
+    transition: opacity 0.35s ease;
+  }
+  .press.fd.seen { transition: opacity 0.35s ease, transform 0.9s cubic-bezier(0.16,1,0.3,1); } /* survive .fd.seen (hunt 8/21) */
+  .press-logo {
+    position: absolute; left: 0; top: 0;
+    transition: transform 0.5s cubic-bezier(0.32, 0.72, 0, 1);
+  }
+  .press:hover .press-logo { transform: translateY(var(--logo-up, 0px)); }
+  .press-quote {
+    font-weight: 400; font-size: 16px; line-height: 21.6px;
+    letter-spacing: -0.32px; color: #000; word-break: break-word;
+    transition: color 0.5s ease;
+  }
+  /* NF inline wipe (486:1990): hovering the card sends the logo UP and the
+     article image wipes into the freed space above the quote. */
+  .press-wipe {
+    position: absolute; left: 0; width: 100%; overflow: hidden;
+    opacity: 0;
+    transition: opacity 0.6s ease; /* quick, clean release on leave */
+  }
+  .press-wipe img { width: 100%; height: 100%; object-fit: cover; }
+  /* the article image BURNS IN slowly (~3s) as the logo lifts (Joel 8/20) */
+  .press:hover .press-wipe { opacity: 1; transition: opacity 1s ease 0.15s; } /* Joel 8/20: 1s burn-in */
+  .press-quote, .press-read { position: absolute; left: 0; }
+  /* Hover law (Joel 8/25: border removed — he didn't like the box):
+     the hovered card stays full ink, the others step back. */
+  #pressgrid:hover .press:not(:hover) { opacity: 0.3; }
+  .press { transition: opacity 0.5s ease; cursor: pointer; }
+  .press-read {
+    font-weight: 500; font-size: 14px; line-height: 32.727px;
+    letter-spacing: -0.42px; color: #000; height: 33px;
+    cursor: pointer; transition: color 0.5s ease, opacity 0.3s ease;
+  }
+  .press-read:hover { opacity: 0.55; }
+  /* THE PRESS GHOST LAW (Joel 8/24): hovering one article ghosts the rest,
+     the same 15% read as the work grids. */
+  #pressgrid:has(.press:hover) .press:not(:hover) { opacity: 0.15; }
+  .press-arrow {
+    position: absolute; left: 1636.88px; top: 3062.6px; width: 12.115px; height: 23.517px;
+    cursor: pointer; transition: opacity 0.3s ease, transform 0.3s ease;
+  }
+  .press-arrow:hover { opacity: 0.6; transform: translateX(3px); }
+  .press-arrow .in { position: absolute; top: -8.5%; right: -23.7%; bottom: -8.5%; left: -16.51%; }
+  .press-arrow img { width: 100%; height: 100%; max-width: none; }
+  .press-arrow.prev:hover { transform: translateX(-3px); }
+  .press-arrow.prev img { transform: scaleX(-1); }
+
+  .rule-full { position: absolute; left: 75px; top: 3265.6px; width: 1574px; height: 0; }
+  .rule-full .in { position: absolute; top: -0.5px; bottom: -0.5px; left: 0; right: 0; }
+  .rule-short { position: absolute; left: 75px; top: 3265.6px; width: 353px; height: 0; }
+  .rule-short .in { position: absolute; top: -2px; bottom: -2px; left: 0; right: 0; }
+  .rule-full img, .rule-short img { width: 100%; height: 100%; max-width: none; }
+
+  /* ---------- Footer ---------- */
+  .footer {
+    position: absolute; left: 0; top: 3524px; width: 1728px; height: 349px;
+    background: #000; overflow: hidden; transition: background 0.6s ease;
+  }
+  .foot-cta {
+    position: absolute; left: 40px; top: 60px; width: 470px; height: 74px;
+    font-weight: 700; font-size: 24px; line-height: 24px;
+    color: #fff; text-transform: uppercase; word-break: break-word;
+    transition: color 0.5s ease;
+  }
+  .foot-cta a { text-decoration: underline; text-underline-position: from-font; cursor: pointer; }
+  .foot-mark { position: absolute; top: 54.44%; right: 2.23%; bottom: -35.46%; left: 2.29%; }
+  .foot-mark img { position: absolute; inset: 0; width: 100%; height: 100%; max-width: none; transition: filter 0.6s ease; }
+  .foot-col {
+    position: absolute;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; /* 9/4 Joel: footers all in Helvetica (was Azeret Mono) */
+    font-weight: 400; font-size: 15px; line-height: 17.5px;
+    color: #fff; text-transform: uppercase;
+    word-break: break-word; transition: color 0.5s ease;
+  }
+  .foot-col .b, .foot-b { font-weight: 700; }
+
+  /* Everything below the work grid shifts when the grid relayouts.
+     The wrapper spans the whole page, so it must not eat mouse events —
+     only its actual contents are interactive. */
+  .below {
+    position: absolute; left: 0; top: 0; width: 100%; height: 100%;
+    transition: transform 0.45s cubic-bezier(0.25,0.1,0.25,1);
+    pointer-events: none;
+  }
+  .below > * { pointer-events: auto; }
+
+  /* THE 8/19 SNAP BUG: .fd.seen (scroll fade-in) declares its own transition,
+     which out-specifies the tile rules and erased the hover glide entirely —
+     every enlarge snapped. These merge both systems at higher specificity. */
+  .work-thumb.fd.seen {
+    transition: left 0.7s ease-in-out, top 0.7s ease-in-out,
+                width 0.7s ease-in-out, height 0.7s ease-in-out,
+                opacity 0.5s ease, transform 0.9s cubic-bezier(0.16,1,0.3,1);
+  }
+  .wtitle.fd.seen, .wdir.fd.seen {
+    transition: left 0.7s ease-in-out, top 0.7s ease-in-out,
+                opacity 0.4s ease, transform 0.9s cubic-bezier(0.16,1,0.3,1);
+  }
+</style>
+</head>
+<body>
+<script>
+/* Fit-to-window: this is a fixed 1728px canvas. If the window is narrower,
+   bounce into the scaling shell so the whole site always shows (Joel, 8/10).
+   Inside the shell (an iframe) this never fires. */
+(function () {
+  if (window.self === window.top && !location.search.includes('flat=1')) {
+    var page = location.pathname.split('/').pop() || 'index.html';
+    location.replace('view.html?p=' + encodeURIComponent(page));
+  }
+  /* ?reveal=1: freeze the page in its fully-revealed static state (headless
+     captures, PDF export, Figma sync) — same overrides the capture copies use. */
+  if (location.search.includes('reveal=1')) {
+    document.write('<style>' +
+      '.fd{opacity:1 !important; transform:none !important;}' +
+      '.hero{position:absolute !important;}' +
+      '.hero img{width:1730px !important; height:1011px !important;}' +
+      '.hdr{position:relative !important;}' +
+      '*,*::before,*::after{transition:none !important; animation:none !important;}' +
+      '#menu-overlay{display:none !important;}' +
+      '</style>');
+  }
+})();
+</script>
+
+<div class="page" id="page">
+
+  <!-- ============ HEADER (sticky, scroll-morphing) ============ -->
+  <div class="hdr">
+    <div class="hdr-bg" id="hdr-bg"></div>
+    <!-- The real letter morph (LOGO REDACTED, 505:3208): S pinned, X slides
+         in, I/2/6 collapse, then the whole mark scales down. logomorph.js. -->
+    <div id="lettermark" data-selfdriven="1" style="position:absolute; left:63px; top:0; width:639px; height:161px; z-index:2;"></div>
+    <script>/* the mark must EXIST in the first paint after an SX-wipe swap —
+       script-built letters were blinking off and on across the navigation */
+    try { SXLogo.build(document.getElementById('lettermark'))(0); } catch (e) {}</script>
+    <p class="hdr-tagline" id="hdr-tagline">SixTwentySix is a full-service creative studio building stories for brands</p>
+    <p class="nav-sm nav-city" id="city-la" style="left:745px; top:111px;">LOS ANGELES, CA</p>
+    <p class="nav-sm nav-city" id="city-ny" style="left:745px; top:136px;">NEW YORK, NY</p>
+    <div class="hdr-menu" id="hdr-menu" title="Menu">
+      <div class="l" id="burger1" style="top:133px;"></div>
+      <div class="l" id="burger2" style="top:144px;"></div>
+      <div class="l" id="burger3" style="top:155px;"></div>
+    </div>
+  </div>
+
+  <!-- ============ HERO (pinned reel) ============ -->
+  <div class="hero">
+    <!-- the REAL sizzle reel (downloaded from the live site 8/21) -->
+    <video src="assets/live/reel.mp4" autoplay muted loop playsinline poster="assets/hero.png"></video>
+  </div>
+
+  <div class="content-shift">
+  <div class="sheet"></div>
+
+  <!-- ============ STATEMENT (SEE HOW removed per Full Site frame) ============ -->
+  <p class="statement fd"><b>We reimagine how brands connect with their audience</b> through innovative storytelling.</p>
+
+  <!-- ============ GRID TOGGLE CLUSTER ============
+       Standardized 4/3/2/1 icons, right-aligned to the content edge, no text
+       label (Joel, 8/10). Same cluster on case-studies and director. -->
+  <div id="toggles">
+    <div class="tbtn active" data-cols="4" style="left:1526px; top:1675px; width:38px; height:28px;">
+      <div class="gt" style="left:0px; top:0px; width:8px; height:8px;"></div>
+      <div class="gt" style="left:0px; top:10px; width:8px; height:8px;"></div>
+      <div class="gt" style="left:0px; top:20px; width:8px; height:8px;"></div>
+      <div class="gt" style="left:10px; top:0px; width:8px; height:8px;"></div>
+      <div class="gt" style="left:10px; top:10px; width:8px; height:8px;"></div>
+      <div class="gt" style="left:10px; top:20px; width:8px; height:8px;"></div>
+      <div class="gt" style="left:20px; top:0px; width:8px; height:8px;"></div>
+      <div class="gt" style="left:20px; top:10px; width:8px; height:8px;"></div>
+      <div class="gt" style="left:20px; top:20px; width:8px; height:8px;"></div>
+      <div class="gt" style="left:30px; top:0px; width:8px; height:8px;"></div>
+      <div class="gt" style="left:30px; top:10px; width:8px; height:8px;"></div>
+      <div class="gt" style="left:30px; top:20px; width:8px; height:8px;"></div>
+    </div>
+    <div class="tbtn" data-cols="3" style="left:1574px; top:1675px; width:38px; height:28px;">
+      <div class="gt" style="left:0px; top:0px; width:11px; height:12px;"></div>
+      <div class="gt" style="left:0px; top:15px; width:11px; height:13px;"></div>
+      <div class="gt" style="left:13px; top:0px; width:12px; height:12px;"></div>
+      <div class="gt" style="left:13px; top:15px; width:12px; height:13px;"></div>
+      <div class="gt" style="left:27px; top:0px; width:11px; height:12px;"></div>
+      <div class="gt" style="left:27px; top:15px; width:11px; height:13px;"></div>
+    </div>
+    <div class="tbtn" data-cols="2" style="left:1621px; top:1675px; width:33px; height:28px;">
+      <div class="gt" style="left:0px; top:0px; width:15px; height:12px;"></div>
+      <div class="gt" style="left:0px; top:15px; width:15px; height:13px;"></div>
+      <div class="gt" style="left:17px; top:0px; width:16px; height:12px;"></div>
+      <div class="gt" style="left:17px; top:15px; width:16px; height:13px;"></div>
+    </div>
+  </div>
+
+  <!-- ============ WORK GRID (12 works, exact Figma defaults) ============ -->
+  <div id="workgrid"></div>
+
+  <!-- ============ EVERYTHING BELOW THE GRID ============ -->
+  <div class="below" id="below">
+
+    <p class="news-h fd">News and Features</p>
+
+    <!-- Columns paint from PRESS[]; the chevron pages to the next three. -->
+    <div id="pressgrid"></div>
+    <div class="press-arrow prev fd" id="pressPrev" title="Previous press">
+      <div class="in"><img class="ink" src="assets/arrow-right.svg" alt="Previous press"></div>
+    </div>
+    <div class="press-arrow fd" id="pressNext" title="More press">
+      <div class="in"><img class="ink" src="assets/arrow-right.svg" alt="Next press"></div>
+    </div>
+
+    <!-- rule under the articles removed (Joel 8/21) -->
+
+    <!-- ============ FOOTER ============ -->
+    <div class="footer">
+      <div class="foot-cta">
+        <p>Let&rsquo;s get started.&nbsp;</p>
+        <p>Connect with us at <a href="mailto:hello@sixtwentysix.co">hello@sixtwentysix.co</a></p>
+      </div>
+      <div class="foot-mark"><img src="assets/six26-wordmark.svg" alt="SIX26"></div>
+
+      <p class="foot-col foot-b" style="left:884px; top:60px;">join the team</p>
+      <p class="foot-col" style="left:884px; top:96px; width:225px;"><a href="mailto:careers@sixtwentysix.co" style="color:inherit; text-decoration:none; cursor:pointer;">careers@sixtwentysix.co</a></p>
+
+      <div class="foot-col" style="left:1185px; top:60px; width:166px;">
+        <p class="b">capabilities Deck</p>
+        <p>&#8203;</p>
+        <p><a href="mailto:hello@sixtwentysix.co?subject=SX%20-%20Capabilities%20Deck%20Request&body=Hi!%20I%20am%20requesting%20the%20SixTwentySix%20capabilities%20deck." style="color:inherit; text-decoration:none; cursor:pointer;">request our deck</a></p>
+      </div>
+
+      <div class="foot-col" style="left:1427px; top:60px; width:130px;">
+        <p class="b">newsletter</p>
+        <p>&#8203;</p>
+        <p><a href="mailto:hello@sixtwentysix.co?subject=Newsletter" style="color:inherit; text-decoration:none; cursor:pointer;">Subscribe</a></p>
+      </div>
+
+      <div class="foot-col" style="left:1601px; top:60px; width:89px;">
+        <p class="b">follow us</p>
+        <p>&#8203;</p>
+        <p><a href="https://www.instagram.com/sixtwentysixco/" target="_blank" rel="noopener" style="color:inherit; text-decoration:none; cursor:pointer;">ig</a> / <a href="https://www.linkedin.com/company/sixtwentysix" target="_blank" rel="noopener" style="color:inherit; text-decoration:none; cursor:pointer;">li</a></p>
+      </div>
+    </div>
+  </div><!-- /.below -->
+  </div><!-- /.content-shift -->
+
+</div><!-- /.page -->
+
+<script>
+/* Always open at the top: browser scroll-restoration was landing reloads
+   mid-page, which pre-marked sections "seen" and killed the fade-ins. */
+if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+window.scrollTo(0, 0);
+
+/* ================= Header morph: SIX26 → SX over the first 260px of scroll ================= */
+const hdrEls = {
+  lm: document.getElementById('lettermark'),
+  bg: document.getElementById('hdr-bg'),
+  tagline: document.getElementById('hdr-tagline'),
+  cityLa: document.getElementById('city-la'),
+  cityNy: document.getElementById('city-ny'),
+  burgers: [document.getElementById('burger1'), document.getElementById('burger2'), document.getElementById('burger3')],
+};
+const heroEl = document.querySelector('.hero');
+/* First screen = header + reel ONLY (Joel, 8/10). The reel stretches to the
+   bottom of the viewport and every bit of content starts below the fold. At
+   the design's native height (16" fullscreen) this is a no-op. */
+let EXTRA_HERO = 0, CONTENT_OFFSET = 1100; /* Joel 8/24: fade start (480 = 80% of morph) + fade (600) + 20 — the sheet still arrives only after the scrubbed reveal completes */
+const REVEAL = location.search.includes('reveal=1');
+function fitHero() {
+  // reveal mode: static Figma geometry, no scroll phase, no viewport fitting
+  EXTRA_HERO = REVEAL ? 0 : Math.max(0, window.innerHeight - 118 - 1011);
+  CONTENT_OFFSET = REVEAL ? 0 : 1100 + EXTRA_HERO;
+  /* Joel 8/21 (fill-frame): seeded compressed under the big header; the
+     morph grows it live, and the reel-moment takes it full-bleed. */
+  heroEl.style.top = '0px';
+  heroEl.style.height = (REVEAL ? 1129 : window.innerHeight) + 'px';
+
+  const shiftEl = document.querySelector('.content-shift');
+  shiftEl.style.top = CONTENT_OFFSET + 'px';
+  shiftEl.style.height = '3873px'; // = DEFAULT_PAGE_H (declared later); flush with .page bottom
+  /* 9/3 (Joel: "2 scrolls max to open the bottom part, still soft"): wheel
+     intent counts double through the entrance (smoothscroll.js reads this),
+     tapering to the site tempo as the content sheet arrives. The damper is
+     untouched, so the glide stays slow-feeling — you just get there in two
+     firm gestures instead of five. */
+  window.SX_WHEEL_ZONE = REVEAL ? null : { until: CONTENT_OFFSET, mult: 2, taper: 250 };
+  /* literal 960 = SCRUB_MORPH*0.8 + SCRUB_FADE — fitHero runs before those
+     consts exist (same TDZ trap as the 3873 note above) */
+  /* 9/8 (Joel: "really really slow to get onto the work from the sizzle and
+     then absolutely RIPS past all of them"): the intro cap was 1600 and the
+     grid had NO cap, so intent banked during the intro slingshotted through
+     the work. Now the entrance runs at 2200 and the rest of the page at
+     2600 — one tempo, no cliff. */
+  window.SX_SCROLL_MAXV = REVEAL ? null : (window.scrollY < 960 ? 2200 : 2600);
+}
+fitHero();
+/* Rounded lerp: every header element lands on whole pixels. Fractional tops
+   were what made LOS ANGELES / NEW YORK shimmer up and down on scroll
+   (Joel, 8/10). */
+const lerp = (a, b, t) => Math.round(a + (b - a) * t);
+/* Morph targets = the Full Site interior header component (459:3638):
+   210 -> 118 tall, big SIX26 -> SX at [63,43], cities slide to [432,43/68],
+   the hamburger rides up to [1648,56..72], tagline fades. */
+function paintHeader(p) {
+  const pb = Math.max(0, (p - 0.5) / 0.5);  // chrome compacts in phase two
+  /* The white band tracks the LETTERS: bottom of the S to bottom of the
+     white stays a constant 25px through the whole morph (Joel 8/20). The
+     letters shrink only in the engine's phase three (q 0.65 -> 1), so the
+     band holds at 185 until then. S bottom: big 159.9, compact 92.95. */
+  const sm = t => { t = Math.max(0, Math.min(1, t)); return t * t * (3 - 2 * t); };
+  /* Joel 8/22: on the way HOME the letters transform at small size first
+     (renderUp), and the band/cities/burger only ride the final GROW —
+     which lives in the last 45% of the reverse (p 0.45 -> 0). */
+  const up = !!window.__hdrUpPlay;
+  /* 9/3 (supersedes the 8/24 diagonal): three sequential beats in
+     logomorph.js — fade (0..0.3), X glides into the S at full size
+     (0.3..0.65), THEN the SX shrinks (0.65..1). The white band holds at
+     185 through the fade + glide and rides ONLY the shrink, per the 8/20
+     law (S bottom to band bottom = constant 25px). */
+  const q5 = t => { t = Math.max(0, Math.min(1, t)); return t * t * t * (t * (t * 6 - 15) + 10); };
+  const kc = up ? sm(Math.max(0, Math.min(1, p / 0.45))) : q5((p - 0.65) / 0.35);
+  /* kg: cities / burger / tagline ride the shrink with the letters (they
+     bottom-align to the word, 8/24), leading it slightly so they settle
+     softly rather than sprinting the last third */
+  const kg = up ? kc : q5((p - 0.55) / 0.45);
+  const bandH = lerp(159.9 + 25, 92.95 + 25, kc);
+  hdrEls.bg.style.height = bandH + 'px';
+  /* Joel 8/23: the reel box is ALWAYS full-screen — the shrinking band
+     simply reveals more of a stable frame. (The old fill-frame reframed
+     the cover-crop as the band moved, which read as a creep-zoom before
+     the real zoom.) The 35% crop holds perfectly until the fade begins. */
+  if (up) renderLogo.up(1 - p); else renderLogo(p);
+  hdrEls.lm.style.top = '0px';
+  window.SX_MORPH_TOPOFF = 0;
+  window.SX_MORPH_Q = p;
+  /* tagline rides the cities' band (kg) — with the white band now moving
+     only in the swap window, kc would hold the tagline visible too long */
+  hdrEls.tagline.style.opacity = String(Math.max(0, 1 - kg / 0.6));
+  /* Joel 8/24 (NARROW BIG): the cities live at x504 in BOTH states — the
+     narrow word's right edge (483) never reaches their column, so the whole
+     504↔745 slide machinery (8/20-8/23, entry slides, exit choreography,
+     city-state hysteresis) is SUPERSEDED and gone. They bottom-align to the
+     word at each size and ride the same kc as the letters' shrink:
+     ONE LINE, BOTTOM-ALIGNED (Joel 8/24 final: "the six26 needs to be the
+     bottom line that everything else is alligned to at its largest form"):
+     the big word's base (y141) is the datum — the cities block (91..141),
+     the tagline (91..141) and the burger (bottom line on 139) all end
+     flush with it. Compact seats unchanged (43/68). Pure vertical, fully
+     scrubbable, no timers.
+     GRACE (Joel 8/24, "the la nyc hit the top too hard" + "slide in
+     softly"): the cities and hamburger ride their own long quintic band
+     (0.35..1), slightly behind the letters' movement, settling into the
+     top with zero slope AND zero curvature. Going home they leave the top
+     just as gently and re-seat on the word's baseline as it returns. */
+  hdrEls.cityLa.style.top = lerp(91, 43, kg) + 'px';
+  hdrEls.cityNy.style.top = lerp(116, 68, kg) + 'px';
+  /* Joel 8/21 (round 2): the hamburger DOES ride the morph with the scroll;
+     it is the menu's X that pins itself wherever the hamburger was at the
+     moment of the click (menu.js stages it from the live position).
+     8/24: big seats bottom-aligned to the word's base (bottom line on
+     y139..141), riding kg with the cities so the whole right side of the
+     line travels as one. */
+  hdrEls.burgers[0].style.top = lerp(117, 56, kg) + 'px';
+  hdrEls.burgers[1].style.top = lerp(128, 64, kg) + 'px';
+  hdrEls.burgers[2].style.top = lerp(139, 72, kg) + 'px';
+}
+// The reel stays put; the white page simply scrolls over it. (The 8/8
+// "squeeze" experiment is reverted per Joel, 8/10 — it wasn't working.)
+const sheetEl = document.querySelector('.sheet');
+/* THE STAR MOMENT (Joel 8/23): the first scroll gesture lands you AT the
+   full-bleed reel (white scrubbed away, crop zoomed out) and HOLDS there —
+   leftover momentum is discarded. Only a SECOND, fresh scroll gesture
+   releases the hold and brings the content up. Scrolling back above the
+   moment re-arms it. */
+function updateReelMoment() {
+  /* PURE SCRUB (Joel 8/23): the white’s 100 -> 0 and the reel’s 35% -> 0
+     crop ride the wheel over SCRUB_FADE px once the shrink has finished.
+     Fully reversible. The sheet-edge wipe still owns the black return. */
+  const t = sheetEl.getBoundingClientRect().top;
+  const y = window.scrollY;
+  const hdr = document.querySelector('.hdr');
+  const H = 118;                        // small-state band = the wipe stage
+  /* 8/24 (evening, "the whole thing should be one smooth animation"): the
+     white dissolve no longer WAITS for the morph to land — it begins at 80%
+     of the morph span and rides its own smoothstep, so collapse -> dissolve
+     -> zoom is one continuous breath with no dead beat between stages. */
+  const ft = Math.max(0, Math.min(1, (y - SCRUB_MORPH * 0.8) / SCRUB_FADE));
+  const fade = ft * ft * (3 - 2 * ft);
+  hdrEls.bg.style.opacity = (t > 0) ? String(+(1 - fade).toFixed(3)) : '';
+  const vid = heroEl.querySelector('video, img');
+  if (vid) vid.style.transform = 'scale(' + (1.35 - 0.35 * fade).toFixed(4) + ')';
+  const dark = fade > 0.55 && t > 0;
+  const wiping = dark && t < H;
+  if (hdr.classList.contains('dark') !== dark) {
+    if (t < H) {
+      hdr.classList.add('snap');
+      setTimeout(() => hdr.classList.remove('snap'), 80);
+    }
+    hdr.classList.toggle('dark', dark);
+  }
+  /* THE WIPE (Joel 8/21): the featured-work sheet’s leading edge WIPES the
+     black into the chrome as it slides under the header. */
+  if (wiping) {
+    if (!updateReelMoment.wipe) {
+      const w = hdr.cloneNode(true);
+      w.classList.remove('dark', 'snap');
+      w.style.pointerEvents = 'none';
+      document.body.appendChild(w);     // after the original, so getElementById still hits the real header
+      updateReelMoment.wipe = w;
+    }
+    hdr.style.clipPath = 'inset(0 0 ' + Math.max(0, H - t).toFixed(1) + 'px 0)';
+    updateReelMoment.wipe.style.clipPath = 'inset(' + Math.max(0, t).toFixed(1) + 'px 0 0 0)';
+  } else {
+    hdr.style.clipPath = '';
+    if (updateReelMoment.wipe) { updateReelMoment.wipe.remove(); updateReelMoment.wipe = null; }
+  }
+}
+function updateHero(y) {
+  updateReelMoment();
+  /* Joel 8/22: the old fixed cutoff (y 1271) killed the reel ~280px of
+     scroll BEFORE the sheet reached the top — a white void under an
+     invisible dark header ("it flashes and there is nothing"). The reel
+     stays until the sheet actually covers the screen. */
+  const covered = sheetEl.getBoundingClientRect().top <= 0;
+  heroEl.style.visibility = covered ? 'hidden' : 'visible';
+}
+const renderLogo = SXLogo.build(hdrEls.lm);
+/* PURE SCRUB (Joel 8/23 — lab winner, variant 2 slowed twice): the whole
+   entrance rides the wheel. No plays, no holds, no detents, no pacing —
+   the site's damped scroll is the only easing. The shrink unfolds over the
+   first 1300px of scroll; the white dissolve + reel zoom-out over the next
+   1000; the sheet arrives after. Fully reversible at any pixel.
+   (The prior triggered-choreography engine is preserved in
+   ../Header Animation States.md for revert.) */
+/* Joel 8/24: the collapse now completes in ~TWO wheel gestures (deltas run
+   through smoothscroll's 0.6 multiplier, so a firm gesture banks ~200px of
+   intent). Was 1300, then 400; 320 so two gestures OVERSHOOT the span and
+   the end-of-morph shrink rides the damper at real velocity instead of its
+   slow settling tail ("smooth and not too slow", Joel 8/24). The fade
+   LENGTH stays 1000 — it just starts sooner. */
+const SCRUB_MORPH = 450, SCRUB_FADE = 600; /* 8/24 (night): "speed up the scroll on the home page header" — 600 -> 450, splitting the distance back toward the 320 it was before the evening slow-down. The white fade still keys off the morph span (starts at 80% of it) so the sequence holds together at any tempo */
+/* SOFT LANDING (Joel 8/24, "we are thinking about elegance here"): the
+   scrub position runs through a smoothstep, so the morph decelerates INTO
+   both of its end states. A hard upward flick no longer slams the word
+   into its full-size seat at the top — the growth settles with zero slope
+   over the last pixels of approach — and the first notch of a collapse
+   starts just as gently. */
+const hdrEase = t => { t = Math.max(0, Math.min(1, t)); return t * t * (3 - 2 * t); };
+let hdrDisp = hdrEase(window.scrollY / SCRUB_MORPH);
+window.SX_SCROLL_CAP = null; window.SX_SCROLL_PULL = null; window.SX_SCROLL_DRIVE = null;
+/* Arriving from an interior SX click: the old page ended white with the
+   big SIX26 — home opens under that same white and fades back to normal. */
+try {
+  /* Joel 8/22: arriving from an interior SX click, the page opens behind
+     FULL WHITE (the interior header wiped down over everything) and the
+     white then wipes BACK UP to the big header's band — the header wipes
+     the page back on. */
+  const g = sessionStorage.getItem('sx_wipe') || sessionStorage.getItem('sx_white');
+  if (g) {
+    sessionStorage.removeItem('sx_wipe');
+    sessionStorage.removeItem('sx_white');
+    if (Date.now() - parseFloat(g) < 2500) {
+      /* Joel 8/22 (rebuilt): arrive behind FULL white (over everything),
+         the white lifts, and the SIX26 header fades from zero to a hundred. */
+      const wash = document.createElement('div');
+      wash.style.cssText = 'position:fixed; left:50%; margin-left:-864px; width:1728px; top:0; height:100vh; background:#fff; z-index:60; pointer-events:none;';
+      document.body.appendChild(wash);
+      const hd = document.querySelector('.hdr');
+      /* the fade must play ON TOP of the retracting white — below it, the
+         whole fade happened behind the sheet and the chrome just popped */
+      if (hd) { hd.style.transition = 'none'; hd.style.opacity = '0'; hd.style.zIndex = '70'; }
+      document.documentElement.classList.remove('sx-arriving'); // guard -> wash, same tick: no gap
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        /* the white retracts UP and ENDS at the big header's bottom edge —
+           the leftover white IS the header. The SIX26's fade lands at 100%
+           in the same moment the edge lands on the band line. */
+        wash.style.transition = 'height 0.85s cubic-bezier(0.45, 0, 0.2, 1) 0.05s';
+        wash.style.height = '185px';
+        if (hd) {
+          hd.style.transition = 'opacity 0.75s ease 0.15s';
+          hd.style.opacity = '1';
+        }
+      }));
+      setTimeout(() => {
+        wash.remove(); // the real band is identical white beneath it
+        if (hd) { hd.style.transition = ''; hd.style.opacity = ''; hd.style.zIndex = ''; }
+      }, 1500);
+    } else {
+      document.documentElement.classList.remove('sx-arriving'); // stale flag: never strand the cover
+    }
+  } else {
+    document.documentElement.classList.remove('sx-arriving');
+  }
+} catch (e) {}
+/* narrow-big law: one x seat forever — no left transition to fight the scrub */
+[hdrEls.cityLa, hdrEls.cityNy].forEach(el => {
+  el.style.transition = 'color 0.9s ease';
+  el.style.left = '504px';
+});
+paintHeader(hdrDisp);
+updateHero(window.scrollY);
+/* Sheet drift (Joel 8/21, corrected): the WORDS hold still — the WHITE
+   STRIP starts lower (its edge tight ~100 above the paragraph) and RISES
+   to its design seat as you scroll, opening the gap. */
+(() => {
+  const sheet = document.querySelector('.sheet');
+  const stmt = document.querySelector('.statement');
+  if (!sheet || !stmt) return;
+  let nat = null;
+  const LIFT = 160;
+  function drift() {
+    if (nat === null) nat = stmt.getBoundingClientRect().top + window.scrollY;
+    const vh = window.innerHeight;
+    const start = nat - vh;
+    const end = nat - vh * 0.45;
+    const p = Math.max(0, Math.min(1, (window.scrollY - start) / Math.max(1, end - start)));
+    sheet.style.transform = 'translateY(' + Math.round(LIFT * (1 - p)) + 'px)';
+  }
+  window.addEventListener('scroll', drift, { passive: true });
+  drift();
+})();
+
+/* I / 2 / 6: a one-shot PLAY, never scrubbed (Joel 8/23). Crossing the
+   trip point fades them out on the clock; scrubbing back over it fades
+   them back in the same way. Hysteresis stops flapping. 8/24 ("the i 2
+   and 6 disapear too slow"): rate 2.6 -> 4.5 per second, ~0.22s. */
+let ltrVis = window.scrollY <= 80 ? 1 : 0, ltrTgt = ltrVis, ltrAnim = false, ltrLast = 0;
+renderLogo.fadeOverride = ltrVis;
+function ltrTick(now) {
+  const dt = Math.min(0.05, (now - ltrLast) / 1000) || 1 / 60;
+  ltrLast = now;
+  ltrVis = Math.max(0, Math.min(1, ltrVis + (ltrTgt > ltrVis ? 1 : -1) * 4.5 * dt));
+  renderLogo.fadeOverride = ltrVis;
+  paintHeader(hdrDisp);
+  if (ltrVis !== ltrTgt) requestAnimationFrame(ltrTick); else ltrAnim = false;
+}
+window.addEventListener('scroll', () => {
+  hdrDisp = hdrEase(window.scrollY / SCRUB_MORPH);
+  const wantVis = window.scrollY > 90 ? 0 : (window.scrollY < 70 ? 1 : ltrTgt);
+  if (wantVis !== ltrTgt) {
+    ltrTgt = wantVis;
+    if (!ltrAnim) { ltrAnim = true; ltrLast = performance.now(); requestAnimationFrame(ltrTick); }
+  }
+  /* 9/4 (Joel: hard scroll makes the morph "glitchy, it shrinks and
+     flashes"): an unbounded damper rips through the 450px morph in a few
+     frames, so letters jump whole phases between paints. A speed limit
+     (the services stepper's SX_SCROLL_MAXV mechanism) holds the entrance
+     to a cinematic pace; past the entrance the page scrolls free. Gentle
+     scrolling never reaches the cap, so the soft feel is untouched. */
+  window.SX_SCROLL_MAXV = window.scrollY < SCRUB_MORPH * 0.8 + SCRUB_FADE ? 2200 : 2600; /* 9/8: 1600/null -> 2200/2600, see fitHero */
+  /* 9/4 (Joel): heading back UP, the reassembly FINISHES ITSELF — if the
+     wheel stops anywhere inside the morph zone the page glides the last
+     stretch to 0 on its own, so the logo never strands mid-morph. Gated
+     to upward intent; any downward wheel takes control back instantly. */
+  clearTimeout(window.__sxTopFinish);
+  if (window.SX_WHEEL_DIR === -1 && window.scrollY > 0 && window.scrollY < SCRUB_MORPH) {
+    window.__sxTopFinish = setTimeout(() => {
+      if (window.SX_WHEEL_DIR === -1 && window.scrollY > 0 && window.scrollY < SCRUB_MORPH)
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, 180);
+  }
+  paintHeader(hdrDisp);
+  updateHero(window.scrollY);
+}, { passive: true });
+
+/* ================= Work grid data (Full Site frame 278:3354) =================
+   NOTE: the Figma frame spells "MEGAN THEE STALION" — kept corrected here
+   (STALLION), same fix Joel already approved on 8/10. */
+// x,y,w,h = thumb rect; lx = label x; tt = title top; dt = director top
+/* REAL work list transferred from sixtwentysix.co (8/21): the live
+   'Latest and Greatest' nine plus Palms / Turo / Credit Karma from the
+   live case-studies page; directors per the work ledger. */
+const WORKS = [
+  { n:'001', t:'PRICELINE', d:'Evan Bourque', img:'assets/live/cs-priceline.jpg', x:75, y:1742, w:291.508, h:164, lx:75, tt:1921.2, dt:1939 },
+  { n:'002', t:'DUNKIN’', d:'Luke Orlando', img:'assets/live/cs-dunkin-pump.jpg', x:504.16, y:1742, w:291.508, h:164, lx:503.94, tt:1921.2, dt:1939 },
+  { n:'003', t:'HERA', d:'Savannah O’Leary', img:'assets/live/cs-hera.jpg', x:933.33, y:1742, w:291.508, h:164, lx:932.89, tt:1921.2, dt:1939 },
+  { n:'004', t:'PURA', d:'Nolan Goff', img:'assets/live/cs-pura.jpg', x:1362.49, y:1748, w:291.508, h:164, lx:1361.83, tt:1921.2, dt:1939 },
+  { n:'005', t:'DUNKIN’', d:'SixTwentySix', img:'assets/live/cs-dunkin-affleck.png', x:75, y:2024, w:291.508, h:164, lx:75, tt:2200.9, dt:2218.8 },
+  { n:'006', t:'EAT PECANS', d:'Evan Bourque', img:'assets/live/cs-eatpecans.jpg', x:504.16, y:2018, w:291.508, h:164, lx:503.94, tt:2200.9, dt:2218.8 },
+  { n:'007', t:'MEGAN THEE STALLION', d:'SixTwentySix', img:'assets/live/cs-megan.jpg', x:933.33, y:2018, w:291.508, h:164, lx:932.89, tt:2200.9, dt:2218.8 },
+  { n:'008', t:'LIQUID I.V.', d:'SixTwentySix', img:'assets/live/cs-liquidiv.jpg', x:1361.5, y:2023, w:291.508, h:164, lx:1361.83, tt:2200.9, dt:2218.8 },
+  { n:'009', t:'SQUARESPACE', d:'Miles & AJ', img:'assets/live/cs-squarespace.jpg', x:75, y:2297.8, w:291.508, h:164, lx:75, tt:2476.6, dt:2493.6 },
+  { n:'010', t:'PALMS CASINO', d:'Nolan Goff', img:'assets/live/cs-palms.jpg', x:504.16, y:2297.8, w:290.5, h:163, lx:503.94, tt:2476.6, dt:2493.6 },
+  { n:'011', t:'TURO', d:'Miles & AJ', img:'assets/live/cs-turo.jpg', x:933.33, y:2297.8, w:290.5, h:163, lx:932.89, tt:2476.6, dt:2493.6 },
+  { n:'012', t:'CREDIT KARMA', d:'Miles & AJ', img:'assets/live/cs-creditkarma.jpg', x:1361.5, y:2302.8, w:291.508, h:164, lx:1361.83, tt:2476.6, dt:2493.6 }
+];
+
+/* Hover loops (8/24, Joel via prod): each tile plays ITS OWN spot on hover.
+   Signed progressive URLs lifted from the live site's tile objects
+   (imageMeta.videoUrl per slug) — same hotlink pattern as the creatives
+   roster. Squarespace (009) had no loop upstream — its spot (WP
+   featuredvimeoid 904533817, "Courses", Miles & AJ) is captured locally
+   instead (Joel 8/24). If a signature ever 403s, re-pull from
+   sixtwentysix.co. */
+const WORK_LOOPS = {
+  '001': 'https://player.vimeo.com/progressive_redirect/playback/1191279752/rendition/1080p/file.mp4%20%281080p%29.mp4?loc=external&log_user=0&signature=b2a3fce188f6bbd5fb6933419b9d79e6508f6afc3a27cce1d8d9455596710be7',
+  '002': 'https://player.vimeo.com/progressive_redirect/playback/1152401903/rendition/1080p/file.mp4%20%281080p%29.mp4?loc=external&log_user=0&signature=308b00f490c2f6e53533b0a02bde34faf2cc1a1505ab749c7e93509bec3862c9',
+  '003': 'https://player.vimeo.com/progressive_redirect/playback/1151638122/rendition/1080p/file.mp4%20%281080p%29.mp4?loc=external&log_user=0&signature=6b7991643db1c95ac1e1c985d693ee0f5ba68754f43250516225593eb886c2bd',
+  '004': 'https://player.vimeo.com/progressive_redirect/playback/1006416097/rendition/1080p/file.mp4?loc=external&log_user=0&signature=64fa71b252b9bfbac835dd46aeffaf4c8bbb012eab0e70ce58747a01f58d86e1',
+  '005': 'https://player.vimeo.com/progressive_redirect/playback/1125246930/rendition/1080p/file.mp4?loc=external&log_user=0&signature=2129a26fac9c81464a0a24faaff8a1522ee90985634b7f89855f5c5eba24da70',
+  '006': 'https://player.vimeo.com/progressive_redirect/playback/996433212/rendition/1080p/file.mp4?loc=external&log_user=0&signature=b1fa4987f20d4f9d170bcfae75826cf6fb124137ac8e2787f799b8eae4a93291',
+  '007': 'https://player.vimeo.com/progressive_redirect/playback/946016464/rendition/1080p/file.mp4?loc=external&log_user=0&signature=99c30ffec4cf29d294f9bd11f32a5203d2b48a43409f9377f12bac6516ad2322',
+  '008': 'https://player.vimeo.com/progressive_redirect/playback/991779444/rendition/1080p/file.mp4?loc=external&log_user=0&signature=c6bc59979b513da2ba84624c3574e96f80b14dfad96e2106f03886802f19f9c2',
+  '009': 'assets/live/loop-squarespace.mp4',
+  '010': 'https://player.vimeo.com/progressive_redirect/playback/1201495653/rendition/1080p/file.mp4%20%281080p%29.mp4?loc=external&log_user=0&signature=43288f8230fc7601951964b3046033e7c02ca670694c8ad9504d5642602dfe38',
+  '011': 'https://player.vimeo.com/progressive_redirect/playback/766676269/rendition/1080p/file.mp4?loc=external&log_user=0&signature=99929a4c148e35ce60df8ce7eaec7ae66adc027d6e38cbfbed7b49517c9d0942',
+  '012': 'https://player.vimeo.com/progressive_redirect/playback/1179304184/rendition/1080p/file.mp4%20%281080p%29.mp4?loc=external&log_user=0&signature=5d5d3eac22153ec0e6d6c3f8296c623a147954b9fc3d6b37c1861cfa93457aed',
+};
+WORKS.forEach(w => { w.loop = WORK_LOOPS[w.n] || null; });
+
+/* Every tile clicks through to ITS work page (Joel 8/24): case-study.html
+   is WP-driven now — ?work=<slug> loads that work's real copy. Slugs
+   joined from the live site's tile objects + WP featuredvimeoid. */
+const WORK_SLUGS = {
+  '001': 'priceline-new-negotiator',
+  '002': 'dunkin-dunk-n-pump',
+  '003': 'hera-age-your-way',
+  '004': 'pura-hands-on',
+  '005': 'dunkin-the-value-affleck',
+  '006': 'eat-pecans-surprisingly-snackable',
+  '007': 'megan-thee-stallion-boa',
+  '008': 'liquid-iv-ice-cream',
+  '009': 'squarespace-courses',
+  '010': 'palms-casino-resort-this-is-that-vegas',
+  '011': 'turo-open-the-door-to-extraordinary',
+  '012': 'credit-karma-card-optimizer',
+};
+
+const LEFT = 75, CONTENT_W = 1579, GAP = 137.652;
+const BASE_W = 291.508, BASE_H = 164, ROW0 = 1742, LABEL_GAP = 15.2, DIR_GAP = 33, ROW_PAD = 112;
+const DEFAULT_GRID_END = 2297.8 + BASE_H + ROW_PAD; // bottom of default 3-row grid
+const DEFAULT_PAGE_H = 3723; /* -150: tighter articles -> footer (Joel 8/21); the footer law re-pins the footer to the new bottom */
+
+const grid = document.getElementById('workgrid');
+const cards = WORKS.map((wk, i) => {
+  /* 8/24 (Joel via prod): tiles are LINKS now. Prototype reality: one
+     case-study page, so every tile routes there until per-work pages
+     exist. Hovering plays that project's own loop over its still. */
+  const thumb = document.createElement('a');
+  thumb.className = 'work-thumb fd';
+  thumb.href = 'case-study.html' + (WORK_SLUGS[wk.n] ? '?work=' + WORK_SLUGS[wk.n] : '');
+  thumb.dataset.i = i;
+  thumb.innerHTML = `<img src="${wk.img}" alt="${wk.t}">` +
+    (wk.loop ? `<video loop playsinline preload="none" src="${wk.loop}"></video>` : '');
+  const vid = thumb.querySelector('video');
+  if (vid) {
+    vid.muted = true; // set as a property: the attribute alone is unreliable via innerHTML
+    thumb.addEventListener('mouseenter', () => { vid.play().catch(() => {}); });
+    thumb.addEventListener('mouseleave', () => { vid.pause(); });
+  }
+  const title = document.createElement('p');
+  title.className = 'wtitle fd';
+  title.textContent = wk.t;
+  const dir = document.createElement('p');
+  dir.className = 'wdir fd';
+  dir.textContent = wk.d || 'SixTwentySix';
+  grid.append(thumb, title, dir);
+  return { wk, thumb, title, dir, cur: { x: wk.x, y: wk.y, w: wk.w, h: wk.h } };
+});
+
+function place(c, x, y, w, h, lx, tt, dt) {
+  c.cur = { x, y, w, h, lx, tt, dt };
+  Object.assign(c.thumb.style, { left: x+'px', top: y+'px', width: w+'px', height: h+'px' });
+  Object.assign(c.title.style, { left: lx+'px', top: tt+'px' });
+  Object.assign(c.dir.style,   { left: lx+'px', top: dt+'px' });
+}
+
+/* Standardized 4/3/2/1 column layout, driven by the toggle cluster. At 4-up
+   every card sits at its exact Figma coordinate; other densities compute the
+   same rhythm at the wider tile size. Everything below the grid rides the
+   #below wrapper so the press section and footer follow the grid's height. */
+let COLS = 4;
+function layout(cols) {
+  if (cols) COLS = cols;
+  let gridEnd;
+  if (COLS === 4) {
+    cards.forEach(c => place(c, c.wk.x, c.wk.y, c.wk.w, c.wk.h, c.wk.lx, c.wk.tt, c.wk.dt));
+    gridEnd = DEFAULT_GRID_END;
+  } else {
+    const w = (CONTENT_W - (COLS - 1) * GAP) / COLS;
+    const h = w * (BASE_H / BASE_W);
+    cards.forEach((c, i) => {
+      const col = i % COLS, row = Math.floor(i / COLS);
+      const x = LEFT + col * (w + GAP);
+      const y = ROW0 + row * (h + ROW_PAD);
+      place(c, x, y, w, h, x, y + h + LABEL_GAP, y + h + DIR_GAP);
+    });
+    const rows = Math.ceil(cards.length / COLS);
+    gridEnd = ROW0 + rows * (h + ROW_PAD);
+  }
+  const delta = gridEnd - DEFAULT_GRID_END;
+  document.getElementById('below').style.transform = `translateY(${delta}px)`;
+  document.getElementById('page').style.height = (DEFAULT_PAGE_H + CONTENT_OFFSET + delta) + 'px';
+  document.querySelector('.content-shift').style.height = (DEFAULT_PAGE_H + delta) + 'px';
+}
+
+document.querySelectorAll('#toggles .tbtn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('#toggles .tbtn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    layout(parseInt(btn.dataset.cols, 10));
+  });
+});
+
+layout(4);
+
+window.addEventListener('resize', () => {
+  fitHero();
+  layout();
+  paintHeader(hdrDisp);
+});
+
+/* ================= White ghost hover — THE site hover law =================
+   One engine (gridhover.js) now runs every grid on the site. The homepage
+   just registers its tiles; the scale, gap clamps, anchoring, ghost dim,
+   label ride, timing and scroll-exit all live in the engine — identical on
+   every page by construction. */
+SXGrid.attach({
+  tiles: cards.map(c => ({ el: c.thumb, caps: [{ el: c.title, gap: LABEL_GAP }, { el: c.dir, gap: DIR_GAP }] })),
+  ghost: { el: document.body, cls: 'ghost' },
+  bounds: { left: LEFT, right: LEFT + CONTENT_W },
+});
+
+/* ================= News and Features =================
+   Deck-exact columns ("add press", 89:1055) with the paging chevron: three
+   show at a time, the arrow advances to the next three and wraps. Add the next
+   real hit as one more PRESS entry and paging picks it up — no placeholder
+   outlets, only real press ships. Geometry per column comes from the original
+   Figma frame (each logo block carries its own offsets). */
+const PRESS = [
+  { alt: 'AdAge',
+    quote: 'Priceline revives The Negotiator, with Randall Park succeeding William Shatner.',
+    url: 'https://adage.com/creativity/work/aa-priceline-negotiator-handoff/',
+    dy: 8.9, qw: 291, gap: 54, logoH: 31, wipe: 'assets/press-adage-wipe.png',
+    logo: `<img class="ink" src="assets/logo-adage.svg" alt="AdAge" style="width:101.397px; height:30.995px;">` },
+  { alt: 'Forbes 30 Under 30',
+    quote: '30 Under 30: Marketing & Advertising.',
+    url: 'https://www.forbes.com/profile/sixtwentysix/',
+    dy: 5, qw: 346, gap: 53, logoH: 38, wipe: 'assets/press-forbes-hover.jpg',
+    logo: `<img class="ink" src="assets/logo-forbes.svg" alt="Forbes 30 Under 30" style="width:68px; height:38px;">` },
+  { alt: 'Rolling Stone',
+    quote: 'One of the 150 greatest hip-hop videos of all time.',
+    url: 'https://www.rollingstone.com/music/music-lists/best-rap-music-videos-1234788922/',
+    dy: 0, qw: 274, gap: 51, logoH: 56, wipe: 'assets/press-rollingstone-hover.png',
+    logo: `<div style="position:relative; width:235px; height:56px; overflow:hidden;">
+             <img class="ink" src="assets/logo-rollingstone.svg" alt="Rolling Stone"
+                  style="position:absolute; top:12.63%; left:0; width:100%; height:74.74%;"></div>` },
+];
+
+(() => {
+  /* Joel 8/21: the articles ROLL continuously like the About team rail.
+     Hovering pauses the roll and the article image burns in (the existing
+     press hover). The paging arrow moved beside the News headline, seated
+     exactly like the About chevron sits beside "Meet the core team"
+     (heading top + 6, right rail) — a click nudges the roll forward. */
+  const PRESS_TOP = 2933.6;
+  const PITCH = 450; /* Joel 8/25: 380 read too close, 542 too far */
+  let PERIOD = PRESS.length * PITCH;
+  const host = document.getElementById('pressgrid');
+  const arrow = document.getElementById('pressNext');
+  host.style.cssText = 'position:absolute; left:0; top:0; width:1728px;';
+
+  /* Joel 8/24: ONE image size for every article — the Rolling Stone
+     card's (274 x 154, still 16:9). The per-card qw only sizes the
+     quote column now, not the hover image. */
+  const WIPE_W = 274;
+  const wipeH = Math.round(WIPE_W * 9 / 16); // every rectangle on this site is 16:9 (Joel 8/20)
+
+  function pressCard(p, x) {
+    const el = document.createElement('div');
+    el.className = 'press fd seen';
+    const quoteOff = p.logoH + p.gap;
+    const readOff = quoteOff + 44 + p.gap;
+    el.style.cssText =
+      `left:${x}px; top:${PRESS_TOP + (p.dy || 0)}px;` +
+      ` width:${p.qw}px; height:${readOff + 33}px;`;
+    if (p.url) el.dataset.url = p.url;
+    /* READ is the real article (Joel 8/24) — new tab, no styling change. */
+    const read = p.url
+      ? `<a class="press-read" style="top:${readOff}px; text-decoration:none; display:block;" href="${p.url}" target="_blank" rel="noopener noreferrer">READ</a>`
+      : `<p class="press-read" style="top:${readOff}px; visibility:hidden;">READ</p>`;
+    el.innerHTML =
+      `<div class="press-logo" style="--logo-up:${p.wipe ? -(wipeH + 24 - p.logoH) : 0}px;">${p.logo}</div>
+       ${p.wipe ? `<div class="press-wipe" style="top:${quoteOff - 12 - wipeH}px; width:${WIPE_W}px; height:${wipeH}px;"><img src="${p.wipe}" alt="" loading="lazy"></div>` : ''}
+       <p class="press-quote" style="top:${quoteOff}px; width:${p.qw}px;">&ldquo;${p.quote}&rdquo;</p>
+       ${read}`;
+    return el;
+  }
+
+  /* whole-card click-through (Joel 8/24: "click on any part and it links
+     to the article page") — delegated so rebuilt rails inherit it */
+  host.addEventListener('click', (e) => {
+    if (e.target.closest('a')) return; /* READ handles itself */
+    const c = e.target.closest('.press');
+    if (c && c.dataset.url) window.open(c.dataset.url, '_blank', 'noopener');
+  });
+
+  function buildRail(items) {
+    PERIOD = items.length * PITCH;
+    host.textContent = '';
+    const copies = Math.ceil((1728 + PITCH) / PERIOD) + 1;
+    for (let c = 0; c < copies; c++)
+      items.forEach((p, i) => host.appendChild(pressCard(p, 75 + (c * items.length + i) * PITCH)));
+  }
+  buildRail(PRESS);
+
+  /* ---- WordPress feed (Joel 8/24: "100% of what's on the WordPress
+     needs to be on the website") — every press hit is a WP post: title as
+     the quote, ACF news.linkUrl behind READ, outlet logo + featured image
+     from the CMS. The endpoint is public and CORS-open; on any failure
+     (offline, file:// preview) the three baked cards above stay up.
+     WP's logos are drawn WHITE (their live site sets press on black), so
+     they get flattened to ink with brightness(0). Uniform CMS geometry:
+     logo height 34, gap 53, quote column 291 — the curated cards' laws. */
+  const esc = t => String(t || '').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  fetch('https://api.sixtwentysix.co/graphql', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ query:
+      '{ posts(first: 100) { nodes { title news { linkUrl logo { node { sourceUrl mediaDetails { width height } } } logoImage { node { sourceUrl mediaDetails { width height } } } } featuredImage { node { sourceUrl } } } } }' })
+  })
+    .then(r => r.json())
+    .then(j => {
+      const items = ((j.data && j.data.posts && j.data.posts.nodes) || []).map(n => {
+        const news = n.news || {};
+        const lg = (news.logo && news.logo.node) || (news.logoImage && news.logoImage.node) || null;
+        const d = lg && lg.mediaDetails;
+        const H = 34;
+        const w = d && d.width && d.height ? Math.min(170, Math.round(d.width / d.height * H)) : null;
+        return {
+          quote: esc(n.title),
+          url: esc(news.linkUrl),
+          dy: 0, qw: 291, gap: 53, logoH: H,
+          wipe: (n.featuredImage && n.featuredImage.node && esc(n.featuredImage.node.sourceUrl)) || '',
+          logo: lg ? `<img class="ink" src="${esc(lg.sourceUrl)}" alt="" style="height:${H}px; width:${w ? w + 'px' : 'auto'}; max-width:170px; filter:brightness(0);">` : '',
+        };
+      }).filter(p => p.quote);
+      if (items.length >= 3) buildRail(items);
+    })
+    .catch(() => {});
+
+  let drift = 0, paused = false, lastT = 0, nudge = 0;
+  host.addEventListener('mouseenter', () => { paused = true; });   // hover: stop + image appears
+  host.addEventListener('mouseleave', () => { paused = false; });
+  function roll(now) {
+    const dt = Math.min(0.05, (now - lastT) / 1000) || 0;
+    lastT = now;
+    if (!paused) drift += 24 * dt;
+    if (nudge !== 0) { const step = Math.sign(nudge) * Math.min(Math.abs(nudge), 700 * dt); drift += step; nudge -= step; }
+    /* normalized modulo so a backward nudge (negative drift) still seats
+       inside the periodic rail instead of exposing its left edge */
+    host.style.transform = 'translateX(' + (-(((drift % PERIOD) + PERIOD) % PERIOD)).toFixed(2) + 'px)';
+    requestAnimationFrame(roll);
+  }
+  requestAnimationFrame(roll);
+
+  /* the arrow: seated beside the headline like About's team chevron
+     (heading top + 6, right rail), and nudges the roll one card forward */
+  const newsH = document.querySelector('.news-h');
+  const prevArrow = document.getElementById('pressPrev');
+  if (arrow && newsH) {
+    arrow.style.top = (parseFloat(getComputedStyle(newsH).top) + 6) + 'px';
+    arrow.style.left = '1624px';
+    arrow.addEventListener('click', () => { nudge += PITCH; });
+  }
+  if (prevArrow && newsH) {
+    prevArrow.style.top = (parseFloat(getComputedStyle(newsH).top) + 6) + 'px';
+    prevArrow.style.left = '1584px';
+    prevArrow.addEventListener('click', () => { nudge -= PITCH; });
+  }
+})();
+
+const io = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    const b = e.boundingClientRect;
+    /* zero-size wrappers (absolute children only) never reach ratio 0.15 —
+       they were permanently invisible (the empty-content bug, 8/19) */
+    if (e.intersectionRatio >= 0.15 || (e.isIntersecting && (b.width < 2 || b.height < 2))) {
+      /* one-shot (8/21): un-revealing on exit made the reveal REPLAY when
+         scrolling back up — tabs/toggles popped in 28px low on staggered
+         delays, overlapping, then jumped to their seats. Seen stays seen. */
+      e.target.classList.add('seen');
+      io.unobserve(e.target);
+    }
+  });
+}, { threshold: [0, 0.15] });
+document.querySelectorAll('.fd').forEach(el => io.observe(el));
+</script>
+<script>
+/* Back-to-the-exact-spot law (Joel 8/24): runs HERE — after the grids
+   above have built (the page is at full height, so the seat can't clamp)
+   and BEFORE smoothscroll.js boots (its internal target reads the
+   restored position). */
+(function () {
+  try {
+    var raw = sessionStorage.getItem('sx-return-go');
+    if (!raw) return;
+    sessionStorage.removeItem('sx-return-go');
+    var d = JSON.parse(raw);
+    /* 9/3: stored page may carry a query (?who=<director>) — match path
+       and query separately so per-director returns restore their seat */
+    var curPath = location.pathname.split('/').pop() || 'index.html';
+    var sp2 = new URLSearchParams(location.search); sp2.delete('r');
+    var curQ = sp2.toString();
+    var stored = String(d.page || '').split('?');
+    if (stored[0] !== curPath) return;
+    if (stored[1] && stored[1] !== curQ) return;
+    /* the page reaches full height only after load (footer law stretch),
+       so the seat restores THEN; smoothscroll adopts any external scroll
+       while idle, so this slots straight into its engine */
+    var seat = function () { window.scrollTo(0, d.y || 0); };
+    window.addEventListener('load', function () {
+      seat();
+      setTimeout(seat, 120); /* once more after late layout settles */
+    });
+  } catch (e) {}
+})();
+</script>
+<script src="smoothscroll.js?v=20260819095356"></script>
+<script src="menu.js?v=20260824c"></script>
+<script src="hoverlaw.js?v=20260819095356"></script>
+<script>
+/* Safari back-forward cache restores dead builds from memory - always reload */
+window.addEventListener('pageshow', function (e) { if (e.persisted) location.reload(); });
+</script>
+</body>
+</html>

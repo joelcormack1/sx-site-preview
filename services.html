@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1728">
+<script src="footerlaw.js?v=20260825a"></script>
+<title>SIXTWENTYSIX — Services</title>
+<!--
+  SERVICES — synced 1:1 to Full Site frame 220:1353 + stepper states
+  378:589 / 612 / 635 / 668 (2026-08-18).
+  Hero row ("We've Got You Covered" in Cyr + intro right), the four-pillar
+  stepper (46px Cyr tabs, active pillar wears its number; pinned, answers
+  scroll AND click — states verbatim from the stepper frames), "Our Blueprint"
+  6-step two-column process (numbers BELOW each step, per the frame),
+  "Don't Believe Us, Believe..." testimonial carousel (center card boxed,
+  sides at 30%), black footer. Frame reads "Dont" — apostrophe restored.
+-->
+<style>
+  @font-face {
+    font-family: 'HelveticaNeueCyr';
+    src: url('fonts/HelveticaNeueCyr-Roman.ttf') format('truetype');
+    font-weight: 400;
+  }
+  @font-face {
+    font-family: 'HelveticaNeueCyr';
+    src: url('fonts/HelveticaNeueCyr-Medium.ttf') format('truetype');
+    font-weight: 500;
+  }
+  @font-face {
+    font-family: 'HelveticaNeueCyr';
+    src: url('fonts/HelveticaNeueCyr-Bold.ttf') format('truetype');
+    font-weight: 700;
+  }
+  @font-face {
+    font-family: 'Azeret Mono';
+    src: url('fonts/AzeretMono-VF.woff2') format('woff2-variations');
+    font-weight: 100 900;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #fff; overscroll-behavior: none; }
+  body {
+    overflow-x: clip; /* auto broke position:sticky in Safari */
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  }
+  p { margin: 0; }
+  a { color: inherit; text-decoration: none; }
+  img { display: block; }
+  .cyr { font-family: 'HelveticaNeueCyr', 'Helvetica Neue', Helvetica, sans-serif; }
+
+  .page {
+    position: relative;
+    width: 1728px;
+    margin: 0 auto;
+    background: #fff;
+  }
+
+  /* ---------- Scroll fade-in ---------- */
+  .fd { opacity: 0; transform: translateY(28px); }
+  .fd.seen {
+    opacity: 1; transform: none;
+    transition: opacity 0.9s cubic-bezier(0.16,1,0.3,1), transform 0.9s cubic-bezier(0.16,1,0.3,1);
+    transition-delay: var(--fd, 0s);
+  }
+
+  /* ---------- Header (interior component 459:3638) ---------- */
+  .hdr {
+    /* FIXED, not sticky (Joel 8/21 zero-vibration): sticky repositions
+       asynchronously under scripted per-frame scrolling (the smooth
+       scroll), which reads as a 1px bob. Fixed is compositor-pinned. */
+    position: fixed;
+    top: 0;
+    left: 50%;
+    margin-left: -864px;
+    width: 1728px;
+    height: 118px;
+    background: #fff;
+    z-index: 50;
+  }
+  .hdr-logo { position: absolute; left: 63px; top: 43px; width: 146px; height: 50px; }
+  .hdr-logo .v1 { position: absolute; top: 0.11%; right: 55.69%; bottom: 0; left: 0; }
+  .hdr-logo .v2 { position: absolute; top: 1.81%; right: 8.88%; bottom: 1.81%; left: 42.46%; }
+  .hdr-logo .v3 { position: absolute; top: 0; right: 0; bottom: 82.78%; left: 91.12%; }
+  .hdr-logo img { position: absolute; inset: 0; width: 100%; height: 100%; max-width: none; }
+  .hdr-menu {
+    position: absolute; left: 1636px; top: 44px; width: 57px; height: 30px;
+    cursor: pointer;
+  }
+  .hdr-menu .l {
+    position: absolute; left: 12px; width: 33px; height: 2px;
+    background: #000; border-radius: 2px;
+  }
+  .nav-sm {
+    position: absolute;
+    font-size: 16px; line-height: 25px; letter-spacing: 0.48px;
+    color: #000; white-space: nowrap; font-weight: 400;
+  }
+
+  /* ===================== HERO ROW ===================== */
+  .sv-hero-h {
+    position: absolute; left: 63px; top: 431px; width: 626px; /* SX rail (Joel 8/22) */
+    font-family: 'HelveticaNeueCyr', 'Helvetica Neue', Helvetica, sans-serif;
+    font-weight: 700; font-size: 40px; line-height: 48px; letter-spacing: -1.6px;
+    color: #000; text-transform: capitalize; white-space: pre-line;
+  }
+  .sv-hero-p {
+    position: absolute; left: 725px; top: 442px; width: 887px;
+    /* Joel 8/25: 16px read inconsistent beside the 40px heading — lifted
+       to the site's mid scale (22, the cr-mail size) */
+    font-weight: 400; font-size: 22px; line-height: 30px; letter-spacing: -0.44px;
+    color: #000;
+  }
+
+  /* ===================== STEPPER (pinned; states from 378:589-668) ===================== */
+  #svcPinzone { position: absolute; left: 0; top: 814px; width: 1728px; }
+  #svcStick { position: sticky; top: 150px; width: 1728px; height: 295px; } /* tabs pin at the top, answers mid-screen (Joel 8/19) */
+  .tabrow { position: absolute; left: 0; top: 0; width: 1728px; height: 46px; }
+  /* Joel 8/21: the categories arrive ONE BY ONE, not as one block */
+  .tabrow .tab-word, .tabrow .tab-numbox { opacity: 0; transform: translateY(18px); }
+  .tabrow.in .tab-word, .tabrow.in .tab-numbox {
+    opacity: 1; transform: none;
+    transition: opacity 0.7s cubic-bezier(0.16,1,0.3,1) var(--d, 0s),
+                transform 0.7s cubic-bezier(0.16,1,0.3,1) var(--d, 0s),
+                color 0.55s ease,
+                left 0.75s cubic-bezier(0.33, 1, 0.68, 1),
+                clip-path 0.75s cubic-bezier(0.33, 1, 0.68, 1);
+  }
+  /* Joel 8/21: a black line grows left -> right under the section words as
+     you scroll through the stepper (doubles as its progress) */
+  #svcRule {
+    position: absolute; left: 63px; top: 70px; width: 1602px; height: 2px; /* rail to rail (Joel 8/22) */
+    background: #000; transform: scaleX(0); transform-origin: left center;
+  }
+  /* Joel 8/21: word and number SPLIT from the point where the word starts —
+     the word steps right while the masked number slides left-to-right out
+     of its hidden box into that same origin. One gesture, one curve, slow
+     and graceful. */
+  .tab-word {
+    position: absolute; top: 0;
+    font-family: 'HelveticaNeueCyr', 'Helvetica Neue', Helvetica, sans-serif;
+    font-weight: 700; font-size: 46px; line-height: 45.8px; letter-spacing: -0.92px;
+    color: #bcbcbc; white-space: nowrap; cursor: pointer;
+    transition: color 0.55s ease, left 0.75s cubic-bezier(0.33, 1, 0.68, 1);
+  }
+  .tab-word:hover { color: #8a8a8a; }
+  .tabrow.split .tab-word.on, .tabrow.split .tab-word.on:hover { color: #000; } /* Joel 8/22: ALL grey until the split arms */
+  .tab-numbox {
+    position: absolute; top: 0; height: 46px; width: 142px;
+    pointer-events: none;
+    /* Joel 8/22 (refined split): the mask edge IS the word's back edge — no
+       spacing does the revealing. Word slides +35.5 right, number slides
+       -35.5 left from the SAME origin on the SAME curve; the clip's right
+       edge tracks the word's left edge exactly (rest: edge at the origin;
+       settled: edge at origin+35.5). The 71px gap only EXISTS once both
+       have settled. Box: left = origin-35.5, right = origin+106.5. */
+    clip-path: inset(0 106.5px 0 0);
+    transition: clip-path 0.75s cubic-bezier(0.33, 1, 0.68, 1);
+  }
+  .tabrow.in.split .tab-numbox.on { clip-path: inset(0 71px 0 0); }
+  /* EDGE TABS (Joel 8/22 margins): Creative's rest seat IS the left rail
+     (63) and Experiential's right edge IS the right rail (1665) — so the
+     edge tabs anchor their word at the rail and the NUMBER does the full
+     71px travel instead of splitting half-half (a half-split would push
+     chrome past the page margins). */
+  .tab-numbox[data-i="0"] { clip-path: inset(0 142px 0 0); }
+  .tab-numbox[data-i="0"] .tab-num { transform: none; }
+  .tab-numbox[data-i="3"] { clip-path: inset(0 71px 0 0); }
+  .tab-numbox[data-i="3"] .tab-num { transform: translateX(71px); }
+  /* the number RIDES the split: from under the word to its seat, fading in */
+  .tab-num {
+    font-family: 'HelveticaNeueCyr', 'Helvetica Neue', Helvetica, sans-serif;
+    font-weight: 400; font-size: 46px; line-height: 45.8px;
+    letter-spacing: -0.92px; color: #000; white-space: nowrap;
+    opacity: 0; transform: translateX(35.5px);
+    transition: opacity 0.6s ease, transform 0.75s cubic-bezier(0.33, 1, 0.68, 1);
+  }
+  .tabrow.in.split .tab-numbox.on .tab-num { opacity: 1; transform: translateX(0); }
+  #svcCols { position: absolute; left: 0; top: 180px; width: 1728px;
+    transition: opacity 0.25s ease, top 0.45s cubic-bezier(0.16,1,0.3,1); }
+  /* Joel 8/21: the answers under each category arrive 1, 2, 3, 4... they
+     do not appear as one block */
+  .sv-stg { opacity: 0; transform: translateY(14px); transition: opacity 0.45s ease, transform 0.45s ease; }
+  .tabrow.split ~ #svcCols.in .sv-stg {
+    opacity: 1; transform: none;
+    transition: opacity 0.6s cubic-bezier(0.16,1,0.3,1) var(--d, 0s),
+                transform 0.6s cubic-bezier(0.16,1,0.3,1) var(--d, 0s);
+  }
+  .sv-t {
+    position: absolute;
+    font-family: 'HelveticaNeueCyr', 'Helvetica Neue', Helvetica, sans-serif;
+    font-weight: 700; font-size: 32px; line-height: 31.8px; letter-spacing: -1.28px;
+    color: #000; white-space: nowrap;
+  }
+  .sv-b {
+    position: absolute;
+    font-weight: 400; font-size: 16px; line-height: 21.6px; letter-spacing: -0.32px;
+    color: #646464;
+  }
+
+  /* ===================== OUR BLUEPRINT ===================== */
+  .sv-h {
+    position: absolute; left: 63px; width: 700px; /* SX rail (Joel 8/22) */
+    font-family: 'HelveticaNeueCyr', 'Helvetica Neue', Helvetica, sans-serif;
+    font-weight: 700; font-size: 40px; line-height: 48px; letter-spacing: -1.6px;
+    color: #000; text-transform: capitalize; white-space: nowrap;
+  }
+  .bp-statement {
+    /* Joel 8/22 (round 2): stays in its left column under the headline,
+       small, slid UP so its first line rides the same row as the step
+       bodies under Creative Brief */
+    position: absolute; left: 63px; width: 507px;
+    font-weight: 400; font-size: 16px; line-height: 21.6px; letter-spacing: -0.32px;
+    color: #000;
+  }
+  .bp-t {
+    position: absolute;
+    font-weight: 700; font-size: 34px; line-height: 41.5px; letter-spacing: -1.02px;
+    color: #000; white-space: nowrap;
+  }
+  .bp-b {
+    position: absolute;
+    font-weight: 400; font-size: 16px; line-height: 21.6px; letter-spacing: -0.32px;
+    color: #646464;
+  }
+  .bp-n {
+    position: absolute;
+    font-weight: 500; font-size: 15px; line-height: 18.3px; color: #000;
+  }
+
+  /* ===================== TESTIMONIALS ===================== */
+  .tst-chev {
+    position: absolute; width: 23px; height: 46px; cursor: pointer;
+    transition: opacity 0.3s ease;
+  }
+  .tst-chev:hover { opacity: 0.55; }
+  /* Every testimonial carries its own invisible outline rectangle; it
+     simply fades in on hover — no travel (Joel 8/20). Offsets replicate the
+     old center box's framing (58 left, 62.2 up, 542x584). */
+  .tst-card::before {
+    content: ''; position: absolute; left: -58px; top: -62.2px;
+    width: 542px; height: 584px; border: 1px solid #000;
+    opacity: 0; transition: opacity 0.45s ease; pointer-events: none;
+  }
+  .tst-card:hover::before { opacity: 1; }
+  .tst-card {
+    position: absolute; width: 445px; transition: opacity 0.5s ease;
+  }
+  .tst-card.fd.seen { transition: opacity 0.5s ease, transform 0.9s cubic-bezier(0.16,1,0.3,1); } /* survive .fd.seen (hunt 8/21) */
+  .tst-card.dim { opacity: 0.30; }
+  /* hover one testimonial: the others step back */
+  #tstCards:hover .tst-card:not(:hover) { opacity: 0.30; }
+  .tst-av { position: absolute; border-radius: 50%; overflow: hidden; }
+  .tst-av img { width: 100%; height: 100%; object-fit: cover; }
+  .tst-logo { position: absolute; }
+  .tst-logo img { width: 100%; height: 100%; object-fit: contain; }
+  .tst-brand {
+    position: absolute; left: 188px; top: 26px;
+    font-weight: 700; font-size: 27px; line-height: 32px; letter-spacing: -0.8px;
+    color: #000; white-space: nowrap;
+  }
+  .tst-q {
+    position: absolute; left: 1px; top: 111px;
+    font-weight: 700; font-size: 44.486px; line-height: 44.5px; letter-spacing: -0.89px;
+    color: #000;
+  }
+  .tst-quote {
+    position: absolute; left: 7px; top: 155px;
+    font-weight: 400; font-size: 16px; line-height: 21.6px; letter-spacing: -0.32px;
+    color: #000;
+  }
+  .tst-rule { position: absolute; left: 0; top: 405px; width: 0; height: 45px; border-left: 0.97px solid #000; }
+  .tst-name {
+    position: absolute; left: 27px; top: 409px;
+    font-weight: 700; font-size: 20.445px; line-height: 23.1px; letter-spacing: -0.41px;
+    color: #000; white-space: nowrap;
+  }
+  .tst-role {
+    position: absolute; left: 27px; top: 435px;
+    font-weight: 400; font-size: 13.63px; line-height: 16.1px; letter-spacing: -0.14px;
+    color: #000; white-space: nowrap;
+  }
+
+  /* ---------- Footer (black, SIX26) ---------- */
+  .footer {
+    position: absolute; left: 0; width: 1728px; height: 349px;
+    background: #000; overflow: hidden;
+  }
+  .foot-cta {
+    position: absolute; left: 40px; top: 60px; width: 470px; height: 74px;
+    font-weight: 700; font-size: 24px; line-height: 24px;
+    color: #fff; text-transform: uppercase; word-break: break-word;
+  }
+  .foot-cta a { text-decoration: underline; text-underline-position: from-font; cursor: pointer; }
+  .foot-mark { position: absolute; top: 54.44%; right: 2.23%; bottom: -35.46%; left: 2.29%; }
+  .foot-mark img { position: absolute; inset: 0; width: 100%; height: 100%; max-width: none; }
+  .foot-col {
+    position: absolute;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; /* 9/4 Joel: footers all in Helvetica (was Azeret Mono) */
+    font-weight: 400; font-size: 15px; line-height: 17.5px;
+    color: #fff; text-transform: uppercase; word-break: break-word;
+  }
+  .foot-col .b, .foot-b { font-weight: 700; }
+</style>
+</head>
+<body>
+<script>
+(function () {
+  if (window.self === window.top && !location.search.includes('flat=1')) {
+    var page = location.pathname.split('/').pop() || 'index.html';
+    location.replace('view.html?p=' + encodeURIComponent(page));
+  }
+  if (location.search.includes('reveal=1')) {
+    document.write('<style>.fd{opacity:1 !important; transform:none !important;}' +
+      '.hdr{position:relative !important;} #svcStick{position:absolute !important; top:0 !important;}' +
+      '*,*::before,*::after{transition:none !important; animation:none !important;}' +
+      '#menu-overlay{display:none !important;}</style>');
+  }
+})();
+</script>
+
+<div class="page" id="page">
+
+  <!-- ============ HEADER ============ -->
+  <div class="hdr">
+    <a href="index.html" id="lettermark" style="left:63px; top:0; width:639px; height:161px; z-index:2;"></a>
+    <p class="nav-sm" style="left:504px; top:43px;">LOS ANGELES, CA</p>
+    <p class="nav-sm" style="left:504px; top:68px;">NEW YORK, NY</p>
+    <div class="hdr-menu" title="Menu">
+      <div class="l" style="top:12px;"></div>
+      <div class="l" style="top:20px;"></div>
+      <div class="l" style="top:28px;"></div>
+    </div>
+  </div>
+
+  <!-- ============ HERO ROW ============ -->
+  <p class="sv-hero-h fd">We&rsquo;ve got
+you covered</p>
+  <p class="sv-hero-p fd" style="--fd:0.1s;">5-star experiences, 100% of the time. We create experiences that resonate deeply with your audience by combining cutting-edge technology, artistic vision, and meticulous attention to detail. When you work with us, you're not just getting a service provider, you're gaining a creative partner who is an extension of your team and creates an experience that is seamless and enjoyable. We are not here to just execute but to elevate your brand through unparalleled storytelling and visual excellence.</p>
+
+  <!-- ============ STEPPER (pinned) ============ -->
+  <div id="svcPinzone">
+    <div id="svcStick">
+      <div class="tabrow">
+        <div id="svcRule"></div>
+        <div class="tab-numbox" data-i="0" style="left:63px;"><p class="tab-num">01</p></div>
+        <div class="tab-numbox" data-i="1" style="left:480.5px;"><p class="tab-num">02</p></div>
+        <div class="tab-numbox" data-i="2" style="left:951.5px;"><p class="tab-num">03</p></div>
+        <div class="tab-numbox" data-i="3" style="left:1346px;"><p class="tab-num">04</p></div>
+        <p class="tab-word on" style="left:63px;">Creative</p>
+        <p class="tab-word" style="left:516px;">Production</p>
+        <p class="tab-word" style="left:987px;">Post</p>
+        <p class="tab-word" style="left:1417px;">Experiential</p>
+      </div>
+      <div id="svcCols"></div>
+    </div>
+  </div>
+
+  <!-- ============ EVERYTHING BELOW THE PINZONE ============ -->
+  <div id="below" style="position:absolute; left:0; top:0; width:1728px;">
+
+    <!-- ============ OUR BLUEPRINT ============ -->
+    <p class="sv-h fd" style="top:1617px;">Our Blueprint</p>
+    <p class="bp-statement fd" style="top:1681px;">No matter where you are on your creative and production journey, we&rsquo;re ready to dive in and get to work with our trusted process.</p>
+    <div id="blueprint"></div>
+
+    <!-- ============ TESTIMONIALS ============ -->
+    <p class="sv-h fd" style="top:2615px;">Don't Believe Us, Believe...</p>
+    <div class="tst-chev fd" id="tstPrev" style="left:1495px; top:2616px;" title="Previous">
+      <svg width="23" height="46" viewBox="0 0 23 46" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M20 2 L4 23 L20 44" stroke="#000" stroke-width="4"/></svg>
+    </div>
+    <div class="tst-chev fd" id="tstNext" style="left:1593px; top:2616px;" title="Next">
+      <svg width="23" height="46" viewBox="0 0 23 46" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3 2 L19 23 L3 44" stroke="#000" stroke-width="4"/></svg>
+    </div>
+    <div id="tstCards"></div>
+
+    <!-- ============ FOOTER ============ -->
+    <div class="footer" style="top:3732px;">
+      <div class="foot-cta">
+        <p>Let&rsquo;s get started.&nbsp;</p>
+        <p>Connect with us at <a href="mailto:hello@sixtwentysix.co">hello@sixtwentysix.co</a></p>
+      </div>
+      <div class="foot-mark"><img src="assets/six26-wordmark.svg" alt="SIX26"></div>
+      <p class="foot-col foot-b" style="left:884px; top:60px;">join the team</p>
+      <p class="foot-col" style="left:884px; top:96px; width:225px;"><a href="mailto:careers@sixtwentysix.co" style="color:inherit; text-decoration:none; cursor:pointer;">careers@sixtwentysix.co</a></p>
+      <div class="foot-col" style="left:1185px; top:60px; width:166px;">
+        <p class="b">capabilities Deck</p>
+        <p>&#8203;</p>
+        <p><a href="mailto:hello@sixtwentysix.co?subject=SX%20-%20Capabilities%20Deck%20Request&body=Hi!%20I%20am%20requesting%20the%20SixTwentySix%20capabilities%20deck." style="color:inherit; text-decoration:none; cursor:pointer;">request our deck</a></p>
+      </div>
+      <div class="foot-col" style="left:1427px; top:60px; width:130px;">
+        <p class="b">newsletter</p>
+        <p>&#8203;</p>
+        <p><a href="mailto:hello@sixtwentysix.co?subject=Newsletter" style="color:inherit; text-decoration:none; cursor:pointer;">Subscribe</a></p>
+      </div>
+      <div class="foot-col" style="left:1601px; top:60px; width:89px;">
+        <p class="b">follow us</p>
+        <p>&#8203;</p>
+        <p><a href="https://www.instagram.com/sixtwentysixco/" target="_blank" rel="noopener" style="color:inherit; text-decoration:none; cursor:pointer;">ig</a> / <a href="https://www.linkedin.com/company/sixtwentysix" target="_blank" rel="noopener" style="color:inherit; text-decoration:none; cursor:pointer;">li</a></p>
+      </div>
+    </div>
+
+  </div><!-- /#below -->
+
+</div><!-- /.page -->
+
+<script>
+if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+window.scrollTo(0, 0);
+
+const io = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    const b = e.boundingClientRect;
+    /* zero-size wrappers (absolute children only) never reach ratio 0.15 —
+       they were permanently invisible (the empty-content bug, 8/19) */
+    if (e.intersectionRatio >= 0.15 || (e.isIntersecting && (b.width < 2 || b.height < 2))) {
+      /* one-shot (8/21): un-revealing on exit made the reveal REPLAY when
+         scrolling back up — tabs/toggles popped in 28px low on staggered
+         delays, overlapping, then jumped to their seats. Seen stays seen. */
+      e.target.classList.add('seen');
+      io.unobserve(e.target);
+    }
+  });
+}, { threshold: [0, 0.15] });
+
+/* ================= STEPPER (states verbatim from 378:589-668) ================= */
+(() => {
+  const REVEAL = location.search.includes('reveal=1');
+  const STEPS = [
+    { items: [
+      { t: 'Research',   x: 63,  y: 0, w: 234, b: 'We study trends, markets, competition, inspirations, and insights so you don’t have to.' },
+      { t: 'Concepting', x: 371.8,  y: 0, w: 259, b: 'We’ve mastered the art of the brainstorm, delivering concepts that disrupt any category.' },
+      { t: 'Strategy',   x: 708.7,  y: 0, w: 324, b: 'Planning makes perfect. We take a look at the lay of the land and inform you where the best place to plant the seed is.' },
+      { t: 'Scripting',  x: 1118.6, y: 0, w: 255, b: 'We open on. cut to, fade to black, and most importantly, always get the story straight.' },
+      { t: 'Ideation',   x: 1451, y: 0, w: 214, b: 'Big ideas require big thinkers. And there’s no shortage of that here.' },
+    ]},
+    { items: [
+      { t: 'Commercial',   x: 63,  y: 0, w: 277, b: 'From :06s to :60s, we understand how to put brands - and their agencies - in the spotlight.' },
+      { t: 'Social',       x: 402.6,  y: 0, w: 213, b: 'From captions to content, we’re always looking for a way to break the internet.' },
+      { t: 'Music videos', x: 673.9,  y: 0, w: 312, b: 'Every song needs a visual story. We collaborate with artists and labels to help bring their songs to life.' },
+      { t: 'Experiential', x: 1050.9, y: 0, w: 255, b: 'We create experiences that move people and move the needle for brands.' },
+      { t: 'Branded',      x: 1367, y: 0, w: 298, b: 'We craft and create stories with deeper meaning, connecting with the audience beyond the “Presented by”.' },
+    ]},
+    { items: [
+      { t: 'Editorial', x: 63,    y: 2,   w: 249,   b: 'Frame by frame, we craft cinematic, dynamic magic' },
+      { t: 'VFX',       x: 492.1,  y: 2,   w: 314.8, b: 'We paint pixels, elevating every frame and bringing impossible imaginations to life.' },
+      { t: 'Unreal',    x: 921.1,  y: 2,   w: 314.8, b: 'Utilizing the limitless creative power of Unreal Engine, we push the boundaries of possibility to bring conceptual worlds to reality.' },
+      { t: 'Animation', x: 1350.2, y: 2,   w: 314.8, b: 'We bring vivid imaginations to reality through the magic of 2D and 3D visualizations.' },
+      { t: 'Color',     x: 63,    y: 210, w: 314.8, b: 'We set the perfect mood, grading footage to deliver ownable, distinct color stories to your content.' },
+      { t: 'Music',     x: 492.1,  y: 210, w: 314.8, b: 'From original compositions to sourcing the next big track, we orchestrate cues and find hidden gems to set your content apart.' },
+      { t: 'Sound',     x: 921.1,  y: 210, w: 314.8, b: 'Whooshes, vrooms, clicks, and clacks, we immerse audiences into the story through sound, adding depth and dimension to every moment.' },
+      { t: 'Motion graphics', x: 1350.2, y: 210, w: 314, b: 'Animating ideas into dynamic visual narratives, we combine design and movement to create impactful storytelling experiences.' },
+    ]},
+    { items: [
+      { t: 'Event production', x: 63,  y: 1,   w: 438, b: 'We handle every logistical and creative detail, ensuring smooth execution from build-out to showtime.' },
+      { t: 'Event capture',    x: 645,  y: 1,   w: 438, b: 'We document every moment with high-quality video and photography, turning live experiences into lasting content.' },
+      { t: 'Livestream',       x: 1227, y: 1,   w: 438, b: 'We produce seamless live broadcasts, extending the reach of events to global audiences in real time.' },
+      { t: 'Fabrication',      x: 63,  y: 202, w: 300, b: 'We design and build custom installations, transforming spaces into immersive brand experiences.' },
+      { t: 'BTS',              x: 645,  y: 202, w: 438, b: 'We document behind-the-scenes content that pulls back the curtain, showcasing the energy and creativity behind the experience.' },
+      { t: 'Event recap',      x: 1227, y: 202, w: 438, b: 'We craft compelling highlight videos that capture the essence of the event and keep the momentum going long after it’s over.' },
+    ]},
+  ];
+
+  const SEC_TOP = 814, EXTRA = REVEAL ? 0 : 1800, STICK_H = 295, HDR = 118;
+  const SLOTS = [63, 516, 987, 1417]; /* resting seats: edges ON the rails (63 / right edge 1665) */
+  const NUM_W = 71;                     /* number seated 71px before the word */
+
+  /* Pinzone height = stick + extra scroll; everything below shifts by EXTRA. */
+  document.getElementById('svcPinzone').style.height = (STICK_H + EXTRA) + 'px';
+  document.getElementById('below').style.top = EXTRA + 'px';
+  document.getElementById('page').style.height = (4081 + EXTRA) + 'px';
+
+  const stick = document.getElementById('svcStick');
+  const words = [...document.querySelectorAll('.tabrow .tab-word')];
+  const numboxes = [...document.querySelectorAll('.tabrow .tab-numbox')];
+  const colsEl = document.getElementById('svcCols');
+  let active = -1;
+
+  /* Joel's law for this section: the section words pin at the TOP of the
+     viewport and the answer rows sit in the MIDDLE (recentered per step,
+     since Post/Experiential run two rows deep). The stick spans the whole
+     viewport band below the header so the centered rows live INSIDE it —
+     otherwise they overflow the block and crash into Our Blueprint when
+     the section unpins (Joel's 8/20 screenshot). Everything below shifts
+     by the extra height. */
+  function colsH(i) {
+    return Math.max(...STEPS[i].items.map(it => it.y)) + 130;
+  }
+  function layoutSticky() {
+    if (REVEAL) return;
+    const top = HDR + 130; /* Joel 8/21: not glued to the header — the pinned tabs breathe */
+    /* TIGHT block (Joel 8/20 "the spacing hurts my soul"): the rows sit a
+       fixed 180px under the tab words — no viewport centering, no void.
+       Stick is exactly tab row + gap + the deepest step, one stable seat. */
+    const maxH = Math.max(...STEPS.map((_, i) => colsH(i)));
+    const COLS_TOP = 180;
+    const stickH = Math.max(STICK_H, COLS_TOP + maxH + 30);
+    stick.__seat = top; stick.__h = stickH;
+    if (stick.__repin) stick.__repin();
+    const grow = stickH - STICK_H;
+    document.getElementById('svcPinzone').style.height = (stickH + EXTRA) + 'px';
+    /* -118 puts the stepper -> Blueprint break on the page's native
+       ~300px section rhythm (audit 8/21: the other breaks run 270-320) */
+    document.getElementById('below').style.top = (EXTRA + grow - 118) + 'px';
+    document.getElementById('page').style.height = (4081 + EXTRA + grow - 205) + 'px'; /* testimonials -> footer on the ~300 rhythm (8/21 audit) */
+    colsEl.style.top = COLS_TOP + 'px';
+  }
+  /* FIXED-emulated pin (Joel 8/22 — the stepper was jittering): native
+     sticky reseats ASYNC under the scripted smooth scroll (the header-bob
+     physics). Locked = position:fixed, compositor-pinned; outside the span
+     it parks absolute in the pinzone. */
+  if (!REVEAL) {
+    let pinMode = '';
+    const setPin = m => {
+      if (pinMode === m) return;
+      pinMode = m;
+      const h = stick.__h || STICK_H;
+      if (m === 'pre')  stick.style.cssText = `position:absolute; left:0; top:0; width:1728px; height:${h}px;`;
+      if (m === 'lock') stick.style.cssText = `position:fixed; left:50%; margin-left:-864px; top:${stick.__seat}px; width:1728px; height:${h}px;`;
+      if (m === 'post') stick.style.cssText = `position:absolute; left:0; top:${EXTRA}px; width:1728px; height:${h}px;`;
+    };
+    const drivePin = () => {
+      const S0 = SEC_TOP - (stick.__seat || HDR);
+      const y = window.scrollY;
+      setPin(y < S0 ? 'pre' : (y <= S0 + EXTRA ? 'lock' : 'post'));
+    };
+    stick.__repin = () => { pinMode = ''; drivePin(); };
+    window.addEventListener('scroll', drivePin, { passive: true });
+  }
+  layoutSticky();
+  window.addEventListener('resize', layoutSticky);
+
+  /* stagger the entrance and fire it when the stepper first comes into view */
+  words.forEach((w, i) => w.style.setProperty('--d', (i * 0.13).toFixed(2) + 's'));
+  numboxes.forEach((b, i) => b.style.setProperty('--d', (i * 0.13 + 0.08).toFixed(2) + 's'));
+  const tabrowEl = document.querySelector('.tabrow');
+  if (REVEAL) { tabrowEl.classList.add('in'); tabrowEl.classList.add('split'); }
+  else new IntersectionObserver((entries, obs) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { armEntrance(); obs.unobserve(e.target); }
+    });
+  }, { threshold: 0.15 }).observe(tabrowEl);
+
+  function setTab(i) {
+    /* Joel 8/21: at the top of the page nothing has split yet — no number,
+       no shift. The word only steps aside (uncovering its number) once the
+       section has actually been scrolled into. */
+    const armed = tabrowEl.classList.contains('split');
+    const wordShift = n => n === 0 ? NUM_W : (n === 3 ? 0 : NUM_W / 2);
+    const boxSeat  = n => n === 0 ? SLOTS[0] : (n === 3 ? SLOTS[3] - NUM_W : SLOTS[n] - NUM_W / 2);
+    words.forEach((w, n) => {
+      w.classList.toggle('on', n === i);
+      w.style.left = (SLOTS[n] + (armed && n === i ? wordShift(n) : 0)) + 'px';
+    });
+    numboxes.forEach((b, n) => {
+      b.style.left = boxSeat(n) + 'px';
+      b.classList.toggle('on', armed && n === i);
+    });
+  }
+  function armEntrance() {
+    if (tabrowEl.classList.contains('in')) return;
+    tabrowEl.classList.add('in');
+    setTab(active < 0 ? 0 : active); // now play the split
+  }
+
+  function paintCols(i) {
+    colsEl.classList.remove('in');
+    colsEl.innerHTML = '';
+    STEPS[i].items.forEach((it, n) => {
+      const d = (n * 0.09).toFixed(2) + 's';
+      const tt = document.createElement('p');
+      tt.className = 'sv-t sv-stg';
+      tt.style.cssText = `left:${it.x}px; top:${it.y}px; width:${it.w}px; --d:${d};`;
+      tt.textContent = it.t;
+      const bb = document.createElement('p');
+      bb.className = 'sv-b sv-stg';
+      bb.style.cssText = `left:${it.x}px; top:${it.y + 32 + 17}px; width:${it.w}px; --d:${(n * 0.09 + 0.06).toFixed(2)}s;`;
+      bb.textContent = it.b;
+      colsEl.append(tt, bb);
+    });
+    setTimeout(() => colsEl.classList.add('in'), 30); // let the start frame commit
+  }
+
+  let colsTimer = null;
+  function show(i, fromScroll) {
+    if (i === active) return;
+    const wasActive = active;
+    active = i;
+    setTab(i);
+    /* Joel 8/22 final: the BOUNDARY SLOWDOWN — opening a new section drops
+       the scroll speed for a beat (the pause), then it keeps going. The
+       line scrubs with the scroll so it eases but never stops. */
+    if (fromScroll && wasActive >= 0 && !REVEAL) {
+      window.SX_SCROLL_MAXV = 240;
+      clearTimeout(show.slowT);
+      show.slowT = setTimeout(() => { window.SX_SCROLL_MAXV = null; }, 520);
+    }
+    clearTimeout(colsTimer); // uncancelled timers flashed stale copy on fast scrubs
+    colsEl.classList.remove('in'); // current answers fade out together
+    colsTimer = setTimeout(() => paintCols(i), 260);
+  }
+
+  function pinStart() {
+    return SEC_TOP - (stick.__seat || HDR);
+  }
+  const svcRule = document.getElementById('svcRule');
+  function stepFromScroll() {
+    if (REVEAL) return;
+    const p = (window.scrollY - pinStart()) / EXTRA;
+    /* the rule scrubs WITH the scroll (Joel 8/22 final): the boundary
+       slowdown shows as the line easing, never stopping */
+    if (svcRule) svcRule.style.transform = 'scaleX(' + Math.max(0, Math.min(1, p)).toFixed(4) + ')';
+    /* the entrance also arms on scroll — IntersectionObserver alone missed
+       it inside the sticky container */
+    /* arm only when the row is genuinely ON SCREEN — the old scroll-distance
+       test was true at the very top of the page, so 01 showed before you
+       ever reached the section (Joel 8/21) */
+    /* Joel 8/22 (final): the ENTRANCE (words rising) arms on sight, but
+       the SPLIT begins only at the LOCK — the moment the stepper pins.
+       Scrolling above the lock plays the split home again. */
+    const locked = window.scrollY >= pinStart();
+    if (tabrowEl && !tabrowEl.classList.contains('split') && locked) {
+      armEntrance();               // in case the io hasn't fired yet
+      tabrowEl.classList.add('split');
+      setTab(active < 0 ? 0 : active);  // now play the split
+      /* Joel 8/22 (round 2): the answers start the MOMENT the split starts —
+         one gesture together, the stagger itself provides the trailing feel */
+      clearTimeout(colsTimer);
+      paintCols(active < 0 ? 0 : active);
+    } else if (tabrowEl && tabrowEl.classList.contains('split') && !locked &&
+               tabrowEl.getBoundingClientRect().top >= 0) {
+      /* above the lock again: number tucks behind the word, all grey */
+      tabrowEl.classList.remove('split');
+      setTab(active < 0 ? 0 : active);
+      if (svcRule) svcRule.style.transform = 'scaleX(0)';
+    }
+    /* Joel 8/22: leave the section entirely and the whole thing RE-ARMS —
+       scrolling back replays the words' entrance, the split, and the
+       answers' stagger from scratch. */
+    if (tabrowEl && tabrowEl.classList.contains('in')) {
+      /* Joel 8/22: measure the WHOLE block, not the tab row — the answers
+         were vanishing while still on screen as you scrolled past the end.
+         Content only re-arms once every last pixel of it has left. */
+      const rr = stick.getBoundingClientRect();
+      if (rr.top > window.innerHeight || rr.bottom < 0) {
+        tabrowEl.classList.remove('in');
+        tabrowEl.classList.remove('split');
+        colsEl.classList.remove('in');
+        active = -1;
+        setTab(0);
+        if (svcRule) svcRule.style.transform = 'scaleX(0)';
+      }
+    }
+    show(Math.max(0, Math.min(STEPS.length - 1, Math.floor(p * STEPS.length))), true);
+  }
+  window.addEventListener('scroll', stepFromScroll, { passive: true });
+  let lastY = -1;
+  (function tick() {
+    if (window.scrollY !== lastY) { lastY = window.scrollY; stepFromScroll(); }
+    if (!REVEAL) requestAnimationFrame(tick);
+  })();
+
+  words.forEach((w, i) => w.addEventListener('click', () => {
+    if (REVEAL) { show(i); return; }
+    window.scrollTo({ top: pinStart() + (i + 0.5) * (EXTRA / STEPS.length), behavior: 'smooth' });
+  }));
+
+  paintCols(0);
+  setTab(0);
+  active = 0;
+  stepFromScroll();
+})();
+
+/* ================= OUR BLUEPRINT (numbers below each step, per frame) ================= */
+(() => {
+  const COLS = [789, 1192];
+  const ROWS = [
+    [{ t:'Creative Brief', w:348, b:'Before we kick off creative, we understand your goals, objectives, target audience, and more. We love telling stories, but we want to make sure it’s the right one for your team.', n:'01' },
+     { t:'Research & Development', w:389, b:'Through in-depth analysis, market trends, and competitor insights, we learn what everyone else is doing so we can do it differently', n:'02' }],
+    [{ t:'Vision Building', w:348, b:'Brainstorms, tissue sessions, and lots of exploration. We’ll develop creative territories to hone in and collaborate on the best vision for your team. Once a territory is selected, we’ll begin the bidding process to determine costs and discuss budgetary opportunities and constraints.', n:'03' },
+     { t:'Pre-Production', w:326, b:'Before our directors say “action,” we plan and prepare every aspect of the shoot. From storyboards, crew assignments, scouts, and schedules, we iron out every wrinkle to avoid any surprises on set.', n:'04' }],
+    [{ t:'Production', w:358, b:'It’s showtime, and we’re ready to bring the vision to life. From the first shot of the day to the Martini shot, we stay collaborative with your team to ensure we’re capturing everything needed, and more.', n:'05' },
+     { t:'Post-Production', w:318, b:'From offline to online to delivery, we’re there every step of the way to craft the finished product, and collectively create something we’re all proud to launch together.', n:'06' }],
+  ];
+  const TITLE_Y = [1617, 1846, 2113], NUM_Y = [1793, 2060, 2295];
+  const host = document.getElementById('blueprint');
+  ROWS.forEach((row, r) => {
+    row.forEach((st, c) => {
+      /* Joel 8/21: the six steps animate in SEQUENCE (01 -> 06) as you
+         scroll onto the section — staggered opacity via the .fd delay var */
+      const k = r * 2 + c;
+      const d = (k * 0.18).toFixed(2) + 's';
+      host.insertAdjacentHTML('beforeend',
+        `<p class="bp-t fd" style="left:${COLS[c]}px; top:${TITLE_Y[r]}px; --fd:${d};">${st.t}</p>
+         <p class="bp-b fd" style="left:${COLS[c]}px; top:${TITLE_Y[r] + 64}px; width:${st.w}px; --fd:${d};">${st.b}</p>
+         <p class="bp-n fd" style="left:${COLS[c]}px; top:${NUM_Y[r]}px; --fd:${(k * 0.18 + 0.12).toFixed(2)}s;">${st.n}</p>`);
+    });
+  });
+})();
+
+/* ================= TESTIMONIALS — every review on the site (Joel 8/22),
+   rolling on THE TEAM-RAIL LAW: continuous 44px/s drift, duplicated lap so
+   there is never a gap, pause while the cursor is on it, chevrons glide one
+   card. Content pulled verbatim from sixtwentysix.co/services. ================= */
+(() => {
+  const PEOPLE = [
+    { name: 'Andrew Mok', role: 'Chief Marketing Officer', av: 'assets/live/av-andrew-mok.jpg', brand: 'Turo',
+      q: 'We\u2019re thrilled to launch our new brand campaign, Open Doors, developed in partnership with SixTwentySix. Using cutting edge production technology like Unreal Engine, SixTwentySix completely brought this storytelling to life. They were a phenomenal partner all throughout and truly felt like an extension of the Turo team.' },
+    { name: 'Stacey Andrade', role: 'V.P. of Marketing', av: 'assets/svc-av-stacey.png',
+      logo: 'assets/svc-logo-liquidiv.png', lw: 133, lh: 70,
+      q: 'SixTwentySix brought so much creativity and attention to detail from story-board development all the way through to post-production. The team was receptive to feedback, and demonstrated extreme speed and agility to usher us from idea generation to launch. They were a key partner for us in this monumental campaign for our brand.' },
+    { name: 'Dexter Lee', role: 'V.P. Creative', av: 'assets/svc-av-dexter.png',
+      logo: 'assets/svc-logo-path.png', lw: 122, lh: 64,
+      q: 'Loved working with Team SX as everyone on the team knew their roles and made a long day very enjoyable. Loved the \u201cout-of-the-box\u201d thinking that the creative team brought to the table to make our video stand out from the rest. In the end, we are extremely happy with the final video as it captured spot-on what we were envisioning.' },
+    { name: 'Ulrika Karlberg', role: 'Chief Creative Officer', av: 'assets/live/av-ulrika.jpg', brand: 'YARD NYC',
+      q: 'This USTA project was one of the smoothest, most well-run productions I\u2019ve been a part of. SixTwentySix pulled together a great team that was tight, efficient and competent, that communicated incredibly well. The vibe was light and positive and poised. If I had three thumbs they would all point upwards. Thanks so much SixTwentySix!' },
+    { name: 'Chris Froelich', role: 'Creative Director', av: 'assets/svc-av-chris.png',
+      logo: 'assets/svc-logo-kizik.png', lw: 104, lh: 54,
+      q: 'Where to start? You guys were such a positive, organized, and creative group to work with. Your attention to detail was incredible. I was in awe with how much effort you put into every part of the process. You worked with our budget constraints and still made something beautiful.' },
+  ];
+  const PITCH = 660, PERIOD = PITCH * PEOPLE.length; /* Joel 8/22 round 2: air, but a touch tighter */
+  const WIN_TOP = 2813, CARD_TOP = 70, LEFT0 = 114;
+  const host = document.getElementById('tstCards');
+  host.style.cssText = `position:absolute; left:0; top:${WIN_TOP}px; width:1728px; height:610px; overflow:clip;`;
+  const track = document.createElement('div');
+  track.style.cssText = 'position:absolute; left:0; top:0; width:1728px; height:610px;';
+  host.appendChild(track);
+  const card = (p, x) => `
+    <div class="tst-card fd seen" style="left:${x}px; top:${CARD_TOP}px; height:452px;">
+      <div class="tst-av" style="left:14px; top:0; width:85px; height:85px;"><img src="${p.av}" alt="${p.name}"></div>
+      ${p.logo
+        ? `<div class="tst-logo" style="left:188px; top:${(85 - p.lh) / 2}px; width:${p.lw}px; height:${p.lh}px;"><img src="${p.logo}" alt=""></div>`
+        : `<p class="tst-brand">${p.brand}</p>`}
+      <p class="tst-q">&ldquo;</p>
+      <p class="tst-quote" style="width:408px;">${p.q}</p>
+      <div class="tst-rule"></div>
+      <p class="tst-name">${p.name}</p>
+      <p class="tst-role">${p.role}</p>
+    </div>`;
+  track.innerHTML =
+    PEOPLE.map((p, k) => card(p, LEFT0 + k * PITCH)).join('') +
+    PEOPLE.map((p, k) => card(p, LEFT0 + (k + PEOPLE.length) * PITCH)).join('');
+
+  let drift = 0, nudge = 0, nudgeT = 0, paused = false, last = 0;
+  /* pause ONLY while the cursor is on an actual card — hovering the empty
+     band between cards kept stopping the roll and read as stalling */
+  host.addEventListener('mouseover', e => { paused = !!e.target.closest('.tst-card'); });
+  host.addEventListener('mouseleave', () => { paused = false; });
+  function tick(now) {
+    const dt = Math.min(0.05, (now - last) / 1000) || 0;
+    last = now;
+    if (!paused) drift += 44 * dt;
+    nudge += (nudgeT - nudge) * (1 - Math.exp(-8 * dt));
+    const v = (((drift + nudge) % PERIOD) + PERIOD) % PERIOD;
+    track.style.transform = 'translateX(' + (-v).toFixed(2) + 'px)';
+    requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+  document.getElementById('tstNext').addEventListener('click', () => { nudgeT += PITCH; });
+  document.getElementById('tstPrev').addEventListener('click', () => { nudgeT -= PITCH; });
+})();
+
+document.querySelectorAll('.fd').forEach(el => io.observe(el));
+</script>
+<script src="smoothscroll.js?v=20260819095356"></script>
+<script src="logomorph.js?v=20260824a"></script>
+<script src="menu.js?v=20260824c"></script>
+<script>
+/* Safari back-forward cache restores dead builds from memory - always reload */
+window.addEventListener('pageshow', function (e) { if (e.persisted) location.reload(); });
+</script>
+</body>
+</html>

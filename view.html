@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Cache-Control" content="no-store">
+<meta name="viewport" content="width=1728">
+<title>SIXTWENTYSIX</title>
+<!--
+  FIT-TO-WINDOW SHELL (added 2026-08-10).
+  The site is a fixed 1728px desktop canvas (Figma-exact; mobile is phase two).
+  In anything narrower — the Claude side pane, a half-screen window — the raw
+  pages crop to a skinny slice. This shell embeds the real site in an iframe
+  that keeps its internal 1728px coordinate space (so every scroll animation,
+  fixed hero, and pixel threshold stays true) and simply scales the whole
+  frame down to the window width. Navigation happens inside the frame, so the
+  entire site is browsable from here.
+
+  Share/view link: http://localhost:8626/view.html
+  The raw pages are unchanged — index.html etc. are still the real build.
+-->
+<style>
+  html, body { margin: 0; height: 100%; overflow: hidden; background: #fff; }
+  #frame { border: 0; width: 1728px; transform-origin: top left; display: block; }
+</style>
+</head>
+<body>
+<iframe id="frame" title="SIXTWENTYSIX"></iframe>
+<script>
+  /* MOBILE (9/4, Joel: "full mobile pass — everything is way too small"):
+     phones get the phone-native build (m.html, from the Figma Full Site
+     Mobile frames) instead of the scaled desktop canvas. Route the ?p deep
+     link into m.html's hash router. Tablets and desktops keep the canvas. */
+  (function () {
+    const phone = matchMedia('(pointer: coarse)').matches && Math.min(screen.width, screen.height) < 500;
+    if (!phone) return;
+    const raw = new URLSearchParams(location.search).get('p') || '';
+    const [pg, q] = raw.split('?');
+    let hash = '#home';
+    const qs = new URLSearchParams(q || '');
+    if (pg === 'director.html') hash = '#director/' + (qs.get('who') || 'evan-bourque');
+    else if (pg === 'case-study.html') hash = qs.get('work') ? '#work/' + qs.get('work') : '#case-studies';
+    else if (pg && pg !== 'index.html') hash = '#' + pg.replace('.html', '');
+    location.replace('m.html' + hash);
+  })();
+  const f = document.getElementById('frame');
+  /* Deep links: raw pages redirect here with ?p=<page> when the window is
+     narrower than the 1728px canvas. Whitelisted so only site pages load. */
+  const PAGES = ['index.html','creatives.html','director.html','case-studies.html',
+                 'case-study.html','experiential.html','services.html','about.html',
+                 'careers.html','contact.html','lab.html'];
+  /* Cache-buster: today's stale-page confusion came from Chrome serving old
+     copies; a fresh stamp per shell load forces current files. */
+  const stamp = 'r=' + Date.now();
+  /* ?p may carry a page QUERY too (case-study.html?work=<slug> — the
+     WP-driven work pages, Joel 8/24): whitelist the page half, keep the
+     query half. */
+  const rawWant = new URLSearchParams(location.search).get('p') || '';
+  const qSplit = rawWant.indexOf('?');
+  const wantPage = qSplit === -1 ? rawWant : rawWant.slice(0, qSplit);
+  const wantQ = qSplit === -1 ? '' : rawWant.slice(qSplit + 1);
+  f.src = (wantPage && PAGES.includes(wantPage) ? wantPage : 'index.html')
+    + '?' + (wantQ ? wantQ + '&' : '') + stamp;
+  /* the frame's real query, minus our cache stamp — reused by the ?p sync
+     and the stale-tab reload so deep links survive both */
+  const frameQ = () => {
+    try {
+      const sp = new URLSearchParams(f.contentWindow.location.search);
+      sp.delete('r');
+      const t = sp.toString();
+      return t ? '?' + t : '';
+    } catch (e) { return ''; }
+  };
+  /* Title sync: the CMS pages (case-study.html?work=) retitle THEMSELVES
+     after their fetch lands, so the shell can't copy the title just once at
+     load — it watches the frame's <title> and mirrors every change. */
+  let titleWatch = null;
+  const syncTitle = hm => {
+    try { document.title = (f.contentDocument.title || 'SIXTWENTYSIX') + ' · ' + hm; } catch (e) { document.title = 'SIXTWENTYSIX · ' + hm; }
+  };
+  f.addEventListener('load', () => {
+    const t = new Date();
+    const hm = t.getHours().toString().padStart(2,'0') + ':' + t.getMinutes().toString().padStart(2,'0');
+    syncTitle(hm);
+    try {
+      if (titleWatch) titleWatch.disconnect();
+      const tEl = f.contentDocument.querySelector('title');
+      if (tEl) {
+        titleWatch = new MutationObserver(() => syncTitle(hm));
+        titleWatch.observe(tEl, { childList: true, characterData: true, subtree: true });
+      }
+    } catch (e) {}
+    /* ?p SYNC (Joel 8/22: "back to directors took me home"): the shell URL
+       froze at the page it opened with, so ANY reload — including Safari's
+       bfcache reload below — restarted the site at that stale page. Keep
+       ?p pointing at wherever the iframe actually is. */
+    try {
+      const cur = f.contentWindow.location.pathname.split('/').pop() || 'index.html';
+      if (PAGES.includes(cur)) history.replaceState(null, '', '?p=' + encodeURIComponent(cur + frameQ()));
+    } catch (e) {}
+  });
+  /* Stale-tab killer (8/19): a tab left open all day kept showing old builds.
+     Returning to the tab after 45s away reloads the CURRENT page with a
+     fresh stamp, so what you see is always what is on disk. */
+  let hiddenAt = 0;
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'hidden') { hiddenAt = Date.now(); return; }
+    if (hiddenAt && Date.now() - hiddenAt > 45000) {
+      let cur = 'index.html';
+      try { cur = f.contentWindow.location.pathname.split('/').pop() || 'index.html'; } catch (e) {}
+      const q = frameQ();
+      f.src = cur + (q ? q + '&' : '?') + 'r=' + Date.now();
+    }
+  });
+  let scaleNow = 1;
+  /* 9/8 (Joel, universal desktop note): designed on a 16" laptop (1728);
+     on his ProArt "everything felt way too zoomed in and big" — but a
+     capped scale leaves white gutters, which he vetoed the same hour. With a
+     fixed 1728 canvas those are the only two options, so the prototype keeps
+     FILLING the width (MAX_UP = Infinity). The real fix is the production
+     build: a responsive layout whose canvas widens at 1:1 type and boxes.
+     Recorded as the desktop scale law in Inbox/626 Website.md. */
+  const MAX_UP = Infinity;
+  function fit() {
+    const s = Math.min(MAX_UP, innerWidth / 1728);
+    scaleNow = s;
+    f.style.transform = 'scale(' + s + ')';
+    // Height is pre-divided by the scale so the frame fills the window exactly
+    // after scaling; the iframe's own viewport stays 1728px wide internally.
+    f.style.height = (innerHeight / s) + 'px';
+    f.style.marginLeft = Math.max(0, (innerWidth - 1728 * s) / 2) + 'px';
+  }
+
+  /* The 8/10 "optically constant header chrome" counter-scale was retired in
+     the 2026-08-18 Full Site sync: the new header (big SIX26 wordmark + cities
+     + tagline at exact Figma seats) collides with any per-element scaling, so
+     the canvas now scales uniformly — Figma-exact proportions at every width. */
+
+  addEventListener('resize', fit);
+  fit();
+</script>
+<script>
+/* Safari back-forward cache restores dead builds from memory - always reload */
+window.addEventListener('pageshow', function (e) { if (e.persisted) location.reload(); });
+</script>
+</body>
+</html>
