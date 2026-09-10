@@ -863,6 +863,9 @@ document.querySelectorAll('.fd').forEach(el => io.observe(el));
     row.style.cursor = 'pointer';
     row.addEventListener('click', () => { location.href = row.dataset.href; });
   });
+  /* the scroll fade-in observer registered every .fd before these rows
+     existed; hand it the new rows or they stay at opacity 0 */
+  document.querySelectorAll('#lrows .fd').forEach(el => io.observe(el));
 
   /* Geometry (89:1642): 53px margins, 99px gutter -> 476px tiles at 3-up. */
   const LEFT = 53, RIGHT = 1678, CONTENT = RIGHT - LEFT, GUT = 99, TOP_0 = 183;
