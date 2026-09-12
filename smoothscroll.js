@@ -133,7 +133,7 @@
   }, { passive: false });
 
   /* ===================== TOUCH (2026-09-12) =====================
-     Sophee's iPad. view.html serves the desktop canvas to anything wider
+     Jake's iPad (Magic Keyboard, but he also taps the screen). view.html serves the desktop canvas to anything wider
      than a phone, but every cap, glide and speed limit above lived in the
      WHEEL handler alone, and a finger fires no wheel event. Measured on an
      emulated iPad against the same page: touch moved 280px per frame
@@ -146,6 +146,30 @@
 
      Escape hatch: ?nativescroll=1 hands scrolling back to the browser
      untouched, for when the engine misbehaves on a real device. */
+  /* WHICH HAND IS ON THE WHEEL (9/12 pm, Jake: "can we have it work off a
+     trackpad as if its a laptop, i have the ipad with the keyboard and
+     trackpad. thats what i was using"). The morning's pass gated everything
+     on matchMedia('(pointer: coarse)'), which is wrong for exactly that
+     setup: iPadOS reports a coarse PRIMARY pointer even with a Magic
+     Keyboard attached, so the device tells you nothing about what the hand
+     is actually doing. The EVENT does. A trackpad reports pointerType
+     'mouse' and fires wheel events; a finger reports 'touch'. Tracked live,
+     so the same iPad switches between the two mid-session. */
+  window.SXInput = { mode: 'mouse' };
+  var mark = function (m) { return function () { window.SXInput.mode = m; }; };
+  window.addEventListener('touchstart', mark('touch'), { passive: true, capture: true });
+  window.addEventListener('wheel', mark('mouse'), { passive: true, capture: true });
+  window.addEventListener('pointerdown', function (e) {
+    window.SXInput.mode = e.pointerType === 'touch' ? 'touch' : 'mouse';
+  }, { passive: true, capture: true });
+  window.addEventListener('pointermove', function (e) {
+    if (e.pointerType !== 'touch') window.SXInput.mode = 'mouse';
+  }, { passive: true, capture: true });
+
+  /* A touchscreen device INSTALLS the touch transport, but the transport
+     only ever engages on a real touchstart — a trackpad never fires one, so
+     on Jake's iPad the wheel path below runs exactly as it does on a
+     laptop, and the finger path is there for when he taps the screen. */
   var COARSE = window.matchMedia && matchMedia('(pointer: coarse)').matches;
   if (COARSE && location.search.indexOf('nativescroll=1') === -1) {
     /* Regions that scroll THEMSELVES keep the browser's own touch handling:

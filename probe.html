@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SIXTWENTYSIX — input probe</title>
+<!--
+  INPUT PROBE (2026-09-12). Built because the assistant cannot test iPadOS
+  Safari, and the whole iPad diagnosis turns on two questions no amount of
+  emulation can answer honestly: does a Magic Keyboard trackpad send WHEEL
+  events on iPadOS (if so the site's scroll engine already governs it), and
+  does it report pointerType 'mouse' (if so it should keep the full desktop
+  hover law). Jake opens this, scrolls and hovers for ten seconds, screenshots.
+  Not linked from anywhere; not in view.html's page whitelist.
+-->
+<style>
+  :root { color-scheme: light; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font: 15px/1.5 -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
+         background: #fff; color: #111; padding: 22px; -webkit-text-size-adjust: 100%; }
+  h1 { font-size: 19px; letter-spacing: -0.3px; margin-bottom: 4px; }
+  p.sub { color: #777; margin-bottom: 20px; }
+  section { border-top: 1px solid #e6e6e6; padding: 14px 0; }
+  h2 { font-size: 11px; letter-spacing: 1.2px; text-transform: uppercase; color: #999; margin-bottom: 9px; }
+  .row { display: flex; justify-content: space-between; gap: 16px; padding: 3px 0; }
+  .row b { font-weight: 600; }
+  .v { font-variant-numeric: tabular-nums; text-align: right; }
+  .yes { color: #0a7d2e; font-weight: 600; }
+  .no  { color: #c0271a; font-weight: 600; }
+  .verdict { margin-top: 18px; padding: 14px 16px; border-radius: 10px; background: #f4f4f4; font-size: 15px; }
+  .verdict b { display: block; margin-bottom: 4px; }
+  .pad { height: 140vh; }
+  .hovbox { margin-top: 12px; padding: 22px; border: 1px solid #ddd; border-radius: 10px;
+            text-align: center; color: #888; transition: background 0.2s, color 0.2s; }
+  .hovbox.on { background: #111; color: #fff; }
+  code { font: 12px/1.4 ui-monospace, Menlo, monospace; color: #555; word-break: break-all; }
+</style>
+</head>
+<body>
+<h1>Input probe</h1>
+<p class="sub">Scroll this page for a few seconds, then move the cursor over the box below. Screenshot the whole thing.</p>
+
+<section>
+  <h2>What this device says it is</h2>
+  <div class="row"><b>pointer: coarse</b><span class="v" id="q1"></span></div>
+  <div class="row"><b>pointer: fine</b><span class="v" id="q2"></span></div>
+  <div class="row"><b>any-hover: hover</b><span class="v" id="q3"></span></div>
+  <div class="row"><b>maxTouchPoints</b><span class="v" id="q4"></span></div>
+  <div class="row"><b>window</b><span class="v" id="q5"></span></div>
+</section>
+
+<section>
+  <h2>What your hand is actually sending</h2>
+  <div class="row"><b>wheel events</b><span class="v" id="c-wheel">0</span></div>
+  <div class="row"><b>&nbsp;&nbsp;last deltaY / mode</b><span class="v" id="c-delta">—</span></div>
+  <div class="row"><b>&nbsp;&nbsp;biggest jump per frame</b><span class="v" id="c-jump">—</span></div>
+  <div class="row"><b>touch events</b><span class="v" id="c-touch">0</span></div>
+  <div class="row"><b>pointer type: mouse</b><span class="v" id="c-pm">0</span></div>
+  <div class="row"><b>pointer type: touch</b><span class="v" id="c-pt">0</span></div>
+  <div class="row"><b>pointer type: pen</b><span class="v" id="c-pp">0</span></div>
+</section>
+
+<section>
+  <h2>Does the page control its own scrolling?</h2>
+  <div class="row"><b>wheel preventDefault honoured</b><span class="v" id="c-pd">—</span></div>
+  <div class="row"><b>scroll position</b><span class="v" id="c-y">0</span></div>
+  <div class="hovbox" id="hovbox">move the cursor here</div>
+  <div class="row" style="margin-top:8px"><b>hover fired, type</b><span class="v" id="c-hov">—</span></div>
+</section>
+
+<div class="verdict" id="verdict"><b>Reading…</b>scroll and hover for a few seconds</div>
+<section><h2>Browser</h2><code id="ua"></code></section>
+<div class="pad"></div>
+<p class="sub" style="margin-top:30px">End of probe. Scroll back up and screenshot.</p>
+
+<script>
+var mq = function (q) { return matchMedia(q).matches; };
+var yn = function (b) { return '<span class="' + (b ? 'yes' : 'no') + '">' + (b ? 'YES' : 'no') + '</span>'; };
+document.getElementById('q1').innerHTML = yn(mq('(pointer: coarse)'));
+document.getElementById('q2').innerHTML = yn(mq('(pointer: fine)'));
+document.getElementById('q3').innerHTML = yn(mq('(any-hover: hover)'));
+document.getElementById('q4').textContent = navigator.maxTouchPoints;
+document.getElementById('q5').textContent = innerWidth + ' x ' + innerHeight + ' @' + (devicePixelRatio || 1) + 'x';
+document.getElementById('ua').textContent = navigator.userAgent;
+
+var n = { wheel: 0, touch: 0, pm: 0, pt: 0, pp: 0 };
+var set = function (id, v) { document.getElementById(id).textContent = v; };
+
+/* The site's engine cancels wheel and re-drives the scroll itself. Do the same
+   here for one event to prove iPadOS honours it, then get out of the way. */
+var pdTested = false;
+addEventListener('wheel', function (e) {
+  n.wheel++; set('c-wheel', n.wheel);
+  set('c-delta', Math.round(e.deltaY) + ' / mode ' + e.deltaMode);
+  if (!pdTested) {
+    pdTested = true;
+    var y0 = scrollY;
+    e.preventDefault();
+    requestAnimationFrame(function () {
+      document.getElementById('c-pd').innerHTML = yn(Math.abs(scrollY - y0) < 2);
+    });
+  }
+}, { passive: false });
+
+['touchstart', 'touchmove'].forEach(function (t) {
+  addEventListener(t, function () { n.touch++; set('c-touch', n.touch); }, { passive: true });
+});
+addEventListener('pointerdown', function (e) { tally(e); }, { passive: true });
+addEventListener('pointermove', function (e) { tally(e); }, { passive: true });
+function tally(e) {
+  if (e.pointerType === 'mouse') { n.pm++; set('c-pm', n.pm); }
+  else if (e.pointerType === 'touch') { n.pt++; set('c-pt', n.pt); }
+  else { n.pp++; set('c-pp', n.pp); }
+}
+
+/* Biggest per-frame scroll jump: the whole iPad diagnosis in one number.
+   The site's animations are tuned for ~35px a frame. */
+var lastY = scrollY, worst = 0;
+(function tick() {
+  var d = Math.abs(scrollY - lastY); lastY = scrollY;
+  if (d > worst && d < 4000) { worst = d; set('c-jump', Math.round(worst) + ' px/frame'); }
+  set('c-y', Math.round(scrollY));
+  verdict();
+  requestAnimationFrame(tick);
+})();
+
+var box = document.getElementById('hovbox');
+box.addEventListener('pointerenter', function (e) {
+  box.classList.add('on');
+  document.getElementById('c-hov').innerHTML = '<span class="yes">' + e.pointerType + '</span>';
+});
+box.addEventListener('pointerleave', function () { box.classList.remove('on'); });
+
+function verdict() {
+  var v = document.getElementById('verdict'), t;
+  if (!n.wheel && !n.touch) return;
+  if (n.wheel && worst <= 80) t = '<b>Trackpad, governed.</b>Wheel events are arriving and the page is moving about ' + Math.round(worst) + 'px a frame, which is laptop behaviour. The scroll engine is in control here.';
+  else if (n.wheel && worst > 80) t = '<b>Wheel events arrive but the page is running at ' + Math.round(worst) + 'px a frame.</b>The engine is not holding it. Send Joel this screenshot.';
+  else if (!n.wheel && worst > 80) t = '<b>Finger, ungoverned: ' + Math.round(worst) + 'px a frame.</b>No wheel events at all. This is the bug.';
+  else t = '<b>Finger, governed at ' + Math.round(worst) + 'px a frame.</b>The touch engine is holding it.';
+  v.innerHTML = t;
+}
+</script>
+</body>
+</html>

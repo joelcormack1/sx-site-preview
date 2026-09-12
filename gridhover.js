@@ -29,9 +29,11 @@
    relayouts (density toggles) need no re-attach. */
 (function () {
   const SCALE = 1.3475, MARGIN = 14, LABEL_BAND = 58;
-  /* same gate as smoothscroll.js, same escape hatch */
-  const COARSE = window.matchMedia && matchMedia('(pointer: coarse)').matches
-                 && location.search.indexOf('nativescroll=1') === -1;
+  /* A trackpad gets the full desktop hover law even on an iPad; a finger
+     never does. Decided per event from pointerType, never from the device
+     (see the note in smoothscroll.js). */
+  const POINTER = 'onpointerenter' in window;
+  const fromTouch = e => e && e.pointerType === 'touch';
 
   /* THE LOOP LAW (Joel 8/24): every work tile on the site plays its own
      spot on hover, the way the homepage does. Any tile attached with a
@@ -197,29 +199,30 @@
     }
 
     /* TOUCH (9/12). There is no hover on a finger, and pretending otherwise
-       is what broke Sophee's iPad: a tap fires mouseenter, so the tile grew
+       is what broke Jake's iPad: a tap fires mouseenter, so the tile grew
        to 851px and ghosted the whole grid, and mouseleave never came. Worse,
        the scroll-exit below then set lock = true, which only ever clears on
        mousemove — so after one tap and one scroll, NO tile previewed again
        for the rest of the page. Verified: tap 1 grows, scroll, tap 3 does
        nothing, inject a mousemove and it works again.
 
-       So on a coarse pointer the grow/ghost choreography is off entirely and
-       a tap is just a tap. The loop law still holds, in the only way touch
-       allows: the tile nearest the middle of the screen plays its own spot,
-       one at a time, so the page still moves without asking an iPad to
-       decode a dozen videos at once. */
-    if (COARSE) {
-      cfg.tiles.forEach(ensureLoop);
-      touchLoops(cfg.tiles);
-      return;
-    }
-
+       So a FINGER no longer gets the grow/ghost choreography and a tap is
+       just a tap, while a trackpad or mouse gets the law untouched — on the
+       same iPad, switching freely. For the finger the loop law still holds
+       in the only way touch allows: the tile nearest the middle of the
+       screen plays its own spot, one at a time, so the page still moves
+       without asking an iPad to decode a dozen videos at once. */
     cfg.tiles.forEach(tile => {
       ensureLoop(tile);
-      tile.el.addEventListener('mouseenter', () => enter(tile));
-      tile.el.addEventListener('mouseleave', () => leave(tile));
+      if (POINTER) {
+        tile.el.addEventListener('pointerenter', e => { if (!fromTouch(e)) enter(tile); });
+        tile.el.addEventListener('pointerleave', e => { if (!fromTouch(e)) leave(tile); });
+      } else {
+        tile.el.addEventListener('mouseenter', () => enter(tile));
+        tile.el.addEventListener('mouseleave', () => leave(tile));
+      }
     });
+    touchLoops(cfg.tiles); // idle unless the last input was a real finger
 
     window.addEventListener('scroll', () => {
       if (active && Math.abs(window.scrollY - startScrollY) > 40) {
@@ -228,7 +231,11 @@
         leave(t);
       }
     }, { passive: true });
+    /* the scroll-exit lock releases on any real pointer movement. It used to
+       listen for mousemove alone, which a finger never sends — that is what
+       left the whole grid dead after one tap and one scroll. */
     window.addEventListener('mousemove', () => { lock = false; }, { passive: true });
+    window.addEventListener('pointermove', e => { if (!fromTouch(e)) lock = false; }, { passive: true });
   }
 
   /* One loop at a time, on the tile closest to the middle of the viewport.
@@ -262,6 +269,17 @@
     pickLoop();
   }
   function pickLoop() {
+    /* stands down the moment a trackpad or mouse takes over: hover owns the
+       loops then, and two engines driving the same videos would fight */
+    if (((window.SXInput && window.SXInput.mode) || 'mouse') !== 'touch') {
+      if (touchPlaying) {
+        touchPlaying.el.classList.remove('is-hover');
+        const pv0 = touchPlaying.el.querySelector('video');
+        if (pv0) pv0.pause();
+        touchPlaying = null;
+      }
+      return;
+    }
     const mid = window.innerHeight / 2;
     let best = null, bestD = Infinity;
     touchSet.forEach(t => {
