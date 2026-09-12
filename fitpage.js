@@ -37,4 +37,17 @@ window.SXFit = function (designH, footerH) {
   }
   fit();
   window.addEventListener('resize', fit);
+  /* 9/11: pages that rebuild a block AFTER load (careers reads its roles
+     from the CMS) can move a design seat and re-fit without double-scaling:
+     SXFit.move(el, newDesignTop) rewrites the captured design top for that
+     element, SXFit.refit() re-runs the distribution. */
+  window.SXFit.move = function (el, designTop) {
+    const o = els.find(x => x.el === el);
+    if (o) o.t = designTop;
+  };
+  window.SXFit.refit = fit;
+  window.SXFit.designTop = function (el) {
+    const o = els.find(x => x.el === el);
+    return o ? o.t : NaN;
+  };
 };

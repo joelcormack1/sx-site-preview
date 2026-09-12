@@ -9,7 +9,8 @@
 <!--
   CASE STUDIES — synced 1:1 to Full Site frame 234:1667 (2026-08-18).
   "Case Studies" in HelveticaNeueCyr Bold with the three filter tabs on the
-  same line (creative studio / Live Action / Experiential, in-place filters),
+  same line (Live Action / creative studio / Experiential, in-place filters;
+  the page opens on Live Action, Joel 9/11),
   density cluster below, uniform 3-up grid (431x242, r7.6), black footer.
   Hover = the white ghost treatment (Full Site frames 174-177), not the old
   black takeover.
@@ -208,15 +209,15 @@
   <!-- ============ TITLE + FILTERS ============ -->
   <p class="cs-title fd">Case studies</p>
   <div id="cstabs" class="fd" style="--fd:0.1s;">
-    <p class="cs-tab on" data-cat="cs"   style="left:1214px;">creative studio</p>
-    <p class="cs-tab"    data-cat="live" style="left:1397px;">Live Action</p>
+    <p class="cs-tab on" data-cat="live" style="left:1214px;">Live Action</p>
+    <p class="cs-tab"    data-cat="cs"   style="left:1345px;">creative studio</p>
     <p class="cs-tab"    data-cat="exp"  style="left:1528px;">Experiential</p>
-    <div id="cs-under" style="left:1214px; width:154px;"></div>
+    <div id="cs-under" style="left:1214px; width:102px;"></div>
   </div>
 
-  <!-- ============ DENSITY CLUSTER (234:1667: 6-block active) ============ -->
+  <!-- ============ DENSITY CLUSTER (234:1667; 2x2 active per the 9/11 law) === -->
   <div id="toggles" class="fd" style="--fd:0.15s;">
-    <div class="tbtn active" data-cols="3" style="left:1566px; top:372px; width:38px; height:28px;">
+    <div class="tbtn" data-cols="3" style="left:1566px; top:372px; width:38px; height:28px;">
       <div class="gt" style="left:0px; top:0px; width:11px; height:12px;"></div>
       <div class="gt" style="left:0px; top:15px; width:11px; height:13px;"></div>
       <div class="gt" style="left:13px; top:0px; width:12px; height:12px;"></div>
@@ -224,7 +225,7 @@
       <div class="gt" style="left:27px; top:0px; width:11px; height:12px;"></div>
       <div class="gt" style="left:27px; top:15px; width:11px; height:13px;"></div>
     </div>
-    <div class="tbtn" data-cols="2" style="left:1613px; top:372px; width:33px; height:28px;">
+    <div class="tbtn active" data-cols="2" style="left:1613px; top:372px; width:33px; height:28px;">
       <div class="gt" style="left:0px; top:0px; width:15px; height:12px;"></div>
       <div class="gt" style="left:0px; top:15px; width:15px; height:13px;"></div>
       <div class="gt" style="left:17px; top:0px; width:16px; height:12px;"></div>
@@ -377,21 +378,17 @@ const io = new IntersectionObserver(entries => {
   const host = document.getElementById('csgrid');
   const under = document.getElementById('cs-under');
   const tabs = [...document.querySelectorAll('.cs-tab')];
-  let cat = 'cs', cols = 3, userCols = false;
-  /* THE ROW-COUNT LAW (Joel 8/25): small sets read as rows of 2; once the
-     set breaks past two rows of three (7+ works) it goes back to 3-up.
-     Automatic per category; a manual toggle click overrides it. */
-  const autoCols = n => n > 6 ? 3 : 2;
+  /* Opens on Live Action (Joel 9/11) — the lead tab of the rail. */
+  let cat = 'live', cols = 2;
+  /* THE ROW-COUNT LAW (Joel 9/11, supersedes the per-category auto of 8/25):
+     ONE density for the whole page. Every tab reads rows of 2; the cluster
+     switches all three tabs together, so the grid never re-rhythms when you
+     move between filters. */
 
   let tiles = [];
 
   function layout() {
     const list = WORKS.filter(w => w.cats.includes(cat));
-    if (!userCols) {
-      cols = autoCols(list.length);
-      document.querySelectorAll('.tbtn').forEach(b =>
-        b.classList.toggle('active', parseInt(b.dataset.cols, 10) === cols));
-    }
     host.innerHTML = '';
     tiles = [];
     const w = cols === 3 ? W3 : (CONTENT_W - (cols - 1) * 145.5) / cols;
@@ -438,7 +435,27 @@ const io = new IntersectionObserver(entries => {
     });
   }
 
+  /* Tab rail: seats are MEASURED and right-aligned to the content rail so
+     reordering the labels keeps the frame's 29px gaps and its flush right
+     edge, whatever each label happens to measure. */
+  const TAB_GAP = 29, RAIL_R = LEFT + CONTENT_W;
+  function seatTabs(quiet) {
+    const t0 = under.style.transition;
+    if (quiet) under.style.transition = 'none';
+    let x = RAIL_R;
+    tabs.slice().reverse().forEach(t => {
+      x -= t.getBoundingClientRect().width;
+      t.style.left = x + 'px';
+      x -= TAB_GAP;
+    });
+    const on = document.querySelector('.cs-tab.on') || tabs[0];
+    under.style.left = on.offsetLeft + 'px';
+    under.style.width = on.getBoundingClientRect().width + 'px';
+    if (quiet) { void under.offsetWidth; under.style.transition = t0; }
+  }
+
   tabs.forEach(t => t.addEventListener('click', () => {
+    if (t.dataset.cat === cat) return;
     cat = t.dataset.cat;
     tabs.forEach(o => o.classList.toggle('on', o === t));
     under.style.left = t.offsetLeft + 'px';
@@ -451,11 +468,12 @@ const io = new IntersectionObserver(entries => {
       document.querySelectorAll('.tbtn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       cols = parseInt(btn.dataset.cols, 10);
-      userCols = true;
       layout();
     });
   });
 
+  seatTabs(true);
+  window.addEventListener('load', () => seatTabs(true));
   layout();
 })();
 

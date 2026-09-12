@@ -322,13 +322,19 @@ const io = new IntersectionObserver(entries => {
 (() => {
   /* REAL experiential slate from sixtwentysix.co (8/21): the live page's
      top six, real thumbs. */
+  /* 9/11 (Joel: "none of the experiential links video are working, and
+     when you click on back it goes back to case study"): every tile
+     linked to the BARE case-study.html, i.e. the Priceline demo, so the
+     wrong film loaded and the Back seat (which only the ?work= path
+     honours) fell to case-studies. Each tile now carries its live CMS
+     slug and opens its own work page. */
   const TILES = [
-    { t: 'HEINEKEN',            img: 'assets/live/exp-heineken.png',   x: 71,   y: 609 },
-    { t: 'FIVERR',              img: 'assets/live/exp-fiverr.jpg',     x: 658,  y: 609 },
-    { t: 'TREE HUT',            img: 'assets/live/exp-treehut.jpg',    x: 1223, y: 609 },
-    { t: 'GOOGLE PLAY',         img: 'assets/live/exp-googleplay.jpg', x: 71,   y: 1041 },
-    { t: 'NIKE X CONCRETE BOYS', img: 'assets/live/exp-nike.jpg',      x: 658,  y: 1032 },
-    { t: 'REPUBLIC RECORDS',    img: 'assets/live/exp-republic.jpg',   x: 1223, y: 1032 },
+    { t: 'HEINEKEN',            slug: 'heineken-fan-volunteers',          img: 'assets/live/exp-heineken.png',   x: 71,   y: 609 },
+    { t: 'FIVERR',              slug: 'fiverr-fiverr-amplify',            img: 'assets/live/exp-fiverr.jpg',     x: 658,  y: 609 },
+    { t: 'TREE HUT',            slug: 'tree-hut-slay-the-cosplay',        img: 'assets/live/exp-treehut.jpg',    x: 1223, y: 609 },
+    { t: 'GOOGLE PLAY',         slug: 'google-play',                      img: 'assets/live/exp-googleplay.jpg', x: 71,   y: 1041 },
+    { t: 'NIKE X CONCRETE BOYS', slug: 'nike-concrete-boys',              img: 'assets/live/exp-nike.jpg',       x: 658,  y: 1032 },
+    { t: 'REPUBLIC RECORDS',    slug: 'republic-records-vma-after-party', img: 'assets/live/exp-republic.jpg',   x: 1223, y: 1032 },
   ];
 
   /* THE LOOP LAW (Joel 8/24): every tile plays its own spot on hover.
@@ -350,7 +356,7 @@ const io = new IntersectionObserver(entries => {
     const row = Math.floor(i / 3);
     const a = document.createElement('a');
     a.className = 'work-thumb fd';
-    a.href = 'case-study.html';
+    a.href = wk.slug ? 'case-study.html?work=' + encodeURIComponent(wk.slug) : 'case-study.html';
     a.style.cssText = `left:${wk.x}px; top:${wk.y}px; width:${W}px; height:${H}px; --fd:${(i % 3) * 0.12}s`;
     a.innerHTML = `<img src="${wk.img}" alt="${wk.t}">`;
     if (wk.loop) a.dataset.loop = wk.loop; // the engine builds the <video>

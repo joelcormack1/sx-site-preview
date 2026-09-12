@@ -138,6 +138,13 @@
   /* THE PRESS GHOST LAW, applied to open roles (Joel 8/25): hovering one
      role ghosts the other rows to the same 15% read as the work grids. */
   .cr-row { position: absolute; left: 0; top: 0; width: 1728px; height: 104px; transition: opacity 0.4s ease; }
+  /* 9/11 (Joel: "you cant click on the job postings"): only the 49px
+     "Apply" word was a link, and it pointed at a mailto. The WHOLE ROW is
+     the link now and it opens the real posting (LinkedIn, from the CMS);
+     the mailto is the fallback for a role with no post link. */
+  a.cr-row { display: block; text-decoration: none; color: inherit; cursor: pointer; }
+  a.cr-row .cr-role, a.cr-row .cr-meta, a.cr-row .cr-apply { pointer-events: none; }
+  a.cr-row:hover .cr-apply { opacity: 0.6; }
   #openroles:has(.cr-row:hover) .cr-row:not(:hover) { opacity: 0.15; }
 
   /* ===================== DON'T SEE YOUR ROLE ===================== */
@@ -218,26 +225,22 @@
 And careers that do too.</p>
 
   <!-- ============ OPEN ROLES ============ -->
-  <p class="cr-open fd">Open roles<span class="count">(02)</span></p>
+  <p class="cr-open fd">Open roles<span class="count" id="crCount">(01)</span></p>
 
+  <!-- 9/11: the roles render from the live CMS (careers page layout) so
+       the ledger always matches sixtwentysix.co — the Treatment Designer
+       row was stale (filled). The Art Director row below is the offline
+       fallback and is replaced on load. -->
   <div id="openroles">
   <div class="cr-line black fd" style="top:400px;"></div>
 
-  <div class="cr-row" style="top:400px;">
+  <a class="cr-row" style="top:400px;" href="https://www.linkedin.com/jobs/view/4422521831/" target="_blank" rel="noopener">
     <p class="cr-role fd" style="top:36px;">Art Director</p>
     <p class="cr-meta fd" style="left:984px; top:44px;">Culver City, CA</p>
     <p class="cr-meta fd" style="left:1324px; top:44px;">Full-time</p>
-    <a class="cr-apply fd" style="top:43px;" href="mailto:careers@sixtwentysix.co?subject=Art%20Director">Apply</a>
-  </div>
+    <p class="cr-apply fd" style="top:43px;">Apply</p>
+  </a>
   <div class="cr-line gray fd" style="top:504px;"></div>
-
-  <div class="cr-row" style="top:504px;">
-    <p class="cr-role fd" style="top:36px;">Treatment Designer</p>
-    <p class="cr-meta fd" style="left:984px; top:44px;">Culver City, CA</p>
-    <p class="cr-meta fd" style="left:1324px; top:44px;">Full-time</p>
-    <a class="cr-apply fd" style="top:43px;" href="mailto:careers@sixtwentysix.co?subject=Treatment%20Designer">Apply</a>
-  </div>
-  <div class="cr-line gray fd" style="top:608px;"></div>
   </div>
 
   <!-- ============ DON'T SEE YOUR ROLE ============ -->
@@ -292,8 +295,56 @@ const io = new IntersectionObserver(entries => {
   });
 }, { threshold: [0, 0.15] });
 document.querySelectorAll('.fd').forEach(el => io.observe(el));
+
+/* ================= OPEN ROLES from the CMS (9/11) =================
+   Same public WPGraphQL pipe the work pages use. Each role is one row,
+   the whole row links to its posting (new tab); no postLink -> mailto.
+   Everything below the ledger rides the row count (104px per row). */
+(async () => {
+  const esc = t => String(t || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  let roles = null;
+  try {
+    const r = await fetch('https://api.sixtwentysix.co/graphql', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ query: '{ page(id: "/careers/", idType: URI) { pageMetaNew { content { __typename ... on PageMetaNewContentCareersLayout { careers { position location type postLink } } } } } }' })
+    });
+    const blocks = ((((await r.json()).data || {}).page || {}).pageMetaNew || {}).content || [];
+    const lay = blocks.find(b => b && b.careers);
+    if (lay) roles = (lay.careers || []).filter(x => x && x.position);
+  } catch (e) { /* offline: the fallback row stands */ }
+  if (!roles || !roles.length) return;
+  const ROW = 104, TOP = 400;
+  const host = document.getElementById('openroles');
+  const rows = roles.map((x, i) => {
+    const href = x.postLink || ('mailto:careers@sixtwentysix.co?subject=' + encodeURIComponent(x.position));
+    const ext = /^https?:/.test(href);
+    const type = String(x.type || '').replace(/-time$/i, '-time');
+    return `<div class="cr-line ${i ? 'gray' : 'black'} fd seen" style="top:${TOP + i * ROW}px;"></div>
+      <a class="cr-row" style="top:${TOP + i * ROW}px;" href="${esc(href)}"${ext ? ' target="_blank" rel="noopener"' : ''}>
+        <p class="cr-role fd seen" style="top:36px;">${esc(x.position)}</p>
+        <p class="cr-meta fd seen" style="left:984px; top:44px;">${esc(x.location)}</p>
+        <p class="cr-meta fd seen" style="left:1324px; top:44px;">${esc(type)}</p>
+        <p class="cr-apply fd seen" style="top:43px;">Apply</p>
+      </a>`;
+  }).join('') + `<div class="cr-line gray fd seen" style="top:${TOP + roles.length * ROW}px;"></div>`;
+  host.innerHTML = rows;
+  document.getElementById('crCount').textContent = '(' + String(roles.length).padStart(2, '0') + ')';
+  /* the design seats everything below on two rows (ledger end 608):
+     with a different count the blocks under the ledger move by the
+     difference, through the fitter so the one-screen law still holds */
+  const shift = (roles.length - 2) * ROW;
+  if (shift && window.SXFit && window.SXFit.move) {
+    ['.cr-nsr', '.cr-nsr-copy', '.cr-mail'].forEach(sel => {
+      const el = document.querySelector(sel);
+      if (!el) return;
+      const t = window.SXFit.designTop(el);
+      if (isFinite(t)) window.SXFit.move(el, t + shift);
+    });
+    window.SXFit.refit();
+  }
+})();
 </script>
-<script src="fitpage.js?v=20260820a"></script>
+<script src="fitpage.js?v=20260911a"></script>
 <script>SXFit(1249, 349);</script>
 <script src="smoothscroll.js?v=20260819095356"></script>
 <script src="logomorph.js?v=20260824a"></script>

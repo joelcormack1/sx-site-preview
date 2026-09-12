@@ -352,6 +352,26 @@ document.querySelectorAll('.fd').forEach(el => io.observe(el));
    The hero is sized to EXACTLY one screen (Joel: the old fixed 980 could
    run past the fold), and Play opens the spot FULL SCREEN in Vimeo's own
    player — real play/pause/scrub/fullscreen controls. */
+/* 9/11: the Back-to-the-exact-spot seat used to be applied only on the
+   ?work= path, so a link into the demo page sent Back to case-studies
+   regardless of where you came from. It is applied first, for every
+   entry. */
+(() => {
+  const backEl = document.querySelector('.cs-back');
+  if (!backEl) return;
+  try {
+    const ret = sessionStorage.getItem('sx-return');
+    if (ret) {
+      const d = JSON.parse(ret);
+      if (d && d.page) {
+        backEl.href = d.page;
+        backEl.addEventListener('click', () => {
+          try { sessionStorage.setItem('sx-return-go', ret); } catch (e) {}
+        });
+      }
+    }
+  } catch (e) {}
+})();
 (async () => {
   const slug = new URLSearchParams(location.search).get('work');
   if (!slug) return;
@@ -514,17 +534,8 @@ document.querySelectorAll('.fd').forEach(el => io.observe(el));
   const backEl = document.querySelector('.cs-back');
   /* Back to work returns to the EXACT SPOT you left (Joel 8/24): the
      source page stored its seat on the outbound click; hand it back and
-     go there. No seat stored (direct link) -> the default case-studies. */
-  try {
-    const ret = sessionStorage.getItem('sx-return');
-    if (ret) {
-      const d = JSON.parse(ret);
-      backEl.href = d.page;
-      backEl.addEventListener('click', () => {
-        try { sessionStorage.setItem('sx-return-go', ret); } catch (e) {}
-      });
-    }
-  } catch (e) {}
+     go there. No seat stored (direct link) -> the default case-studies.
+     (9/11: applied up top for every entry, see the block above.) */
 
 
   window.addEventListener('scroll', () => {

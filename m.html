@@ -36,8 +36,9 @@
     MORE WORK cue, scroll darkens to 0.75 with role / awards / about.
   - About: statement above the reel (reel 475 tall); Contact + Careers
     restyled to the frames; Home density toggle = Joel's icon (2x2 / 1).
-  - Case Studies: desktop ledger + Creative Studio / Live Action /
-    Experiential tabs (4 / 11 / 8), not the raw CMS list.
+  - Case Studies: desktop ledger + Live Action / Creative Studio /
+    Experiential tabs (11 / 4 / 8), opening on Live Action (Joel 9/11),
+    not the raw CMS list.
 -->
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -983,8 +984,9 @@ R.director = slug => {
 };
 
 /* Case Studies = the desktop ledger (WORKS + SLUGS + LOOPS from
-   case-studies.html) behind the frame's three tabs: 4 / 11 / 8 */
-const CS_TABS = [['cs', 'Creative Studio'], ['live', 'Live Action'], ['exp', 'Experiential']];
+   case-studies.html) behind the frame's three tabs: 11 / 4 / 8.
+   Live Action leads and the page opens on it (Joel 9/11), same as desktop. */
+const CS_TABS = [['live', 'Live Action'], ['cs', 'Creative Studio'], ['exp', 'Experiential']];
 const csTiles = cat => CS_WORKS.filter(w => w.cats.includes(cat)).map(w => {
   const f = w.img.split('/').pop();
   return tileHtml({ t: w.t, img: w.img, slug: CS_SLUGS[f] || null, loop: CS_LOOPS[f] || null });
@@ -993,7 +995,7 @@ R['case-studies'] = () => `
   <div class="wrap">
     <p class="pg-title">Case Studies</p>
     <div class="tabs" id="csTabs">${CS_TABS.map(([k, l], i) => `<button class="${i === 0 ? 'on' : ''}" data-c="${k}">${l}</button>`).join('')}</div>
-    <div id="csGrid">${gridOpen()}${csTiles('cs')}</div></div>
+    <div id="csGrid">${gridOpen()}${csTiles(CS_TABS[0][0])}</div></div>
   </div>
   ${FOOTER}`;
 

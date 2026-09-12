@@ -219,6 +219,20 @@
     position: absolute; left: 1256px; top: 518px; width: 412px;
     font-weight: 400; font-size: 16px; line-height: 21.6px; letter-spacing: -0.32px; color: #fff;
   }
+  /* 9/11 (Joel: "this page needs a massive fix for jimmy tatro"): his bio
+     is three paragraphs and ~3x Evan's, and the 412px seat ran 100px+ into
+     the featured strip. The bio keeps its real paragraph breaks now, and
+     fitAbout() (below) measures it against the strip: a director with no
+     awards spreads the bio across BOTH info seats (861 -> 1668) in two
+     columns; if it still can't fit, the type steps down, then the box
+     scrolls. It never overlaps the strip again. */
+  .h-about p { margin: 0; }
+  .h-about p + p { margin-top: 21.6px; }
+  .h-about.wide { left: 861px; width: 807px; column-count: 2; column-gap: 63px; column-fill: balance; }
+  .h-about.scroll { overflow-y: auto; pointer-events: auto;
+    -webkit-mask-image: linear-gradient(#000 calc(100% - 28px), transparent); mask-image: linear-gradient(#000 calc(100% - 28px), transparent);
+    scrollbar-width: none; }
+  .h-about.scroll::-webkit-scrollbar { display: none; }
 
   /* Featured strip (89:1642): hovering a reel swaps the hero loop (89:1690);
      clicking opens the full film (case-study). */
@@ -671,8 +685,10 @@ document.querySelectorAll('.fd').forEach(el => io.observe(el));
       `<p class="${a.b ? 'b' : 'r'}">${esc(a.t)}</p>`).join('');
   } else { awEl.innerHTML = ''; navs[1].style.display = 'none'; }
   const aboutEl = document.querySelector('.h-about');
-  if (DIR.bio) aboutEl.textContent = DIR.bio;
+  const PARAS = (DIR.bio_paras && DIR.bio_paras.length) ? DIR.bio_paras : (DIR.bio ? [DIR.bio] : []);
+  if (PARAS.length) aboutEl.innerHTML = PARAS.map(t => '<p>' + esc(t) + '</p>').join('');
   else { aboutEl.textContent = ''; navs[2].style.display = 'none'; }
+  const HAS_AWARDS = !!(DIR.awards && DIR.awards.length);
 
   /* the hero IS the director's web loop (Joel 9/3) */
   const heroReel = document.getElementById('heroReel');
@@ -706,8 +722,13 @@ document.querySelectorAll('.fd').forEach(el => io.observe(el));
      design row (53 -> 1662) — N thumbs share the width with the frame's
      23px gap, height stays 140 (cover-crop widens instead). At N=6 this
      is exactly the frame's 249px/272 pitch. */
+  /* 9/11 (Joel: "make sure his image is 16x9"): a thumb is ALWAYS the
+     frame's 249x140, which is 16:9. A one-work director (Jimmy Tatro) used
+     to render his only spot as a 1609x140 banner under the end-to-end
+     rule; now fewer than six works sit at the design pitch from the left
+     margin, six still run end to end (53 -> 1662). */
   const S_L = 53, S_R = 1662, S_GAP = 23, N = FEAT.length || 1;
-  const S_W = (S_R - S_L - (N - 1) * S_GAP) / N;
+  const S_W = Math.min(249, (S_R - S_L - (N - 1) * S_GAP) / N);
   document.getElementById('featstrip').innerHTML = FEAT.map((w, i) => {
     const t = splitT(w.title), x = Math.round(S_L + i * (S_W + S_GAP));
     return `<div class="fitem" data-i="${i}">
@@ -754,8 +775,46 @@ document.querySelectorAll('.fd').forEach(el => io.observe(el));
     document.querySelector('.h-about').style.top = (518 + d) + 'px';
     document.getElementById('grid').style.top = HERO_H + 'px';
     document.getElementById('ledger').style.top = (HERO_H + 183) + 'px';
+    fitAbout(518 + d, flTop);
+  }
+  /* 9/11: the bio must end above the FEATURED WORK label. Steps, in order:
+     design seat -> (no awards) both seats in two columns -> type down to
+     14px -> scroll inside the box. Re-runs on every resize. */
+  function fitAbout(top, limit) {
+    const el = aboutEl, aboutNav = navs[2];
+    const avail = limit - top - 28;
+    el.classList.remove('wide', 'scroll');
+    el.style.fontSize = ''; el.style.lineHeight = ''; el.style.maxHeight = '';
+    el.style.left = ''; el.style.width = '';
+    aboutNav.style.left = '1258px';
+    el.querySelectorAll('p + p').forEach(pp => pp.style.marginTop = '');
+    const fits = () => el.scrollHeight <= avail;
+    if (fits()) return;
+    if (!HAS_AWARDS) {
+      /* the wide block starts at the awards seat (861) unless a long role
+         line (DIRECTOR / CREATIVE DIRECTOR ends near 880) runs into the
+         ABOUT word — then both slide right of it and the columns narrow */
+      const roleR = navs[0].getBoundingClientRect().right;
+      const left = Math.max(861, Math.round(roleR) + 56);
+      el.classList.add('wide');
+      el.style.left = left + 'px';
+      el.style.width = (1668 - left) + 'px';
+      aboutNav.style.left = (left - 1) + 'px';
+      if (fits()) return;
+    }
+    for (const fs of [15, 14]) {
+      const lh = Math.round(fs * 1.35 * 10) / 10;
+      el.style.fontSize = fs + 'px'; el.style.lineHeight = lh + 'px';
+      el.querySelectorAll('p + p').forEach(pp => pp.style.marginTop = lh + 'px');
+      if (fits()) return;
+    }
+    el.classList.add('scroll');
+    el.style.maxHeight = Math.max(80, avail) + 'px';
   }
   fitHero();
+  /* debug hook (9/11): ?pv=1 opens the personality layer without a hover,
+     for headless captures of the awards/about fit */
+  if (location.search.includes('pv=1')) hero.classList.add('pv');
 
   /* ---- personality variant: shows while the cursor is on a role word,
      the director's NAME, or the [HOVER TO VIEW] hint (Joel 8/22) — awards +
