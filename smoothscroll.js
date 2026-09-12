@@ -86,6 +86,27 @@
     if (animating) requestAnimationFrame(tick);
   }
 
+  /* THE ONE INTENT PATH (9/12). Every input pushes scroll intent through
+     here, so the entrance zone, the direction flag, the auto-glide release
+     and the rAF tick (and therefore every cap and speed limit above) apply
+     to touch and wheel by construction. They cannot drift apart again. */
+  function push(dy) {
+    if (!animating) { current = window.scrollY; }
+    var z = window.SX_WHEEL_ZONE;
+    if (z && current < z.until) {
+      var zk = Math.max(0, Math.min(1, (z.until - current) / (z.taper || 250)));
+      dy *= 1 + ((z.mult || 2) - 1) * zk;
+    }
+    window.SX_WHEEL_DIR = dy < 0 ? -1 : 1; // the header morph reads intent
+    if (window.SX_SCROLL_DRIVE != null && dy < 0) window.SX_SCROLL_DRIVE = null; // fighting up releases the glide
+    wanted = Math.max(0, Math.min(max(), wanted + dy)); // the tick derives target from this every frame
+    if (!animating) {
+      animating = true;
+      last = performance.now();
+      requestAnimationFrame(tick);
+    }
+  }
+
   window.addEventListener('wheel', function (e) {
     if (e.ctrlKey) return; // pinch-zoom
     if (window.SX_SCROLL_LOCKED) {
@@ -102,25 +123,116 @@
     var dy = e.deltaMode === 1 ? e.deltaY * 40 : e.deltaMode === 2 ? e.deltaY * window.innerHeight : e.deltaY;
     dy *= 0.6; // Joel 8/21: whole-site scroll at a slower, deliberate tempo (was 1, then 0.75)
     /* SX_WHEEL_ZONE (9/3, Joel: "2 scrolls max to open the bottom part but
-       still feel soft"): a page may declare an entrance zone where wheel
+       still feel soft"): a page may declare an entrance zone where scroll
        intent counts for more — the homepage sets {until: CONTENT_OFFSET,
-       mult: 2} so two firm gestures carry the whole intro. The DAMPER is
-       untouched, so the glide feels exactly as soft; the boost tapers off
-       over the last `taper` px so the hand-feel never steps. */
-    var z = window.SX_WHEEL_ZONE;
-    if (z && current < z.until) {
-      var zk = Math.max(0, Math.min(1, (z.until - current) / (z.taper || 250)));
-      dy *= 1 + ((z.mult || 2) - 1) * zk;
-    }
-    window.SX_WHEEL_DIR = dy < 0 ? -1 : 1; // the header morph reads intent
-    if (window.SX_SCROLL_DRIVE != null && dy < 0) window.SX_SCROLL_DRIVE = null; // fighting up releases the glide
-    wanted = Math.max(0, Math.min(max(), wanted + dy)); // wheelMultiplier 1; the tick derives target from this every frame
-    if (!animating) {
-      animating = true;
-      last = performance.now();
-      requestAnimationFrame(tick);
-    }
+       mult: 2} so two firm gestures carry the whole intro. Applied inside
+       push(), along with the damper, which is untouched: the glide feels
+       exactly as soft, and the boost tapers over the last `taper` px so the
+       hand-feel never steps. */
+    push(dy); // wheelMultiplier 1
   }, { passive: false });
+
+  /* ===================== TOUCH (2026-09-12) =====================
+     Sophee's iPad. view.html serves the desktop canvas to anything wider
+     than a phone, but every cap, glide and speed limit above lived in the
+     WHEEL handler alone, and a finger fires no wheel event. Measured on an
+     emulated iPad against the same page: touch moved 280px per frame
+     (~16,800 px/s) where the wheel engine holds 32-36px per frame
+     (~2,100 px/s). That is an eight-fold overspeed on every scroll-scrubbed
+     animation on the site — the 9/4 "it shrinks and flashes" morph bug,
+     never fixed on touch because the fix (SX_SCROLL_MAXV) lives in here.
+     Touch now pushes through the same push() as the wheel, so the intro,
+     the morph, the reel and the stepper run at their designed pace.
+
+     Escape hatch: ?nativescroll=1 hands scrolling back to the browser
+     untouched, for when the engine misbehaves on a real device. */
+  var COARSE = window.matchMedia && matchMedia('(pointer: coarse)').matches;
+  if (COARSE && location.search.indexOf('nativescroll=1') === -1) {
+    /* Regions that scroll THEMSELVES keep the browser's own touch handling:
+       the menu's search results and the director bio box. Everything else
+       belongs to the engine. */
+    var NATIVE_SEL = '#menu-results, .h-about.scroll';
+    var st = document.createElement('style');
+    st.textContent = 'html { touch-action: pinch-zoom; }' +
+                     NATIVE_SEL + ' { touch-action: auto; }';
+    /* set only once the listeners below are live — with pan disabled and no
+       handler, the page could not scroll at all */
+    var inNative = function (t) {
+      return !!(t && t.closest && t.closest(NATIVE_SEL));
+    };
+
+    var tY = 0, tT = 0, tV = 0, riding = false, hovered = null;
+
+    window.addEventListener('touchstart', function (e) {
+      riding = e.touches.length === 1 && !inNative(e.target);
+      if (!riding) return;
+      tY = e.touches[0].clientY;
+      tT = performance.now();
+      tV = 0;
+      /* a finger down takes the page back from any fling or auto-glide:
+         drop banked intent so the touch starts from where the page IS */
+      wanted = animating ? current : window.scrollY;
+      window.SX_SCROLL_DRIVE = null;
+    }, { passive: true });
+
+    window.addEventListener('touchmove', function (e) {
+      if (!riding || e.touches.length !== 1) return;
+      if (inNative(e.target)) return;
+      if (window.SX_SCROLL_LOCKED) { e.preventDefault(); return; } // menu open
+      e.preventDefault();
+      var y = e.touches[0].clientY;
+      var now = performance.now();
+      var dy = tY - y;                       // finger up = page down
+      var dt = Math.max(1, now - tT);
+      /* clientY inside the frame is already in 1728-canvas units (view.html
+         scales the whole iframe), so the finger tracks the content 1:1 and
+         what is under it stays under it. No multiplier, unlike the wheel. */
+      var inst = dy / dt * 1000;
+      tV = tV ? tV * 0.4 + inst * 0.6 : inst;  // smoothed, for the release
+      tY = y; tT = now;
+      push(dy);
+    }, { passive: false });
+
+    window.addEventListener('touchend', function () {
+      if (!riding) return;
+      riding = false;
+      if (window.SX_SCROLL_LOCKED) return;
+      /* Fling. The damper settles an offset of v/DECAY, so handing it
+         v/DECAY reproduces the release velocity exactly and then eases out
+         into the landing — the same curve a wheel flick rides. Capped, and
+         still subject to every SX_SCROLL_* limit inside the tick. */
+      if (performance.now() - tT < 100 && Math.abs(tV) > 200) {
+        push(Math.max(-4200, Math.min(4200, tV)) / DECAY);
+      }
+    }, { passive: true });
+
+    window.addEventListener('touchcancel', function () { riding = false; }, { passive: true });
+
+    /* STUCK HOVER RELEASE (site-wide). Tapping anything on a touch screen
+       fires mouseover/mouseenter and then NEVER fires mouseleave, so every
+       hover state OUTSIDE the grid engine latches on: the creatives and
+       director ledger rows stay lit with their siblings dimmed, the
+       experiential cards stay dimmed, the press and testimonial rails stay
+       paused, the director hero keeps its preview class, the homepage tile
+       keeps playing. That is a dozen handlers across six pages; rather than
+       edit each one, hand the browser's debt back on the next touch — which
+       includes the touch that begins a scroll, so swiping away clears it
+       too. An over-eager release heals itself, because the browser re-fires
+       mouseenter on whatever the finger actually landed on. */
+    document.addEventListener('mouseover', function (e) { hovered = e.target; }, true);
+    window.addEventListener('touchstart', function (e) {
+      var old = hovered, tgt = e.target;
+      if (!old || old === tgt || old.nodeType !== 1) return;
+      hovered = null;
+      old.dispatchEvent(new MouseEvent('mouseout', { bubbles: true }));
+      for (var n = old; n && n.nodeType === 1; n = n.parentElement) {
+        if (n.contains(tgt)) break;  // the hover legitimately continues here
+        n.dispatchEvent(new MouseEvent('mouseleave'));
+      }
+    }, { passive: true });
+
+    (document.head || document.documentElement).appendChild(st);
+  }
 
   /* Outside input (keyboard, anchor jumps, scripts) resets the baseline so
      the next wheel starts from wherever the page really is. */

@@ -29,6 +29,9 @@
    relayouts (density toggles) need no re-attach. */
 (function () {
   const SCALE = 1.3475, MARGIN = 14, LABEL_BAND = 58;
+  /* same gate as smoothscroll.js, same escape hatch */
+  const COARSE = window.matchMedia && matchMedia('(pointer: coarse)').matches
+                 && location.search.indexOf('nativescroll=1') === -1;
 
   /* THE LOOP LAW (Joel 8/24): every work tile on the site plays its own
      spot on hover, the way the homepage does. Any tile attached with a
@@ -193,6 +196,25 @@
       if (cfg.onLeave) cfg.onLeave(tile);
     }
 
+    /* TOUCH (9/12). There is no hover on a finger, and pretending otherwise
+       is what broke Sophee's iPad: a tap fires mouseenter, so the tile grew
+       to 851px and ghosted the whole grid, and mouseleave never came. Worse,
+       the scroll-exit below then set lock = true, which only ever clears on
+       mousemove — so after one tap and one scroll, NO tile previewed again
+       for the rest of the page. Verified: tap 1 grows, scroll, tap 3 does
+       nothing, inject a mousemove and it works again.
+
+       So on a coarse pointer the grow/ghost choreography is off entirely and
+       a tap is just a tap. The loop law still holds, in the only way touch
+       allows: the tile nearest the middle of the screen plays its own spot,
+       one at a time, so the page still moves without asking an iPad to
+       decode a dozen videos at once. */
+    if (COARSE) {
+      cfg.tiles.forEach(ensureLoop);
+      touchLoops(cfg.tiles);
+      return;
+    }
+
     cfg.tiles.forEach(tile => {
       ensureLoop(tile);
       tile.el.addEventListener('mouseenter', () => enter(tile));
@@ -207,6 +229,62 @@
       }
     }, { passive: true });
     window.addEventListener('mousemove', () => { lock = false; }, { passive: true });
+  }
+
+  /* One loop at a time, on the tile closest to the middle of the viewport.
+     Re-evaluated on scroll (rAF-throttled) and re-registrable, since the
+     density toggles rebuild their tiles and call attach again. */
+  let touchSet = [], touchQueued = false, touchPlaying = null;
+  function touchLoops(tiles) {
+    /* The homepage builds its own <video> markup inline (it is the reference
+       implementation and carries no data-loop), so match on either. Missing
+       this left the most important page on the site with no loops at all. */
+    touchSet = tiles.filter(t => t.el.dataset.loop || t.el.querySelector('video'));
+    if (!touchSet.length) return;
+    if (!touchLoops.wired) {
+      touchLoops.wired = true;
+      /* the homepage reveals its loop with .work-thumb:hover video, which a
+         finger can never satisfy honestly — give is-hover the same power */
+      const st = document.createElement('style');
+      st.textContent = '.work-thumb.is-hover video, .g-tile.is-hover video,' +
+                       '.h-thumb.is-hover video { opacity: 1; }';
+      document.head.appendChild(st);
+      const queue = () => {
+        if (touchQueued) return;
+        touchQueued = true;
+        requestAnimationFrame(() => { touchQueued = false; pickLoop(); });
+      };
+      window.addEventListener('scroll', queue, { passive: true });
+      /* the stuck-hover release in smoothscroll.js pauses whatever a tap
+         played; re-assert the centre tile once the finger lifts */
+      window.addEventListener('touchend', queue, { passive: true });
+    }
+    pickLoop();
+  }
+  function pickLoop() {
+    const mid = window.innerHeight / 2;
+    let best = null, bestD = Infinity;
+    touchSet.forEach(t => {
+      const r = t.el.getBoundingClientRect();
+      if (r.bottom < 0 || r.top > window.innerHeight) return;
+      const d = Math.abs(r.top + r.height / 2 - mid);
+      if (d < bestD) { bestD = d; best = t; }
+    });
+    if (best === touchPlaying) {
+      const v0 = best && best.el.querySelector('video');
+      if (v0 && v0.paused) v0.play().catch(() => {}); // re-assert after a tap release
+      return;
+    }
+    if (touchPlaying) {
+      touchPlaying.el.classList.remove('is-hover');
+      const pv = touchPlaying.el.querySelector('video');
+      if (pv) pv.pause();
+    }
+    touchPlaying = best;
+    if (!best) return;
+    best.el.classList.add('is-hover');
+    const v = best.el.querySelector('video');
+    if (v) v.play().catch(() => {});
   }
 
   window.SXGrid = { attach: attach };

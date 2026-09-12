@@ -108,6 +108,18 @@
       let cur = 'index.html';
       try { cur = f.contentWindow.location.pathname.split('/').pop() || 'index.html'; } catch (e) {}
       const q = frameQ();
+      /* KEEP THE SEAT (9/12). On a laptop this reload is a stale-build
+         killer you never notice. On an iPad, locking the screen or checking
+         a message for a minute counts as "hidden", so a reviewer came back
+         to the page thrown to the top — read as the site losing its place.
+         Hand the reload the same seat a Back navigation uses; the pages
+         that restore it (index, case-studies, case-study, experiential,
+         director) put the reviewer back exactly where they were. */
+      try {
+        const y = f.contentWindow.scrollY || 0;
+        if (y > 0) f.contentWindow.sessionStorage.setItem('sx-return-go',
+          JSON.stringify({ page: cur + (q || ''), y: y }));
+      } catch (e) {}
       f.src = cur + (q ? q + '&' : '?') + 'r=' + Date.now();
     }
   });
