@@ -23,7 +23,7 @@ html.sx-arriving::before {
   width: 1728px; top: 0; height: 100vh; background: #fff; z-index: 60;
 }
 </style>
-<script src="logomorph.js?v=20260824a"></script>
+<script src="logomorph.js?v=20260914b"></script>
 <style>
   /* Full Site re-sync (2026-08-18, Figma page 89:1055): type follows the frames
      exactly — Helvetica Neue for body/UI, HelveticaNeueCyr Bold for section
@@ -605,11 +605,14 @@ function paintHeader(p) {
      185 through the fade + glide and rides ONLY the shrink, per the 8/20
      law (S bottom to band bottom = constant 25px). */
   const q5 = t => { t = Math.max(0, Math.min(1, t)); return t * t * t * (t * (t * 6 - 15) + 10); };
-  const kc = up ? sm(Math.max(0, Math.min(1, p / 0.45))) : q5((p - 0.65) / 0.35);
+  /* 9/14: the letters are Joel's own film now (logomorph.js v3) — the band,
+     the cities, the tagline and the burger ride the shrink exactly as the
+     frames shrink, both directions (the film's reverse is symmetric) */
+  const kc = renderLogo.shrinkAt(p);
   /* kg: cities / burger / tagline ride the shrink with the letters (they
      bottom-align to the word, 8/24), leading it slightly so they settle
      softly rather than sprinting the last third */
-  const kg = up ? kc : q5((p - 0.55) / 0.45);
+  const kg = kc;
   const bandH = lerp(159.9 + 25, 92.95 + 25, kc);
   hdrEls.bg.style.height = bandH + 'px';
   /* Joel 8/23: the reel box is ALWAYS full-screen — the shrinking band
@@ -712,6 +715,7 @@ function updateHero(y) {
   heroEl.style.visibility = covered ? 'hidden' : 'visible';
 }
 const renderLogo = SXLogo.build(hdrEls.lm);
+renderLogo.warm(); /* the whole film, now: the morph is the first thing that moves */
 /* PURE SCRUB (Joel 8/23 — lab winner, variant 2 slowed twice): the whole
    entrance rides the wheel. No plays, no holds, no detents, no pacing —
    the site's damped scroll is the only easing. The shrink unfolds over the
@@ -935,7 +939,9 @@ const cards = WORKS.map((wk, i) => {
   const vid = thumb.querySelector('video');
   if (vid) {
     vid.muted = true; // set as a property: the attribute alone is unreliable via innerHTML
-    thumb.addEventListener('mouseenter', () => { vid.play().catch(() => {}); });
+    /* a finger's synthesised mouseenter never plays a loop: on touch the
+       grid engine's tap / hold law owns the loops (9/14) */
+    thumb.addEventListener('mouseenter', () => { if (window.SXInput && window.SXInput.mode === 'touch') return; vid.play().catch(() => {}); });
     thumb.addEventListener('mouseleave', () => { vid.pause(); });
   }
   const title = document.createElement('p');
@@ -984,19 +990,31 @@ function layout(cols) {
   document.querySelector('.content-shift').style.height = (DEFAULT_PAGE_H + delta) + 'px';
 }
 
+/* 9/14 (Joel, iPad held vertical: "it should start at rows of two instead
+   of rows of four ... everything should be a little bit bigger"): a viewport
+   taller than it is wide opens the grid at two per row; a landscape or
+   laptop window keeps the frame's four. The cluster still overrides, and
+   the choice sticks until the window turns. */
+const PORTRAIT_COLS = 2;
+const defaultCols = () => (window.innerHeight > window.innerWidth ? PORTRAIT_COLS : 4);
+let userCols = null;
+function markToggle(cols) {
+  document.querySelectorAll('#toggles .tbtn').forEach(b => b.classList.toggle('active', parseInt(b.dataset.cols, 10) === cols));
+}
 document.querySelectorAll('#toggles .tbtn').forEach(btn => {
   btn.addEventListener('click', () => {
-    document.querySelectorAll('#toggles .tbtn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    layout(parseInt(btn.dataset.cols, 10));
+    userCols = parseInt(btn.dataset.cols, 10);
+    markToggle(userCols);
+    layout(userCols);
   });
 });
 
-layout(4);
+layout(defaultCols());
+markToggle(COLS);
 
 window.addEventListener('resize', () => {
   fitHero();
-  layout();
+  if (userCols) layout(); else { layout(defaultCols()); markToggle(COLS); }
   paintHeader(hdrDisp);
 });
 

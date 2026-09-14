@@ -386,14 +386,21 @@ const io = new IntersectionObserver(entries => {
        holds in place for a beat of scroll before releasing. Native sticky —
        the same zero-jitter pin as the values below. */
     const REEL_LOCK = 400;
+    const REEL_ZOOM = 360; /* scroll px the small -> full-aspect zoom takes once the reel pins */
     /* Joel 8/20: when the reel locks big it is FULL SCREEN on any aspect —
        the locked frame is sized to the real viewport (measured at load; the
        img covers, cropping as needed) instead of the frame's fixed 957. */
-    const REEL_H = Math.max(957, window.innerHeight);
+    /* 9/14 (Joel, iPad: "it has to zoom in and lock at full aspect ratio...
+       when the ipad is horizontal it zooms in too much on the video and you
+       can never see it full screen"): the locked reel is the WHOLE 16:9
+       frame at full width, centred in whatever viewport is there — a
+       laptop shows it just under the header, an iPad holds it mid-screen.
+       Supersedes the 8/20 fill-the-viewport crop. */
+    const REEL_H = Math.round(1732 * 9 / 16);
     const REEL_GROW = REEL_H - 957;
     const heroEl = document.getElementById('abHero');
     const rz = document.createElement('div');
-    rz.style.cssText = `position:absolute; left:-4px; top:853px; width:1732px; height:${REEL_H + REEL_LOCK}px;`;
+    rz.style.cssText = `position:absolute; left:-4px; top:853px; width:1732px; height:${REEL_H + REEL_ZOOM + REEL_LOCK}px;`;
     const rs = document.createElement('div');
     rs.style.cssText = `position:sticky; top:0; width:1732px; height:${REEL_H}px;`;
     rz.appendChild(rs);
@@ -402,16 +409,38 @@ const io = new IntersectionObserver(entries => {
     heroEl.style.top = '0px';
     heroEl.style.height = REEL_H + 'px';
     rs.appendChild(heroEl);
-    rs.style.top = Math.min(0, Math.round((window.innerHeight - REEL_H) / 2)) + 'px';
-    window.AB_REEL_PIN = 853; // scrollY where the reel pins (zoom must be done by then)
-    window.AB_REEL_END = 853 + REEL_GROW + REEL_LOCK; // where the lock releases (dark header ends here)
-    // everything below the reel rides down by the lock span
+    const seatReel = () => {
+      const t = Math.max(0, Math.round((window.innerHeight - REEL_H) / 2));
+      rs.style.top = t + 'px';
+      window.AB_REEL_TOP = t; /* drive() darkens the header only when the reel reaches under it */
+      /* the reel PINS when its zone top reaches the seat: the zoom runs over
+         the next REEL_ZOOM px of scroll, then it holds for REEL_LOCK */
+      window.AB_REEL_PIN = 853 - t;
+      window.AB_REEL_ZOOM = REEL_ZOOM;
+      window.AB_REEL_END = 853 - t + REEL_ZOOM + REEL_LOCK;
+      /* one swipe lands the reel zoomed and locked (smoothscroll.js snap
+         zone: a single step whose landing is the end of the zoom) */
+      window.AB_SNAP_REEL = { start: 853 - t, step: REEL_ZOOM + REEL_LOCK, count: 1, land: REEL_ZOOM + 24 };
+      window.SX_SNAPS = [window.AB_SNAP_REEL, window.AB_SNAP_CV].filter(Boolean);
+    };
+    seatReel();
+    window.addEventListener('resize', seatReel);
+    /* the lighter phone encode on touch devices (43 MB -> 22 MB): the iPad
+       sat on the poster with a play glyph while the full file buffered */
+    const reelVideo = heroEl.querySelector('video');
+    if (reelVideo && window.matchMedia && matchMedia('(pointer: coarse)').matches) {
+      reelVideo.src = 'assets/live/sx-reel-m.mp4';
+      reelVideo.preload = 'auto';
+      reelVideo.load();
+      const p = reelVideo.play(); if (p && p.catch) p.catch(() => {});
+    }
+    // everything below the reel rides down by the zoom + lock span
     pg.querySelectorAll(':scope > *').forEach(el => {
       if (el === rz) return;
       const cs = getComputedStyle(el);
       if (cs.position !== 'absolute') return;
       const t = parseFloat(cs.top);
-      if (!isNaN(t) && t >= 1810) el.style.top = (t + REEL_GROW + REEL_LOCK) + 'px';
+      if (!isNaN(t) && t >= 1810) el.style.top = (t + REEL_GROW + REEL_ZOOM + REEL_LOCK) + 'px';
     });
 
     /* NATIVE STICKY PIN (8/20). The old translate-chasing pin corrected the
@@ -419,7 +448,7 @@ const io = new IntersectionObserver(entries => {
        sticky pins in the compositor — zero lag, same as the services
        stepper. The cluster (heading / strip / copy) moves into a sticky box
        inside a pinzone spanning the block + the 720px value ride. */
-    const BLOCK_TOP = 2097 + REEL_GROW + REEL_LOCK, BLOCK_H = 500;
+    const BLOCK_TOP = 2097 + REEL_GROW + REEL_ZOOM + REEL_LOCK, BLOCK_H = 500;
     const zone = document.createElement('div');
     zone.style.cssText = `position:absolute; left:0; top:${BLOCK_TOP}px; width:1728px; height:${BLOCK_H + CV_SPAN}px;`;
     const stickBox = document.createElement('div');
@@ -431,24 +460,56 @@ const io = new IntersectionObserver(entries => {
       stickBox.appendChild(el);
     });
     // push everything below the values block down by the span
+    const cvBelow = [];
     pg.querySelectorAll(':scope > *').forEach(el => {
       if (el === zone || el === rz) return;
       const cs = getComputedStyle(el);
       if (cs.position !== 'absolute') return;
       const t = parseFloat(cs.top);
-      if (!isNaN(t) && t >= 2600 + REEL_GROW + REEL_LOCK) el.style.top = (t + CV_SPAN) + 'px';
+      if (!isNaN(t) && t >= 2600 + REEL_GROW + REEL_ZOOM + REEL_LOCK) {
+        el.style.top = (t + CV_SPAN) + 'px';
+        if (!el.classList.contains('footer')) cvBelow.push(el);
+      }
     });
+    /* THE BELOW LOCK (9/14, Joel: "have the content on the bottom slide up
+       and lock so there isn't just a bunch of random empty space" / the
+       Services note "locked in place as of where it would be by the time
+       you're done scrolling"): the team section rides in one wrapper that
+       is pulled up by the values' unspent scroll, so it sits directly under
+       the pinned block through all six values and settles into its seat as
+       the block releases. It waits as a ghost (0.15) and comes to full
+       opacity across the last value. The footer stays outside. */
+    const cvLock = document.createElement('div');
+    cvLock.id = 'cvBelowLock';
+    cvLock.style.cssText = 'position:absolute; left:0; top:0; width:1728px; height:0; will-change:transform, opacity;';
+    pg.appendChild(cvLock);
+    cvBelow.forEach(el => cvLock.appendChild(el));
     /* -64: the team photos dissolve ~92% up their cells, which left a dead
        strip before the footer (Joel 8/21) — the footer law re-pins the
        footer to the new page bottom automatically */
-    pg.style.height = (parseFloat(getComputedStyle(pg).height) + REEL_GROW + REEL_LOCK + CV_SPAN - 64) + 'px';
+    pg.style.height = (parseFloat(getComputedStyle(pg).height) + REEL_GROW + REEL_ZOOM + REEL_LOCK + CV_SPAN - 64) + 'px';
 
     /* center the block in the viewport while pinned */
     function layoutCv() {
-      stickBox.style.top = Math.max(130, Math.round((window.innerHeight - BLOCK_H) / 2)) + 'px';
+      /* centred on a laptop (the 8/20 law); a viewport taller than the
+         laptop's keeps the laptop seat instead of sliding to the middle of a
+         tall screen, so the team section can lock beneath the values
+         (9/14, Joel's second iPad pass) */
+      let t = Math.min(Math.max(130, Math.round((1117 - BLOCK_H) / 2)),
+                       Math.max(130, Math.round((window.innerHeight - BLOCK_H) / 2)));
+      /* THE REACH LAW (9/14): the values' span must end inside the page's
+         scroll range — on a tall viewport the seat drops just enough that
+         the sixth value is reachable before the page runs out */
+      const pageH = parseFloat(pg.style.height) || 0;
+      const seatMin = window.innerHeight - (pageH - BLOCK_TOP - CV_SPAN);
+      t = Math.max(t, Math.ceil(seatMin));
+      stickBox.style.top = t + 'px';
+      /* one swipe = one value on touch (smoothscroll.js reads this) */
+      window.AB_SNAP_CV = { start: BLOCK_TOP - t, step: CV_SPAN / vals.length, count: vals.length };
+      window.SX_SNAPS = [window.AB_SNAP_REEL, window.AB_SNAP_CV].filter(Boolean);
     }
     layoutCv();
-    window.addEventListener('resize', layoutCv);
+    window.addEventListener('resize', () => { layoutCv(); cvScroll(); });
 
     /* the scroll only STEPS the values now — the browser does the pinning */
     function cvScroll() {
@@ -457,6 +518,12 @@ const io = new IntersectionObserver(entries => {
       if (window.scrollY >= pinStart) {
         setVal(Math.min(vals.length - 1, Math.floor((ty / CV_SPAN) * vals.length)));
       }
+      const p = window.scrollY - pinStart;
+      const step = CV_SPAN / vals.length;
+      const lift = Math.max(0, Math.min(CV_SPAN, CV_SPAN - p));
+      const k = Math.max(0, Math.min(1, (p - (CV_SPAN - step)) / step));
+      cvLock.style.transform = 'translateY(' + (-lift) + 'px)';
+      cvLock.style.opacity = (0.15 + 0.85 * k).toFixed(3);
     }
     window.addEventListener('scroll', cvScroll, { passive: true });
     cvScroll();
@@ -509,8 +576,60 @@ const io = new IntersectionObserver(entries => {
                   + TEAM.map((t, i) => cellHtml(t, i, PERIOD)).join('');
   const MIN = -2, MAX = TEAM.length - 3;  /* 9 cells now, chevrons cover the book */
   let pos = 0;
-  const setPos = () => { track.style.transform = `translateX(${-(pos * PITCH + drift)}px)`; };
-  window.TM_SETPOS = (dt) => { drift = (drift + 44 * dt) % PERIOD; setPos(); }; /* 24 -> 44 px/s: Joel wanted the roll faster (8/21) */
+  const wrap = v => ((v % PERIOD) + PERIOD) % PERIOD;
+  const setPos = () => { track.style.transform = `translateX(${-(pos * PITCH + wrap(drift))}px)`; };
+  window.TM_SETPOS = (dt) => { drift = wrap(drift + 44 * dt); setPos(); }; /* 24 -> 44 px/s: Joel wanted the roll faster (8/21) */
+  /* 9/14 (Joel: "anything that rolls like the meet the core team ... should
+     be fully controlled by swipe"): drag with a finger or mouse, the cells
+     follow the hand and the roll parks; a flick adds its velocity and
+     decays back to the 44px/s roll (the phone rails' law). The chevron
+     transition is dropped while the hand is on it so it tracks 1:1. */
+  let boost = 0, drag = null;
+  const rail = document.getElementById('tmRail');
+  rail.style.touchAction = 'pan-y';
+  rail.style.cursor = 'grab';
+  window.TM_TICK = (dt, rolling) => {
+    if (rolling && !drag) drift = wrap(drift + 44 * dt);
+    if (boost) { drift = wrap(drift + boost * dt); boost *= Math.exp(-dt / 0.45); if (Math.abs(boost) < 2) { boost = 0; track.style.transition = ''; } }
+    if (drag || boost) setPos();
+    else if (rolling) setPos();
+  };
+  rail.addEventListener('pointerdown', e => {
+    if (e.button !== undefined && e.button !== 0) return;
+    drag = { x0: e.clientX, y0: e.clientY, d0: drift, moved: false, hist: [[performance.now(), e.clientX]], id: e.pointerId, decided: e.pointerType !== 'touch' };
+    boost = 0;
+  });
+  rail.addEventListener('pointermove', e => {
+    if (!drag || e.pointerId !== drag.id) return;
+    const dx = e.clientX - drag.x0, dy = e.clientY - drag.y0;
+    if (!drag.decided) {
+      if (Math.abs(dx) < 6 && Math.abs(dy) < 6) return;
+      if (Math.abs(dy) > Math.abs(dx)) { drag = null; return; }
+      drag.decided = true;
+    }
+    if (!drag.moved && Math.abs(dx) > 4) {
+      drag.moved = true; rail.style.cursor = 'grabbing'; track.style.transition = 'none';
+      try { rail.setPointerCapture(e.pointerId); } catch (err) {}
+    }
+    if (!drag.moved) return;
+    drift = wrap(drag.d0 - dx);
+    setPos();
+    const now = performance.now();
+    drag.hist.push([now, e.clientX]);
+    while (drag.hist.length > 2 && now - drag.hist[0][0] > 90) drag.hist.shift();
+  });
+  const endDrag = e => {
+    if (!drag || (e && e.pointerId !== undefined && e.pointerId !== drag.id)) return;
+    const d = drag; drag = null;
+    rail.style.cursor = 'grab';
+    if (!d.moved) { track.style.transition = ''; return; }
+    const h0 = d.hist[0], h1 = d.hist[d.hist.length - 1];
+    if (performance.now() - h1[0] < 80) boost = Math.max(-3500, Math.min(3500, -(h1[1] - h0[1]) / Math.max(16, h1[0] - h0[0]) * 1000));
+    if (!boost) track.style.transition = '';
+  };
+  rail.addEventListener('pointerup', endDrag);
+  rail.addEventListener('pointercancel', endDrag);
+  rail.addEventListener('lostpointercapture', endDrag);
   document.getElementById('tmNext').addEventListener('click', () => { pos = Math.min(MAX, pos + 1); setPos(); });
   document.getElementById('tmPrev').addEventListener('click', () => { pos = Math.max(MIN, pos - 1); setPos(); });
 })();
@@ -584,7 +703,7 @@ document.querySelectorAll('.fd').forEach(el => io.observe(el));
        chrome only while it actually holds full screen (bug hunt 8/21). */
     const pin = window.AB_REEL_PIN, end = window.AB_REEL_END || 0;
     if (pin && hero.classList.contains('in')) {
-      const range = Math.max(1, (end - pin) * 0.75);
+      const range = Math.max(1, window.AB_REEL_ZOOM || (end - pin) * 0.75);
       const p = Math.min(1, Math.max(0, (window.scrollY - pin) / range));
       if (p > 0) {
         hero.classList.add('scrub');
@@ -598,7 +717,9 @@ document.querySelectorAll('.fd').forEach(el => io.observe(el));
       if (zoomed !== (drive.zoomed || false)) {
         drive.zoomed = zoomed;
         const hd = document.querySelector('.hdr');
-        if (hd) hd.classList.toggle('dark', zoomed);
+        /* dark chrome only when the locked reel actually reaches under the
+           header (a laptop); centred lower on a tall iPad it stays light */
+        if (hd) hd.classList.toggle('dark', zoomed && (window.AB_REEL_TOP || 0) < 118);
       }
     }
   }
@@ -617,14 +738,15 @@ document.querySelectorAll('.fd').forEach(el => io.observe(el));
   function roll(now) {
     const dt = Math.min(0.05, (now - last) / 1000) || 0;
     last = now;
-    if (!paused && onScreen && window.TM_SETPOS) window.TM_SETPOS(dt);
+    if (window.TM_TICK) window.TM_TICK(dt, !paused && onScreen);
+    else if (!paused && onScreen && window.TM_SETPOS) window.TM_SETPOS(dt);
     requestAnimationFrame(roll);
   }
   requestAnimationFrame(roll);
 })();
 </script>
 <script src="smoothscroll.js?v=20260914a"></script>
-<script src="logomorph.js?v=20260824a"></script>
+<script src="logomorph.js?v=20260914b"></script>
 <script src="menu.js?v=20260914a"></script>
 <script>
 /* Safari back-forward cache restores dead builds from memory - always reload */

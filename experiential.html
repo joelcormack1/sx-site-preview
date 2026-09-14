@@ -481,8 +481,22 @@ const io = new IntersectionObserver(entries => {
       if (m === 'post')  stickBox.style.cssText = `position:absolute; left:0; top:${HP_SPAN}px; width:1728px; height:${BLOCK_H}px;`;
     };
     function layoutHp() {
-      seatTop = Math.max(130, Math.round((window.innerHeight - BLOCK_H) / 2));
+      /* centred on a laptop; a taller viewport keeps the laptop seat (9/14,
+         Joel's second iPad pass: no block floating mid-screen over nothing) */
+      seatTop = Math.min(Math.max(130, Math.round((1117 - BLOCK_H) / 2)),
+                         Math.max(130, Math.round((window.innerHeight - BLOCK_H) / 2)));
+      /* THE REACH LAW (9/14, Joel's iPad: "it wouldn't scroll to the very
+         bottom on how we make it happen, and was getting stuck on audience
+         engagement"): on a portrait iPad the 800px span ran past the end of
+         the page's scroll range, so the last rows could never arrive. The
+         seat is never higher than the point that keeps the span's end
+         reachable — the block locks low, the footer rising beneath it. */
+      const pageH = blockTop + BLOCK_H + HP_SPAN + 300 + 349;
+      const seatMin = window.innerHeight - (pageH - blockTop - HP_SPAN);
+      seatTop = Math.max(seatTop, Math.ceil(seatMin));
       if (pinMode === 'lock') stickBox.style.top = seatTop + 'px';
+      /* one swipe = one step on touch (smoothscroll.js reads this) */
+      window.SX_SNAP = { start: blockTop - seatTop, step: HP_SPAN / rows.length, count: rows.length };
       stepFromScroll();
     }
     function stepFromScroll() {
@@ -535,7 +549,7 @@ document.querySelectorAll('.fd').forEach(el => io.observe(el));
 })();
 </script>
 <script src="smoothscroll.js?v=20260914a"></script>
-<script src="logomorph.js?v=20260824a"></script>
+<script src="logomorph.js?v=20260914b"></script>
 <script src="menu.js?v=20260914a"></script>
 <script src="hoverlaw.js?v=20260819095356"></script>
 <script>

@@ -149,6 +149,54 @@
 
   addEventListener('resize', fit);
   fit();
+  /* THE CURTAIN (9/14, Joel: "when you click on one thumbnail, the whole
+     page flashes before it switches to the other, this is a universal note").
+     Between two documents WebKit paints this iframe blank for as long as the
+     next page's HTML takes to arrive — a white beat on every navigation over
+     the network, worst on the way into a dark work page. Only the shell
+     outlives both documents, so the shell holds the curtain: a page about to
+     navigate posts {sx:'curtain', dark, art} (footerlaw.js, on every site
+     link) and the curtain paints at once — black, carrying the clicked
+     tile's art on the way into a work, white on the way to a light page.
+     It lifts after the new page's first paint, or, for a page that posts
+     {sx:'hold'} (the work page waits for the CMS), on its {sx:'ready'}.
+     A JS navigation the shell was not told about falls back to the
+     departing page's own tone via its pagehide. Failsafe: 6s. */
+  const curtain = document.createElement('div');
+  curtain.id = 'curtain';
+  curtain.style.cssText = 'position:fixed; left:0; top:0; width:100%; height:100%; z-index:9; pointer-events:none;' +
+    ' opacity:0; background:#000; transition:opacity 0.12s ease;';
+  document.body.appendChild(curtain);
+  let holding = false, curtainT = null;
+  const DARK_PAGES = /(case-study\.html\?work=|director\.html)/;
+  const curtainOn = (dark, art) => {
+    curtain.style.background = dark
+      ? ('#000' + (art ? ' url("' + String(art).replace(/"/g, '%22') + '") center / cover no-repeat' : ''))
+      : '#fff';
+    curtain.style.transition = 'opacity 0.12s ease';
+    curtain.style.opacity = '1';
+    clearTimeout(curtainT);
+    curtainT = setTimeout(curtainOff, 6000);
+  };
+  const curtainOff = () => {
+    clearTimeout(curtainT); holding = false;
+    curtain.style.transition = 'opacity 0.35s ease';
+    curtain.style.opacity = '0';
+  };
+  window.addEventListener('message', e => {
+    const m = e.data || {};
+    if (m.sx === 'curtain') curtainOn(!!m.dark, m.art || '');
+    else if (m.sx === 'hold') holding = true;
+    else if (m.sx === 'ready') curtainOff();
+  });
+  f.addEventListener('load', () => {
+    try {
+      const w = f.contentWindow;
+      const here = w.location.pathname.split('/').pop() + w.location.search;
+      w.addEventListener('pagehide', () => { if (curtain.style.opacity !== '1') curtainOn(DARK_PAGES.test(here), ''); });
+    } catch (e) {}
+    requestAnimationFrame(() => requestAnimationFrame(() => { if (!holding) curtainOff(); }));
+  });
   /* iPadOS TOUCH DELIVERY (9/14, Joel: "services and about still arent
      scrolling" on the iPad). Bisected on the iPad simulator against the
      deployed build: WebKit only forwards finger events INTO this scaled

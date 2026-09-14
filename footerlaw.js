@@ -115,6 +115,23 @@
       }));
     } catch (err) {}
   }, true);
+  /* THE CURTAIN (9/14, Joel: "the whole page flashes before it switches"):
+     any click on a site link tells the shell (view.html) what is coming so
+     it can cover the blank beat between documents — black with the clicked
+     tile's art on the way into a work or a director, white to a light page.
+     A modified click (new tab) or an external / mail link says nothing. */
+  document.addEventListener('click', function (e) {
+    if (e.defaultPrevented || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button) return;
+    const a = e.target.closest && e.target.closest('a[href]');
+    if (!a || a.target === '_blank' || window.parent === window) return;
+    const href = a.getAttribute('href') || '';
+    if (!/^[a-z-]+\.html(\?|#|$)/i.test(href)) return;
+    const img = a.querySelector('img');
+    const dark = /(case-study\.html\?work=|director\.html)/.test(href);
+    try {
+      window.parent.postMessage({ sx: 'curtain', dark: dark, art: dark ? ((img && (img.currentSrc || img.src)) || '') : '' }, '*');
+    } catch (err) {}
+  }, true);
 })();
 
 

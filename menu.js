@@ -240,7 +240,11 @@
      it is. u is renderUp's clock: 0 = compact SX, 0.55 = small SIX26
      fully formed, 1 = big. */
   const renderLetters = window.SXLogo ? SXLogo.build(morph) : null;
-  const U_OPEN = 0.55;
+  /* 9/14: the letters are Joel's film (logomorph.js v3), which has no
+     compact-scale SIX26 state — the menu now HOLDS whatever mark the page
+     shows (compact SX on interiors, the big word at the top of home)
+     instead of folding out to the small word. U_OPEN was 0.55. */
+  const U_OPEN = 0;
   let u = 0, startU = 0, qRaf = null;
   function applyU() { if (renderLetters) renderLetters.up(u); }
   function tweenU(to) {

@@ -138,6 +138,14 @@
   /* THE PRESS GHOST LAW, applied to open roles (Joel 8/25): hovering one
      role ghosts the other rows to the same 15% read as the work grids. */
   .cr-row { position: absolute; left: 0; top: 0; width: 1728px; height: 104px; transition: opacity 0.4s ease; }
+  /* 9/14 (Joel's iPad screenshot: the Art Director row printed over the
+     Careers title). The one-screen fitter (fitpage.js) redistributes the
+     page's direct children down a tall viewport, but the roles were seated
+     inside a zero-height wrapper at their design tops and never moved, so
+     on a portrait iPad the title slid down onto them. The wrapper now IS
+     the ledger's seat (design 400) and the rows sit inside it, so the whole
+     ledger rides the fitter as one block. */
+  #openroles { position: absolute; left: 0; top: 400px; width: 1728px; height: 0; }
   /* 9/11 (Joel: "you cant click on the job postings"): only the 49px
      "Apply" word was a link, and it pointed at a mailto. The WHOLE ROW is
      the link now and it opens the real posting (LinkedIn, from the CMS);
@@ -232,15 +240,15 @@ And careers that do too.</p>
        row was stale (filled). The Art Director row below is the offline
        fallback and is replaced on load. -->
   <div id="openroles">
-  <div class="cr-line black fd" style="top:400px;"></div>
+  <div class="cr-line black fd" style="top:0px;"></div>
 
-  <a class="cr-row" style="top:400px;" href="https://www.linkedin.com/jobs/view/4422521831/" target="_blank" rel="noopener">
+  <a class="cr-row" style="top:0px;" href="https://www.linkedin.com/jobs/view/4422521831/" target="_blank" rel="noopener">
     <p class="cr-role fd" style="top:36px;">Art Director</p>
     <p class="cr-meta fd" style="left:984px; top:44px;">Culver City, CA</p>
     <p class="cr-meta fd" style="left:1324px; top:44px;">Full-time</p>
     <p class="cr-apply fd" style="top:43px;">Apply</p>
   </a>
-  <div class="cr-line gray fd" style="top:504px;"></div>
+  <div class="cr-line gray fd" style="top:104px;"></div>
   </div>
 
   <!-- ============ DON'T SEE YOUR ROLE ============ -->
@@ -313,7 +321,7 @@ document.querySelectorAll('.fd').forEach(el => io.observe(el));
     if (lay) roles = (lay.careers || []).filter(x => x && x.position);
   } catch (e) { /* offline: the fallback row stands */ }
   if (!roles || !roles.length) return;
-  const ROW = 104, TOP = 400;
+  const ROW = 104, TOP = 0; /* rows seat inside #openroles, whose own top (400) rides the fitter */
   const host = document.getElementById('openroles');
   const rows = roles.map((x, i) => {
     const href = x.postLink || ('mailto:careers@sixtwentysix.co?subject=' + encodeURIComponent(x.position));
@@ -347,7 +355,7 @@ document.querySelectorAll('.fd').forEach(el => io.observe(el));
 <script src="fitpage.js?v=20260911a"></script>
 <script>SXFit(1249, 349);</script>
 <script src="smoothscroll.js?v=20260914a"></script>
-<script src="logomorph.js?v=20260824a"></script>
+<script src="logomorph.js?v=20260914b"></script>
 <script src="menu.js?v=20260914a"></script>
 <script>
 /* Safari back-forward cache restores dead builds from memory - always reload */

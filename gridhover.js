@@ -70,7 +70,24 @@
     };
   }
 
+  /* 9/14 (Joel, iPad: "when you click on a thumbnail, sometimes other
+     thumbnails do not lower in opacity, typically 1 or 2 per click"): the
+     scroll reveal (.fd.seen) hands every tile a staggered transition-delay
+     (--fd, up to a third of a second per column) and the ghost dim
+     inherited it, so the last column dimmed late or, under a quick second
+     tap, not visibly at all. The dim is immediate on every grid. */
+  const GHOST_CSS = `
+    .ghost .work-thumb:not(.is-hover), .ghost .g-tile:not(.is-hover), .ghost .cs-tile:not(.is-hover),
+    .ghost .wtitle:not(.is-hover), .ghost .wdir:not(.is-hover), .ghost .g-cap:not(.is-hover),
+    .ghost .cs-tcap:not(.is-hover) { transition-delay: 0s !important; }`;
+  let ghostCssIn = false;
   function attach(cfg) {
+    if (!ghostCssIn) {
+      ghostCssIn = true;
+      const gs = document.createElement('style');
+      gs.textContent = GHOST_CSS;
+      document.head.appendChild(gs);
+    }
     const scale = cfg.scale || SCALE;
     const margin = cfg.margin || MARGIN;
     const band = cfg.labelBand || LABEL_BAND;
@@ -251,6 +268,10 @@
         tile.el.addEventListener('pointerdown', e => {
           if (!fromTouch(e)) return;
           cancelPress();
+          /* 9/14: a finger that landed to stop the page mid-glide (Joel:
+             "loops still sometimes play when you scroll") gets no hold
+             timer and its click is swallowed below */
+          if (window.SXInput && window.SXInput.stopper) { press = { tile, stopper: true }; return; }
           if (held && held !== tile) release();
           press = { tile, x: e.clientX, y: e.clientY, fired: false };
           timer = setTimeout(() => {
@@ -270,6 +291,11 @@
         /* the click that ends the hold is not a click on the work */
         tile.el.addEventListener('click', e => {
           if (((window.SXInput && window.SXInput.mode) || 'mouse') !== 'touch') return;
+          if (press && press.tile === tile && press.stopper) {
+            e.preventDefault(); e.stopPropagation();
+            press = null;
+            return;
+          }
           if (press && press.tile === tile && press.fired) {
             e.preventDefault(); e.stopPropagation();
             press = null;
@@ -317,6 +343,12 @@
      density toggles rebuild their tiles and call attach again. */
   let touchSet = [], touchQueued = false, touchPlaying = null;
   function touchLoops(tiles) {
+    /* 9/14 (Joel: "some of the thumbnails are playing their webloops
+       without being clicked on, that needs to be fixed asap"): the 9/12
+       centre-of-screen autoplay is retired. On a touch screen a loop plays
+       only when the finger asks — a tap or a hold on that tile (the
+       press-and-hold law above). Nothing plays on its own. */
+    return;
     /* The homepage builds its own <video> markup inline (it is the reference
        implementation and carries no data-loop), so match on either. Missing
        this left the most important page on the site with no loops at all. */

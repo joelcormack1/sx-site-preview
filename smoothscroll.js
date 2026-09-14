@@ -197,6 +197,13 @@
   window.addEventListener('wheel', mark('mouse'), { passive: true, capture: true });
   window.addEventListener('pointerdown', function (e) {
     window.SXInput.mode = e.pointerType === 'touch' ? 'touch' : 'mouse';
+    /* 9/14 (Joel: "the loops still sometimes play when you scroll. It's
+       rare"): a finger that lands to STOP a gliding page is not a tap, but
+       the browser still synthesises a click for it, and if it landed on a
+       tile that click previewed the tile's loop. Flag the touch-down while
+       the damper is still carrying the page; the tile laws swallow the
+       click that follows. Read as SXInput.stopper. */
+    window.SXInput.stopper = e.pointerType === 'touch' && animating && Math.abs(target - current) > 8;
   }, { passive: true, capture: true });
   window.addEventListener('pointermove', function (e) {
     if (e.pointerType !== 'touch') window.SXInput.mode = 'mouse';
@@ -223,6 +230,40 @@
 
     var tY = 0, tT = 0, tV = 0, riding = false, hovered = null;
 
+    /* ONE SWIPE, ONE STEP (9/14, Joel: "for the sections where you scroll
+       through various sentences like but not exclusive to our core values,
+       it should be one swipe per section. right now one swipe goes through
+       all of the sections very fast"). A page that steps content on scroll
+       publishes its zone as window.SX_SNAP = { start, step, count }:
+       scrollY where step 0 begins, px of scroll per step, number of steps.
+       While a finger rides inside the zone the intent is held to one step
+       either way, and the release glides to the next step boundary in the
+       swipe's direction instead of flinging through three of them. Wheel
+       and trackpad keep the continuous scrub. */
+    var snapK = null, snapDir = 0, snapMoved = 0, snapLo = -Infinity, snapHi = Infinity, snapZ = null;
+    /* a page may publish one zone (SX_SNAP) or several (SX_SNAPS); the zone
+       a gesture belongs to is the one the finger is in, or within one step
+       above or below it (so a swipe from just above the zone lands on its
+       first step). `land` is where a step is entered (default 1px in) */
+    function snapZones() {
+      var list = [].concat(window.SX_SNAPS || [], window.SX_SNAP ? [window.SX_SNAP] : []);
+      return list.filter(function (z) { return z && z.step > 0 && z.count > 0; });
+    }
+    function snapZone(y) {
+      var zs = snapZones();
+      for (var i = 0; i < zs.length; i++) {
+        var z = zs[i], end = z.start + z.count * z.step;
+        if (y >= z.start - z.step && y < end + z.step) return z;
+      }
+      return null;
+    }
+    function snapIndex(z, y) {
+      if (y < z.start) return -1;
+      if (y >= z.start + z.count * z.step) return z.count;
+      return Math.floor((y - z.start) / z.step);
+    }
+    window.SX_SNAP_CLAMP = function (w) { return Math.max(snapLo, Math.min(snapHi, w)); };
+
     window.addEventListener('touchstart', function (e) {
       riding = e.touches.length === 1 && !inNative(e.target);
       dbg.ts++; dbg.riding = riding; dbg.coarse = COARSE; if (HUD) hudPaint();
@@ -234,6 +275,18 @@
          drop banked intent so the touch starts from where the page IS */
       wanted = animating ? current : window.scrollY;
       window.SX_SCROLL_DRIVE = null;
+      /* the snap zone: remember which step the finger started on and hold
+         the gesture to one step either way */
+      var z = snapZone(window.scrollY);
+      snapK = null; snapDir = 0; snapMoved = 0; snapLo = -Infinity; snapHi = Infinity; snapZ = z;
+      if (z) {
+        var land = z.land || 1;
+        snapK = snapIndex(z, window.scrollY);
+        if (snapK > 0) snapLo = z.start + (snapK - 1) * z.step + land;
+        if (snapK < z.count - 1) snapHi = z.start + (snapK + 1) * z.step + land;
+        if (snapK === -1) { snapLo = -Infinity; snapHi = z.start + land; }
+        if (snapK === z.count) { snapLo = z.start + (z.count - 1) * z.step + land; snapHi = Infinity; }
+      }
     }, { passive: true });
 
     window.addEventListener('touchmove', function (e) {
@@ -255,6 +308,11 @@
       tV = tV ? tV * 0.4 + inst * 0.6 : inst;  // smoothed, for the release
       tY = y; tT = now;
       push(dy);
+      if (snapK !== null) {
+        snapMoved += dy;
+        if (dy) snapDir = dy > 0 ? 1 : -1;
+        wanted = Math.max(snapLo, Math.min(snapHi, wanted));
+      }
     }, { passive: false });
 
     /* SELF-HEALING (9/14, Joel: "on iPad its not scrolling at all on the
@@ -280,12 +338,43 @@
       riding = false;
       dbg.te++; if (HUD) hudPaint();
       if (window.SX_SCROLL_LOCKED) return;
+      /* inside a snap zone the release lands on the NEXT step boundary in
+         the swipe's direction (a glide, no fling); leaving the zone at
+         either end falls through to the normal fling */
+      var zz = snapZ;
+      if (snapK !== null && zz && Math.abs(snapMoved) > 24 && snapDir) {
+        var k2 = snapK + snapDir;
+        if (k2 >= 0 && k2 < zz.count) {
+          var tgt = zz.start + k2 * zz.step + (zz.land || 1);
+          wanted = tgt;
+          window.SX_SCROLL_DRIVE = tgt;
+          if (!animating) { animating = true; last = performance.now(); requestAnimationFrame(tick); }
+          snapK = null;
+          return;
+        }
+      }
+      snapK = null; snapLo = -Infinity; snapHi = Infinity;
       /* Fling. The damper settles an offset of v/DECAY, so handing it
          v/DECAY reproduces the release velocity exactly and then eases out
          into the landing — the same curve a wheel flick rides. Capped, and
          still subject to every SX_SCROLL_* limit inside the tick. */
       if (performance.now() - tT < 100 && Math.abs(tV) > 200) {
+        var dir = tV > 0 ? 1 : -1;
         push(Math.max(-4200, Math.min(4200, tV)) / DECAY);
+        /* a fling never sails THROUGH a stepping section: it lands on the
+           next zone's first step (or last step when swiping back up), so
+           the reel -> core values swipe opens on value one, not value four */
+        var y0 = window.scrollY, nz = null, best = Infinity;
+        snapZones().forEach(function (z) {
+          var zEnd = z.start + z.count * z.step;
+          if (dir > 0 && z.start > y0 && z.start - y0 < best) { best = z.start - y0; nz = z; }
+          if (dir < 0 && zEnd <= y0 && y0 - zEnd < best) { best = y0 - zEnd; nz = z; }
+        });
+        if (nz) {
+          var landN = nz.land || 1;
+          if (dir > 0) wanted = Math.min(wanted, nz.start + landN);
+          else wanted = Math.max(wanted, nz.start + (nz.count - 1) * nz.step + landN);
+        }
       }
       /* the strike: the finger asked for real travel, nothing held the page,
          the page can scroll, and it did not move */

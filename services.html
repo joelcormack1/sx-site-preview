@@ -238,7 +238,7 @@
      old center box's framing (58 left, 62.2 up, 542x584). */
   .tst-card::before {
     content: ''; position: absolute; left: -58px; top: -62.2px;
-    width: 542px; height: 584px; border: 1px solid #000;
+    width: 542px; height: var(--boxh, 584px); border: 1px solid #000; /* 9/14: follows the card (seatSignoffs) */
     opacity: 0; transition: opacity 0.45s ease; pointer-events: none;
   }
   .tst-card:hover::before { opacity: 1; }
@@ -490,14 +490,38 @@ const io = new IntersectionObserver(entries => {
   }
   function layoutSticky() {
     if (REVEAL) return;
-    const top = HDR + 130; /* Joel 8/21: not glued to the header — the pinned tabs breathe */
     /* TIGHT block (Joel 8/20 "the spacing hurts my soul"): the rows sit a
        fixed 180px under the tab words — no viewport centering, no void.
        Stick is exactly tab row + gap + the deepest step, one stable seat. */
     const maxH = Math.max(...STEPS.map((_, i) => colsH(i)));
     const COLS_TOP = 180;
     const stickH = Math.max(STICK_H, COLS_TOP + maxH + 30);
+    /* Joel 8/21: not glued to the header — the pinned tabs breathe (HDR+130).
+       9/14 (Joel, iPad portrait: "have the content on the bottom slide up
+       and lock so there isnt just a bunch of random empty space"): on a
+       viewport much taller than the block the seat is the centre, so the
+       block slides up and locks mid-screen instead of pinning at the top
+       over a screen of nothing. A laptop viewport is unchanged. */
+    /* 9/14 (Joel, second iPad pass: "our blueprint should just be locked
+       in place as of where it would be by the time you're done scrolling
+       ... instead of it being like 100% blank on the bottom"): the seat is
+       the frame's HDR+130 on every viewport again — the afternoon's
+       centring left a screen of nothing above AND below the block on a
+       portrait iPad. What fills a tall screen now is the content beneath,
+       locked under the stepper by driveLock() below. */
+    /* THE REACH LAW (9/14, Joel's iPad: "it wouldn't scroll to the very
+       bottom on how we make it happen, and was getting stuck"): a tall
+       viewport shortens the page's scroll range, and a pinned span that
+       ends past it can never finish. The seat is never higher than the
+       point that keeps the span's end reachable: the block then locks
+       where it would be by the time you are done scrolling. */
+    const grow0 = stickH - STICK_H;
+    const pageH0 = 4081 + EXTRA + grow0 - 205;
+    const seatMin = window.innerHeight - (pageH0 - SEC_TOP - EXTRA);
+    const top = Math.max(HDR + 130, Math.ceil(seatMin));
     stick.__seat = top; stick.__h = stickH;
+    /* one swipe = one step on touch (smoothscroll.js reads this) */
+    window.SX_SNAP = { start: SEC_TOP - top, step: EXTRA / STEPS.length, count: STEPS.length };
     if (stick.__repin) stick.__repin();
     const grow = stickH - STICK_H;
     document.getElementById('svcPinzone').style.height = (stickH + EXTRA) + 'px';
@@ -506,6 +530,35 @@ const io = new IntersectionObserver(entries => {
     document.getElementById('below').style.top = (EXTRA + grow - 118) + 'px';
     document.getElementById('page').style.height = (4081 + EXTRA + grow - 205) + 'px'; /* testimonials -> footer on the ~300 rhythm (8/21 audit) */
     colsEl.style.top = COLS_TOP + 'px';
+    driveLock();
+  }
+  /* THE BELOW LOCK (9/14, Joel: "our blueprint should just be locked in
+     place as of where it would be by the time you're done scrolling and it
+     should just move through the different sections instead of it being
+     like 100% blank on the bottom, it just kind of makes the website feel
+     empty"). Everything under the stepper (Our Blueprint, the testimonials)
+     lives in one wrapper that is pulled up by the stepper's unspent scroll,
+     so it rests directly beneath the pinned block the whole way through and
+     settles into its natural seat exactly as the stepper releases — no
+     void, no jump. The footer stays outside (the footer law measures it).
+     And "the our blueprint section should be on an opacity animation and
+     appear as you scroll into it": the wrapper waits as a ghost (0.15, the
+     hover law's dim) and comes to full opacity across the stepper's last
+     step, scrubbed by the scroll so one swipe brings it in. */
+  const belowEl = document.getElementById('below');
+  const lockEl = document.createElement('div');
+  lockEl.id = 'belowLock';
+  lockEl.style.cssText = 'position:absolute; left:0; top:0; width:1728px; height:0; will-change:transform, opacity;';
+  [...belowEl.children].forEach(ch => { if (!ch.classList.contains('footer')) lockEl.appendChild(ch); });
+  belowEl.insertBefore(lockEl, belowEl.firstChild);
+  function driveLock() {
+    if (REVEAL || !EXTRA) return;
+    const p = window.scrollY - pinStart();
+    const step = EXTRA / STEPS.length;
+    const lift = Math.max(0, Math.min(EXTRA, EXTRA - p));
+    const k = Math.max(0, Math.min(1, (p - (EXTRA - step)) / step));
+    lockEl.style.transform = 'translateY(' + (-lift) + 'px)';
+    lockEl.style.opacity = (0.15 + 0.85 * k).toFixed(3);
   }
   /* FIXED-emulated pin (Joel 8/22 — the stepper was jittering): native
      sticky reseats ASYNC under the scripted smooth scroll (the header-bob
@@ -592,7 +645,10 @@ const io = new IntersectionObserver(entries => {
     /* Joel 8/22 final: the BOUNDARY SLOWDOWN — opening a new section drops
        the scroll speed for a beat (the pause), then it keeps going. The
        line scrubs with the scroll so it eases but never stops. */
-    if (fromScroll && wasActive >= 0 && !REVEAL) {
+    /* 9/14: a finger never gets the slowdown — on touch a swipe's intent is
+       discarded while the limit holds, which read as the page stopping and
+       starting at every boundary (Joel, iPad). The snap zone paces touch. */
+    if (fromScroll && wasActive >= 0 && !REVEAL && !(window.SXInput && window.SXInput.mode === 'touch')) {
       window.SX_SCROLL_MAXV = 240;
       clearTimeout(show.slowT);
       show.slowT = setTimeout(() => { window.SX_SCROLL_MAXV = null; }, 520);
@@ -608,6 +664,7 @@ const io = new IntersectionObserver(entries => {
   const svcRule = document.getElementById('svcRule');
   function stepFromScroll() {
     if (REVEAL) return;
+    driveLock();
     const p = (window.scrollY - pinStart()) / EXTRA;
     /* the rule scrubs WITH the scroll (Joel 8/22 final): the boundary
        slowdown shows as the line easing, never stopping */
@@ -758,12 +815,16 @@ const io = new IntersectionObserver(entries => {
   const seatSignoffs = () => {
     track.querySelectorAll('.tst-card').forEach(c => {
       const q = c.querySelector('.tst-quote'); if (!q) return;
-      const need = 155 + q.offsetHeight + 26;
-      const d = Math.max(0, need - 405);
-      c.querySelector('.tst-rule').style.top = (405 + d) + 'px';
-      c.querySelector('.tst-name').style.top = (409 + d) + 'px';
-      c.querySelector('.tst-role').style.top = (435 + d) + 'px';
-      c.style.height = (452 + d) + 'px';
+      /* 9/14 (Joel: "the spacing for don't believe us, believe... is a bit
+         off, the bottom line is too far down"): the sign-off no longer waits
+         at the frame's 405 — it sits 44px under each card's own quote, so a
+         short quote is not followed by a hole. */
+      const rule = 155 + q.offsetHeight + 44;
+      c.querySelector('.tst-rule').style.top = rule + 'px';
+      c.querySelector('.tst-name').style.top = (rule + 4) + 'px';
+      c.querySelector('.tst-role').style.top = (rule + 30) + 'px';
+      c.style.height = (rule + 47) + 'px';
+      c.style.setProperty('--boxh', (rule + 47 + 132) + 'px'); /* the hover box keeps its 62/70 margins */
     });
   };
   seatSignoffs();
@@ -775,10 +836,47 @@ const io = new IntersectionObserver(entries => {
      band between cards kept stopping the roll and read as stalling */
   host.addEventListener('mouseover', e => { paused = !!e.target.closest('.tst-card'); });
   host.addEventListener('mouseleave', () => { paused = false; });
+  /* 9/14 (Joel: "anything that rolls ... should be fully controlled by
+     swipe"): drag with a finger or mouse, the cards follow the hand; a hold
+     parks the roll; a flick adds its velocity to the roll and decays back
+     to the standard 44px/s (the phone rails' law). */
+  let boost = 0, drag = null;
+  host.style.touchAction = 'pan-y';
+  host.addEventListener('pointerdown', e => {
+    if (e.button !== undefined && e.button !== 0) return;
+    drag = { x0: e.clientX, y0: e.clientY, d0: drift, moved: false, hist: [[performance.now(), e.clientX]], id: e.pointerId, decided: e.pointerType !== 'touch' };
+    boost = 0; nudge = 0; nudgeT = 0;
+  });
+  host.addEventListener('pointermove', e => {
+    if (!drag || e.pointerId !== drag.id) return;
+    const dx = e.clientX - drag.x0, dy = e.clientY - drag.y0;
+    if (!drag.decided) {
+      if (Math.abs(dx) < 6 && Math.abs(dy) < 6) return;
+      if (Math.abs(dy) > Math.abs(dx)) { drag = null; return; }
+      drag.decided = true;
+    }
+    if (!drag.moved && Math.abs(dx) > 4) { drag.moved = true; try { host.setPointerCapture(e.pointerId); } catch (err) {} }
+    if (!drag.moved) return;
+    drift = drag.d0 - dx;
+    const now = performance.now();
+    drag.hist.push([now, e.clientX]);
+    while (drag.hist.length > 2 && now - drag.hist[0][0] > 90) drag.hist.shift();
+  });
+  const endDrag = e => {
+    if (!drag || (e && e.pointerId !== undefined && e.pointerId !== drag.id)) return;
+    const d = drag; drag = null;
+    if (!d.moved) return;
+    const h0 = d.hist[0], h1 = d.hist[d.hist.length - 1];
+    if (performance.now() - h1[0] < 80) boost = Math.max(-3500, Math.min(3500, -(h1[1] - h0[1]) / Math.max(16, h1[0] - h0[0]) * 1000));
+  };
+  host.addEventListener('pointerup', endDrag);
+  host.addEventListener('pointercancel', endDrag);
+  host.addEventListener('lostpointercapture', endDrag);
   function tick(now) {
     const dt = Math.min(0.05, (now - last) / 1000) || 0;
     last = now;
-    if (!paused) drift += 44 * dt;
+    if (!paused && !drag) drift += 44 * dt;
+    if (boost) { drift += boost * dt; boost *= Math.exp(-dt / 0.45); if (Math.abs(boost) < 2) boost = 0; }
     nudge += (nudgeT - nudge) * (1 - Math.exp(-8 * dt));
     const v = (((drift + nudge) % PERIOD) + PERIOD) % PERIOD;
     track.style.transform = 'translateX(' + (-v).toFixed(2) + 'px)';
@@ -792,7 +890,7 @@ const io = new IntersectionObserver(entries => {
 document.querySelectorAll('.fd').forEach(el => io.observe(el));
 </script>
 <script src="smoothscroll.js?v=20260914a"></script>
-<script src="logomorph.js?v=20260824a"></script>
+<script src="logomorph.js?v=20260914b"></script>
 <script src="menu.js?v=20260914a"></script>
 <script>
 /* Safari back-forward cache restores dead builds from memory - always reload */

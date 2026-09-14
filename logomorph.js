@@ -1,177 +1,82 @@
-/* SIXTWENTYSIX — the real logo morph, v2 (2026-08-19).
-   Built from Joel's three "LOGO REDACTED" keyframes:
-   - 505:3208  K0: full SIX26, every letter its own vector (1:1 header scale)
-   - 506:3223  K1: I / 2 / 6 gone; S, X and (R) HOLD their big positions
-   - 506:3231  K2: the compact SX arrangement (same S+X glyphs, ~0.46 scale)
-   So the choreography is: phase one, the middle letters collapse and fade in
-   place while S / X / (R) stand still; phase two, the three survivors travel
-   and scale into the compact header mark. Pure lerp, no crossfade.
+/* SIXTWENTYSIX — the logo morph, v3 (2026-09-14): JOEL'S OWN FILM.
+   Joel: "across the board can you replace this as the animation for the
+   website" — SX ANIMATION.mp4 (1180x338, 2s at 60fps): SIX26 with the
+   I/2/6 wiping away, the X gliding into the S while the assembled mark
+   shrinks to the compact SX, the (R) returning. The film's 73 moving
+   frames (the last 48 are a hold) live as alpha WebPs in assets/sxanim/
+   (black ink, alpha from luminance, 538KB in all) and the header draws the
+   frame its scroll asks for on a canvas — scrubbable, reversible at any
+   pixel, exactly his frames. The vector morph this replaces (v2, built from
+   the LOGO REDACTED keyframes) is kept as logomorph.vector.js.
 
-   Coordinates are header-space: x relative to the logo's left edge (page
-   x63), y absolute within the header (big cap top y52, compact y43 — the
-   interior header box). Callers place the container at left:63, top:0.
-
-   API:
-     SXLogo.build(container) -> render(q)   q: 0 = big, 1 = compact
-     SXLogo.attachHeader(container)         full interior-header driver:
-       renders the letters, drives cities + hamburger + header band height
-       from scroll (big at top of page, compact by 260px), and exposes
-       window.SX_MORPH_Q for the menu. The homepage drives itself instead
-       (its container carries data-selfdriven). reveal=1 captures pin q=1 on
-       interior pages so they match their compact-header frames. */
+   Geometry, measured from the frames (assets/sxanim/metrics.json, T[i] =
+   S cap top, S bottom, ink right edge in film px):
+   - the big word is 1142 film px wide -> the header's narrow big 420 (the
+     8/24 law), so one film px = 0.3678 site px; the S's left edge (film
+     x21) seats at the container's x0 (page x63)
+   - the big S cap top seats at y70 (BIG_TOP), the compact S at y43.05 —
+     the film's own upward drift is short of the header's, so the frame
+     rides up by the difference across the shrink
+   API as before: SXLogo.build(container) -> render(q) (q 0 = big, 1 =
+   compact), render.up(t) (the reverse: frames backwards), plus
+   render.shrinkAt(q) for the chrome that rides the shrink and
+   render.warm() to preload. SXLogo.attachHeader unchanged. */
 (function () {
   const lerp = (a, b, t) => a + (b - a) * t;
   const clamp01 = t => Math.max(0, Math.min(1, t));
+  const VW = 1180, VH = 338, X0 = 21;
+  const T = [[127,322,1163],[127,322,1163],[127,322,1163],[127,322,1163],[127,322,1157],[127,322,1133],[127,322,1109],[127,322,1086],[127,322,1062],[127,322,1038],[127,322,1014],[127,322,990],[127,322,967],[127,322,943],[127,322,919],[127,322,895],[127,322,872],[127,322,848],[127,322,824],[127,322,800],[127,322,777],[127,322,753],[127,322,729],[127,322,705],[127,322,682],[127,322,658],[127,322,634],[127,322,610],[127,322,596],[127,322,596],[127,322,596],[127,322,596],[126,321,596],[126,321,595],[126,320,594],[126,320,592],[126,319,590],[125,317,587],[125,316,584],[124,314,580],[124,312,576],[123,309,571],[122,306,565],[121,303,558],[120,300,551],[119,296,543],[118,292,535],[117,288,526],[115,283,517],[114,279,508],[113,275,499],[112,271,490],[111,267,482],[110,263,475],[109,260,468],[108,257,462],[107,255,457],[106,252,452],[106,251,448],[105,249,445],[105,248,442],[105,247,440],[104,246,438],[104,245,437],[104,245,436],[104,244,435],[104,244,435],[104,244,435],[104,244,435],[104,244,435],[104,244,435],[104,244,435],[104,244,435]];
+  const N = T.length;
+  const BIG_W = 420, BIG_TOP = 70, COMPACT_TOP = 43.05;
+  const K = BIG_W / (T[0][2] - X0);                 // film px -> site px
+  const H0 = T[0][1] - T[0][0], H1 = T[N - 1][1] - T[N - 1][0];
+  const frameOf = q => Math.round(clamp01(q) * (N - 1));
+  const shrinkOf = i => clamp01((H0 - (T[i][1] - T[i][0])) / (H0 - H1));
+  const src = i => 'assets/sxanim/f' + String(i).padStart(2, '0') + '.webp';
+  const cache = [];
+  function frame(i, onReady) {
+    let im = cache[i];
+    if (!im) { im = new Image(); im.decoding = 'async'; im.src = src(i); cache[i] = im; }
+    if (im.complete && im.naturalWidth) return im;
+    if (onReady) im.addEventListener('load', onReady, { once: true });
+    return null;
+  }
+  function warm() { for (let i = 0; i < N; i++) frame(i); }
 
-  /* movers: big -> mid (X and the (R) close ranks against the S at FULL
-     size, forming a big SX(R)) -> compact (the assembled mark shrinks).
-     mid = the compact arrangement scaled up 1/0.4625, anchored on the S.
-     Faders collapse in place (K1). Choreography per Joel 8/20: letters go
-     away, it TURNS INTO SX, then it shrinks. */
-  const LETTERS = [
-    { id: 's', src: 'letter-s', big: [0,     52,   140.8, 107.9], mid: [0,     52,   140.8, 107.9], compact: [0,   43.05, 64.7, 49.9] },
-    { id: 'i', src: 'letter-i', big: [148.4, 53.8, 39.6,  104.2], fade: true },
-    { id: 'x', src: 'letter-x', big: [184.8, 53.8, 154.7, 104.2], mid: [134.1, 53.8, 154.7, 104.2], compact: [62,  43.9,  71,   48.2] },
-    { id: '2', src: 'letter-2', big: [334.1, 51.8, 133.8, 106.1], fade: true },
-    { id: '6', src: 'letter-6', big: [474,   51.8, 140,   108.2], fade: true },
-    { id: 'r', src: null,       big: [608.5, 51,   28.6,  18.7 ], mid: [287.6, 51.9, 28.6,  18.7 ], compact: [133, 43,    13,   8.6 ] },
-  ];
-
-  /* NARROW BIG (Joel 8/24): the full-size word is scaled to 420px wide and
-     re-seated at cap top y70 (vertically centered in the unchanged 185px
-     band). Its right edge lands at page x483, clearing the cities' one and
-     only x seat (504) — LA/NY never slide horizontally again, they only
-     ride up and down. The compact SX/SIX26 is untouched (KS below adapts).
-     Restore the original 637px-wide state with BIG_W = 637.1, BIG_TOP = 52. */
-  const BIG_W = 420, BIG_TOP = 70, BIGS = BIG_W / 637.1;
-  LETTERS.forEach(L => ['big', 'mid'].forEach(k => {
-    const g = L[k];
-    if (g) L[k] = [g[0] * BIGS, BIG_TOP + (g[1] - 52) * BIGS, g[2] * BIGS, g[3] * BIGS];
-  }));
+  /* LETTERS is kept for anyone who read the v2 seats; the film owns them now */
+  const LETTERS = [];
 
   function build(container) {
     container.innerHTML = '';        // idempotent: rebuilds replace, never stack
     container.style.position = 'absolute';
-    const els = LETTERS.map(L => {
-      const el = document.createElement('span');
-      el.style.cssText = 'position:absolute; display:block;';
-      if (L.id === 'r') {
-        el.innerHTML =
-          '<img src="assets/letter-r-ring.svg" alt="" style="position:absolute; inset:0; width:100%; height:100%;">' +
-          '<img src="assets/letter-r-mark.svg" alt="" style="position:absolute; left:25.5%; top:24%; width:51.7%; height:51.3%;">';
-      } else {
-        el.innerHTML = `<img src="assets/${L.src}.svg" alt="" style="display:block; width:100%; height:100%;">`;
-      }
-      container.appendChild(el);
-      return el;
-    });
-    const smooth = t => t * t * (3 - 2 * t); // eased sub-curves: no jolt
-    /* THE UP PATH (Joel 8/22): the reverse is NOT the forward played
-       backwards. Going home, the SX turns into a COMPACT SIX26 first —
-       I/2/6 fade in at small scale while the X and (R) slide over to make
-       room — and only THEN does the assembled little word grow to full
-       size. Symmetric law both ways: transform at your current size,
-       then change size. t: 0 = compact SX, 1 = big SIX26. */
-    const KS = 49.9 / LETTERS[0].big[3]; // compact scale factor (S height ratio, tracks NARROW BIG)
-    /* Joel 8/23 (final): the small word HUGS the compact corner (x0, y43)
-       the entire time it forms — no reseating, no jump — and the grow then
-       expands down-and-right from that same corner. The 9px difference to
-       the big cap-line is absorbed inside the growth itself, where the eye
-       can't read it against 58px of expansion. */
-    const cw = (g) => [g[0] * KS, 43.05 + (g[1] - LETTERS[0].big[1]) * KS, g[2] * KS, g[3] * KS];
-    function renderUp(t) {
-      t = clamp01(t);
-      const ta = smooth(clamp01(t / 0.55));        // A: SX -> small SIX26
-      const tb = smooth(clamp01((t - 0.55) / 0.45)); // B: the little word grows
-      LETTERS.forEach((L, i) => {
-        const el = els[i];
-        const small = cw(L.big);
-        if (L.fade) {
-          const x = lerp(small[0], L.big[0], tb);
-          const y = lerp(small[1], L.big[1], tb);
-          const w = lerp(small[2], L.big[2], tb);
-          const h = lerp(small[3], L.big[3], tb);
-          el.style.left = x + 'px'; el.style.top = y + 'px';
-          el.style.width = w + 'px'; el.style.height = h + 'px';
-          el.style.transition = 'none';
-          el.style.opacity = String(ta);            // fades IN at small size
-        } else {
-          const seat = L.compact;
-          const x = lerp(lerp(seat[0], small[0], ta), L.big[0], tb);
-          const y = lerp(lerp(seat[1], small[1], ta), L.big[1], tb);
-          const w = lerp(lerp(seat[2], small[2], ta), L.big[2], tb);
-          const h = lerp(lerp(seat[3], small[3], ta), L.big[3], tb);
-          el.style.left = x + 'px'; el.style.top = y + 'px';
-          el.style.width = w + 'px'; el.style.height = h + 'px';
-          el.style.transition = 'none';
-          el.style.opacity = '1';
-        }
-      });
-    }
+    const cv = document.createElement('canvas');
+    cv.width = VW; cv.height = VH;   // full film resolution, scaled down in CSS: crisp at any shell scale
+    cv.setAttribute('role', 'img'); cv.setAttribute('aria-label', 'SIXTWENTYSIX');
+    cv.style.cssText = 'position:absolute; left:' + (-X0 * K).toFixed(2) + 'px; top:0; width:' +
+      (VW * K).toFixed(2) + 'px; height:' + (VH * K).toFixed(2) + 'px; display:block; pointer-events:none;';
+    container.appendChild(cv);
+    const ctx = cv.getContext('2d');
+    let drawn = -1, want = 0;
+    const draw = () => {
+      const im = frame(want, draw);
+      if (!im || drawn === want) return;
+      ctx.clearRect(0, 0, VW, VH);
+      ctx.drawImage(im, 0, 0);
+      drawn = want;
+    };
     const r = function render(q) {
       q = clamp01(q);
-      /* THREE BEATS, STRICTLY SEQUENTIAL (Joel 9/3: "the sx should only
-         shrink after the x slides into the s, and then the r appears
-         after" — supersedes the 8/24 diagonal, which slid and shrank at
-         the same time):
-         1: q 0.00-0.30  I/2/6 FADE, full size (quintic, Joel 8/20 soft)
-         2: q 0.30-0.65  the X GLIDES left into the S at FULL size (big ->
-                         mid seats), forming the big SX
-         3: q 0.65-1.00  the assembled SX SHRINKS to the compact seat
-         (r): appears only after the shrink locks — unchanged below. */
-      const q5 = t => t * t * t * (t * (t * 6 - 15) + 10);
-      const ta = clamp01(q / 0.30);
-      const ka = q5(ta);                        // fade band
-      const kg = q5(clamp01((q - 0.30) / 0.35)); // glide band (big -> mid)
-      const ks = q5(clamp01((q - 0.65) / 0.35)); // shrink band (mid -> compact)
-      const km = ks; // legacy name: downstream reads km as "how shrunk"
-      /* fadeOverride (Joel 8/23): when the page drives the I/2/6 as a
-         one-shot PLAY instead of a scrub, it sets r.fadeOverride (1 =
-         visible). Geometry still follows q; only their opacity is owned
-         by the play. */
-      const fo = typeof r.fadeOverride === 'number' ? r.fadeOverride : null;
-      LETTERS.forEach((L, i) => {
-        const el = els[i];
-        if (L.fade) {
-          /* per Joel: no shrinking — the letters hold their size and simply
-             fade to zero before anything moves */
-          el.style.left   = L.big[0] + 'px';
-          el.style.top    = L.big[1] + 'px';
-          el.style.width  = L.big[2] + 'px';
-          el.style.height = L.big[3] + 'px';
-          el.style.opacity = String(fo !== null ? fo : 1 - ka);
-        } else if (L.id === 'r') {
-          /* Joel 8/20: the (R) never slides — it vanishes with the letters,
-             and only AFTER the SX has shrunk and locked in place does it
-             fade back in at its compact seat (CSS handles the late fade so
-             no extra frames are needed once the morph settles). */
-          const out = fo !== null ? fo : 1 - ka; // gone with I/2/6 (or with their play)
-          const locked = q >= 0.995;          // SX is small and seated
-          const g = km < 0.5 ? L.big : L.compact;
-          el.style.left = g[0] + 'px'; el.style.top = g[1] + 'px';
-          el.style.width = g[2] + 'px'; el.style.height = g[3] + 'px';
-          if (locked) {
-            el.style.transition = 'opacity 0.35s ease 0.12s';
-            el.style.opacity = '1';
-          } else {
-            el.style.transition = 'none';
-            el.style.opacity = String(out);
-          }
-        } else {
-          /* beat 2 slides big -> mid at full size, beat 3 shrinks mid ->
-             compact; ks only starts once kg has landed, so the hand-off
-             seat is exactly the assembled big SX */
-          const x = lerp(lerp(L.big[0], L.mid[0], kg), L.compact[0], ks);
-          const y = lerp(lerp(L.big[1], L.mid[1], kg), L.compact[1], ks);
-          const w = lerp(lerp(L.big[2], L.mid[2], kg), L.compact[2], ks);
-          const h = lerp(lerp(L.big[3], L.mid[3], kg), L.compact[3], ks);
-          el.style.left = x + 'px'; el.style.top = y + 'px';
-          el.style.width = w + 'px'; el.style.height = h + 'px';
-          el.style.opacity = '1';
-        }
-      });
+      const i = frameOf(q);
+      const s = shrinkOf(i);
+      /* the S cap top: y70 big, y43.05 compact, riding the film's shrink */
+      cv.style.top = (lerp(BIG_TOP, COMPACT_TOP, s) - T[i][0] * K).toFixed(2) + 'px';
+      if (i !== want) { want = i; draw(); }
+      else if (drawn !== i) draw();
+      r.q = q; r.shrink = s;
     };
-    r.up = renderUp;
+    r.up = t => r(1 - clamp01(t));
+    r.shrinkAt = q => shrinkOf(frameOf(q));
+    r.warm = warm;
     return r;
   }
 
@@ -227,6 +132,7 @@
     if (!lm || lm.dataset.selfdriven) return;
     const render = build(lm);
     render(1);
+    setTimeout(warm, 2500); // the rest of the film, for the menu and a warm cache on the way home
     /* Joel 8/20: hitting the small SX to go home GROWS the mark back into
        SIX26 (header band swelling with it) before the page turns — smooth,
        not a hard cut. Reverse of the scroll morph, 600ms ease-out. */
@@ -268,5 +174,5 @@
     });
   });
 
-  window.SXLogo = { build: build, attachHeader: attachHeader, LETTERS: LETTERS };
+  window.SXLogo = { build: build, attachHeader: attachHeader, warm: warm, LETTERS: LETTERS };
 })();

@@ -240,6 +240,8 @@
    beat. A ?work= load now opens under BLACK until the data lands. */
 if (new URLSearchParams(location.search).get('work')) {
   document.documentElement.classList.add('cs-loading');
+  /* the shell keeps its curtain up until this page says ready (9/14) */
+  try { if (window.parent !== window) window.parent.postMessage({ sx: 'hold' }, '*'); } catch (e) {}
   /* the clicked tile's art (stashed by footerlaw.js on the way in) paints
      THIS instant as the page background — the work lands immediately
      instead of a black beat (Joel 9/3) */
@@ -249,7 +251,10 @@ if (new URLSearchParams(location.search).get('work')) {
       document.documentElement.style.background = '#000 url("' + art.src.replace(/"/g, '%22') + '") center / cover no-repeat fixed';
   } catch (e) {}
   /* failsafe: a hung CMS fetch must never strand a black page */
-  setTimeout(() => document.documentElement.classList.remove('cs-loading'), 4000);
+  setTimeout(() => {
+    document.documentElement.classList.remove('cs-loading');
+    try { if (window.parent !== window) window.parent.postMessage({ sx: 'ready' }, '*'); } catch (e) {}
+  }, 4000);
 }
 </script>
 <style>
@@ -279,7 +284,10 @@ if (new URLSearchParams(location.search).get('work')) {
 
   <!-- ============ HERO ============ -->
   <div class="cs-hero">
-    <img class="bg" src="assets/cs-hero.png" alt="Priceline — The Negotiator">
+    <!-- 9/14 (Joel: "never flash his face before showing a video"): no source
+         until the page knows which work it is — the demo still is set only
+         on the bare demo page, a ?work= page goes straight to its own art -->
+    <img class="bg" alt="" style="opacity:0;">
     <div class="cs-play"><img src="assets/cs-play.svg" alt="Play"></div>
     <div class="cs-audio"><img src="assets/cs-audio.svg" alt="Sound"></div>
     <div class="cs-track"></div>
@@ -390,7 +398,7 @@ const io = new IntersectionObserver(entries => {
 document.querySelectorAll('.fd').forEach(el => io.observe(el));
 </script>
 <script src="smoothscroll.js?v=20260914a"></script>
-<script src="logomorph.js?v=20260824a"></script>
+<script src="logomorph.js?v=20260914b"></script>
 <script src="menu.js?v=20260914a"></script>
 <script src="gridhover.js?v=20260914a"></script>
 <script>
@@ -427,7 +435,11 @@ document.querySelectorAll('.fd').forEach(el => io.observe(el));
 })();
 (async () => {
   const slug = new URLSearchParams(location.search).get('work');
-  if (!slug) return;
+  if (!slug) {
+    const demo = document.querySelector('.cs-hero img.bg');
+    if (demo) { demo.src = 'assets/cs-hero.png'; demo.alt = 'Priceline — The Negotiator'; demo.style.opacity = ''; }
+    return;
+  }
   const esc = t => String(t || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
   let cs = null;
   try {
@@ -457,6 +469,10 @@ document.querySelectorAll('.fd').forEach(el => io.observe(el));
   const reveal = () => {
     document.documentElement.classList.remove('cs-loading');
     document.documentElement.style.background = '';
+    /* the shell's curtain lifts once this page has painted the work (9/14) */
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      try { if (window.parent !== window) window.parent.postMessage({ sx: 'ready' }, '*'); } catch (e) {}
+    }));
   };
   if (!cs) { reveal(); return; }
 
@@ -491,6 +507,11 @@ document.querySelectorAll('.fd').forEach(el => io.observe(el));
   if (!src && !(meta.featuredvimeoid || '').trim() && galleryNodes.length) { src = galleryNodes[0].sourceUrl; heroFromGallery = true; }
   if (src) img.src = src; else img.style.display = 'none';
   img.alt = cs.title || '';
+  /* the still is shown only once it has actually decoded — the box stays on
+     the clicked tile's art (the head guard) until then, never on anything
+     that belongs to another work */
+  const stillReady = src ? Promise.race([img.decode().catch(() => {}), new Promise(r => setTimeout(r, 900))]) : Promise.resolve();
+  stillReady.then(() => { img.style.opacity = ''; });
   document.title = 'SIXTWENTYSIX \u2014 ' + (cs.title || 'Work');
   const parts = String(cs.title || '').split(/\s+[\u2013\u2014|]\s+/);
   document.querySelector('.cs-title').innerHTML = parts.length > 1
@@ -873,6 +894,173 @@ document.querySelectorAll('.fd').forEach(el => io.observe(el));
     endSec(host, rowInto(host, 0, 'Press', html, true, true));
   };
 
+  /* ---- THE ROLL (9/14, Joel: "for any video with extra content underneath,
+     it should roll the same way articles / who works here does"): under a
+     film, the CMS's stills, clips and campaign spots ride one slow rail —
+     44px/s, the team rail's tempo — that the hand can drag, flick or hold;
+     the chevrons step it a cell. Cells share one height, widths follow the
+     asset. A spot plays its loop on hover, or on a first tap (the second
+     opens it), and the other cells ghost while it plays. Works with no film
+     keep the justified gallery: there the stills ARE the work. ---- */
+  const ROLL_H = 480, ROLL_G = 24, ROLL_CAP = 44;
+  if (!document.getElementById('cs-roll-css')) {
+    const rs = document.createElement('style');
+    rs.id = 'cs-roll-css';
+    rs.textContent = '.cs-roll .cs-rcell { position:absolute; top:0; display:block; text-decoration:none; color:#000; transition:opacity 0.35s ease; }' +
+      ' .cs-roll .cs-rbox { position:absolute; left:0; top:0; overflow:hidden; background:#d9d9d9; }' +
+      ' .cs-roll .cs-rbox img { position:absolute; left:0; top:0; width:100%; height:100%; object-fit:cover; display:block; }' +
+      ' .cs-roll .cs-rbox video { position:absolute; left:0; top:0; width:100%; height:100%; object-fit:cover; opacity:0; transition:opacity 0.3s ease; pointer-events:none; }' +
+      ' .cs-roll .cs-rcell.on .cs-rbox video { opacity:1; }' +
+      ' .cs-roll.lit .cs-rcell:not(.on) { opacity:0.15; }' +
+      ' .cs-roll .cs-ph { transition:opacity 0.35s ease; }';
+    document.head.appendChild(rs);
+  }
+  const imgCell = (node, hover) => ({ w: dims(node).w, h: dims(node).h, build: (w, h) => {
+    const box = document.createElement('div');
+    box.className = 'cs-ph';
+    box.style.cssText = 'left:0; top:0; width:' + w + 'px; height:' + h + 'px;';
+    box.appendChild(imgEl(node, w, h));
+    if (hover && hover.sourceUrl) { const im2 = imgEl(hover, w, h); im2.className = 'hv'; box.appendChild(im2); }
+    return box;
+  } });
+  const clipCell = (id, node) => { const d = node ? dims(node) : { w: 16, h: 9 }; return { w: d.w, h: d.h, build: (w, h, k) =>
+    /* the live clip rides in the first copy; the wrap copies carry its poster */
+    (k === 0 || !node) ? bgVideo(id, w, h) : imgEl(node, w, h) }; };
+  const spotCell = it => ({ w: 16, h: 9, cap: true, build: (w, h) => {
+    const a = document.createElement('a');
+    a.className = 'cs-rcell';
+    a.href = 'case-study.html?work=' + encodeURIComponent(it.slug);
+    a.style.cssText = 'width:' + w + 'px; height:' + (h + ROLL_CAP) + 'px;';
+    const fi = it.featuredImage && it.featuredImage.node;
+    const still = fi && fi.sourceUrl, loop = fi && fi.imageMeta && fi.imageMeta.videoUrl;
+    a.innerHTML = '<div class="cs-rbox" style="width:' + w + 'px; height:' + h + 'px;">' +
+      (still ? '<img src="' + esc(still) + '" alt="' + esc(it.title) + '" loading="lazy">' : '') +
+      (loop ? '<video muted loop playsinline preload="none" src="' + esc(loop) + '"></video>' : '') + '</div>' +
+      '<p class="cs-tcap" style="left:0; top:' + (h + 19) + 'px; width:' + w + 'px;">' + splitTitle(it.title) + '</p>';
+    return a;
+  } });
+  const mediaCells = L => (L.media || []).filter(m => m && (mediaNode(m) || m.vimeoVideoId))
+    .map(m => m.vimeoVideoId ? clipCell(m.vimeoVideoId, mediaNode(m)) : imgCell(mediaNode(m)));
+  const rollRail = (label, cells) => {
+    if (!cells.length) return;
+    const host = sec();
+    const top = label ? labelRow(host, 0, label) : 0;
+    const railH = ROLL_H + (cells.some(c => c.cap) ? ROLL_CAP : 0);
+    const rail = document.createElement('div');
+    rail.className = 'cs-rail cs-roll';
+    rail.style.cssText += 'top:' + top + 'px; height:' + railH + 'px;';
+    const track = document.createElement('div');
+    track.style.cssText = 'position:absolute; left:' + RAIL_L + 'px; top:0; height:' + railH + 'px; will-change:transform;';
+    const ws = cells.map(c => Math.max(200, Math.round(ROLL_H * c.w / c.h)));
+    const PERIOD = ws.reduce((a, w) => a + w + ROLL_G, 0);
+    const copies = Math.max(2, Math.ceil((RAIL_W + PERIOD) / PERIOD) + 1);
+    const PITCH = PERIOD / cells.length;
+    const cellEls = [];
+    let x = 0;
+    for (let k = 0; k < copies; k++) cells.forEach((c, i) => {
+      const el = c.build(ws[i], ROLL_H, k);
+      el.style.left = x + 'px';
+      track.appendChild(el);
+      cellEls.push(el);
+      x += ws[i] + ROLL_G;
+    });
+    rail.appendChild(track);
+    host.appendChild(fd(rail));
+
+    /* the roll: 44px/s while on screen, parked under a hand or a hover,
+       dragged 1:1, flung with its momentum decaying back into the roll */
+    let drift = 0, boost = 0, nudge = 0, drag = null, paused = false, last = 0, onScreen = false;
+    const wrap = v => ((v % PERIOD) + PERIOD) % PERIOD;
+    const setPos = () => { track.style.transform = 'translateX(' + (-wrap(drift)).toFixed(2) + 'px)'; };
+    rail.addEventListener('mouseenter', () => { paused = true; });
+    rail.addEventListener('mouseleave', () => { paused = false; });
+    new IntersectionObserver(es => es.forEach(e => { onScreen = e.isIntersecting; }), { threshold: 0.05 }).observe(rail);
+    rail.addEventListener('pointerdown', e => {
+      if (e.button !== undefined && e.button !== 0) return;
+      drag = { x0: e.clientX, y0: e.clientY, d0: drift, moved: false, hist: [[performance.now(), e.clientX]], id: e.pointerId, decided: e.pointerType !== 'touch' };
+      boost = 0; nudge = 0;
+    });
+    rail.addEventListener('pointermove', e => {
+      if (!drag || e.pointerId !== drag.id) return;
+      const dx = e.clientX - drag.x0, dy = e.clientY - drag.y0;
+      if (!drag.decided) {
+        if (Math.abs(dx) < 6 && Math.abs(dy) < 6) return;
+        if (Math.abs(dy) > Math.abs(dx)) { drag = null; return; } /* a vertical swipe scrolls the page */
+        drag.decided = true;
+      }
+      if (!drag.moved && Math.abs(dx) > 4) {
+        drag.moved = true; rail.classList.add('drag');
+        try { rail.setPointerCapture(e.pointerId); } catch (err) {}
+      }
+      if (!drag.moved) return;
+      drift = drag.d0 - dx;
+      setPos();
+      const now = performance.now();
+      drag.hist.push([now, e.clientX]);
+      while (drag.hist.length > 2 && now - drag.hist[0][0] > 90) drag.hist.shift();
+    });
+    const endDrag = e => {
+      if (!drag || (e && e.pointerId !== undefined && e.pointerId !== drag.id)) return;
+      const d = drag; drag = null;
+      rail.classList.remove('drag');
+      if (!d.moved) return;
+      const h0 = d.hist[0], h1 = d.hist[d.hist.length - 1];
+      if (performance.now() - h1[0] < 80) boost = Math.max(-3500, Math.min(3500, -(h1[1] - h0[1]) / Math.max(16, h1[0] - h0[0]) * 1000));
+      /* the click that ends a drag opens nothing */
+      const swallow = ev => { ev.stopPropagation(); ev.preventDefault(); };
+      rail.addEventListener('click', swallow, { capture: true, once: true });
+      setTimeout(() => rail.removeEventListener('click', swallow, { capture: true }), 300);
+    };
+    rail.addEventListener('pointerup', endDrag);
+    rail.addEventListener('pointercancel', endDrag);
+    rail.addEventListener('lostpointercapture', endDrag);
+    (function tick(now) {
+      const dt = Math.min(0.05, (now - last) / 1000) || 0;
+      last = now;
+      if (onScreen) {
+        if (!paused && !drag && !armed) drift += 44 * dt;
+        if (boost) { drift += boost * dt; boost *= Math.exp(-dt / 0.45); if (Math.abs(boost) < 2) boost = 0; }
+        if (nudge !== 0) { const step = Math.sign(nudge) * Math.min(Math.abs(nudge), 900 * dt); drift += step; nudge -= step; }
+        setPos();
+      }
+      requestAnimationFrame(tick);
+    })(performance.now());
+    /* chevrons: the thin site chevron, one cell per click */
+    const chev = (dir, left) => {
+      const c = document.createElement('div');
+      c.className = 'cs-rchev';
+      c.style.cssText = 'left:' + left + 'px; top:' + (label ? 22 : 8) + 'px;';
+      c.innerHTML = '<svg width="14" height="24" viewBox="0 0 14 24" fill="none"><path d="' + (dir < 0 ? 'M12 2L2 12l10 10' : 'M2 2l10 10L2 22') + '" stroke="#000" stroke-width="1.5" fill="none"/></svg>';
+      c.addEventListener('click', () => { nudge += dir * PITCH; });
+      host.appendChild(c);
+    };
+    chev(-1, RAIL_R - 68); chev(1, RAIL_R - 30);
+
+    /* spots: hover plays the loop and ghosts the rest; on touch the first
+       tap plays, the second opens (the site's tap law) */
+    let armed = null;
+    const lightUp = a => { rail.classList.add('lit'); a.classList.add('on'); const v = a.querySelector('video'); if (v) v.play().catch(() => {}); };
+    const lightOff = a => { a.classList.remove('on'); const v = a.querySelector('video'); if (v) v.pause(); if (!rail.querySelector('.cs-rcell.on')) rail.classList.remove('lit'); };
+    cellEls.forEach(a => {
+      if (!a.classList.contains('cs-rcell')) return;
+      a.addEventListener('pointerenter', e => { if (e.pointerType !== 'touch') lightUp(a); });
+      a.addEventListener('pointerleave', e => { if (e.pointerType !== 'touch') lightOff(a); });
+      a.addEventListener('click', e => {
+        if (((window.SXInput && window.SXInput.mode) || 'mouse') !== 'touch') return;
+        if (window.SXInput.stopper) { e.preventDefault(); return; }
+        if (armed === a) { armed = null; return; } /* second tap: through to the work */
+        e.preventDefault();
+        if (armed) lightOff(armed);
+        armed = a; lightUp(a);
+      });
+    });
+    document.addEventListener('pointerdown', e => {
+      if (e.pointerType !== 'touch' || !armed) return;
+      if (!armed.contains(e.target)) { lightOff(armed); armed = null; }
+    }, true);
+    endSec(host, top + railH);
+  };
+
   /* ---- tiles: campaign spots and "you might also like", the grids' tile
      + caption language, the site's hover law and loop law via gridhover ---- */
   const tileRow = (label, items) => {
@@ -908,16 +1096,17 @@ document.querySelectorAll('.fd').forEach(el => io.observe(el));
   };
 
   if (hasExtras) y += 60;
-  if (GALLERY.length) gallery(GALLERY, GALLERY_HOVER);
+  const FILM = !!String(meta.featuredvimeoid || '').trim();
+  if (GALLERY.length) { if (FILM) rollRail(null, GALLERY.map((n, i) => imgCell(n, GALLERY_HOVER[i]))); else gallery(GALLERY, GALLERY_HOVER); }
   LAYOUTS.forEach(L => {
     const g = String(L.fieldGroupName || '');
-    if (/MediaGrid/i.test(g)) mediaGrid(L);
-    else if (/MediaCarousel/i.test(g)) mediaRail(L);
+    if (/MediaGrid/i.test(g)) { if (FILM) rollRail(null, mediaCells(L)); else mediaGrid(L); }
+    else if (/MediaCarousel/i.test(g)) rollRail(null, mediaCells(L));
     else if (/Vimeovideoonclick/i.test(g)) vimeoClick(L);
     else if (/Testimonials/i.test(g)) testimonials(L);
     else if (/News/i.test(g)) news(L);
   });
-  if (SPOTS.length) tileRow('More from the campaign', SPOTS);
+  if (SPOTS.length) rollRail('More from the campaign', SPOTS.map(spotCell));
   if (RECS.length) tileRow('You might also like', RECS);
   if (extras.length) y -= SEC_GAP; /* the last section's gap is the footer rhythm below */
   reveal(); /* the right work is on the page — lift the flash guard */

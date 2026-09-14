@@ -81,6 +81,7 @@
   /* dark chrome (director hero, the home reel moment): no white, marks in white */
   #hdr.dark #hdrBg { opacity: 0; }
   #hdr.dark #lm svg path { fill: #fff; }
+  #hdr.dark #lm canvas { filter: invert(1); } /* 9/14: the film's frames are black ink with alpha */
   /* cities ride beside the mark on EVERY page (Figma header component):
      left is driven by the morph (beside SIX26 at q=0, beside SX at q=1) */
   #hdrCities { position: absolute; left: 186px; top: 18px; font-size: 8.5px; line-height: 12px; letter-spacing: 0.26px; text-transform: uppercase; transition: color 0.35s ease; }
@@ -95,6 +96,7 @@
   body.menu-open #hdr #hdrBg { opacity: 1 !important; }
   body.menu-open #hdr #burger i { background: #000; }
   body.menu-open #hdr #lm svg path { fill: #000; }
+  body.menu-open #hdr #lm canvas { filter: none; }
 
   /* ================= menu (Figma 551:87) ================= */
   #menu { position: fixed; inset: 0; background: #fff; z-index: 30; padding: 92px 20px 24px;
@@ -143,10 +145,17 @@
   .tile .ph img, .tile .ph video { position: absolute; left: -1px; top: -1px; width: calc(100% + 2px); height: calc(100% + 2px); object-fit: cover; }
   .tile .ph video { opacity: 0; transition: opacity 0.45s ease; }
   .tile.playing .ph video { opacity: 1; }
-  .tile .t { font-weight: 700; font-size: 14px; line-height: 17px; letter-spacing: -0.28px; margin-top: 10px; text-transform: uppercase; }
-  .tile .d { font-size: 10px; line-height: 10px; color: #6b6b6b; margin-top: 1px; }
+  /* 9/14 (Joel: "on mobile make sure that the copy is the same, it looks
+     different on the home page when it comes to title / director name"):
+     the caption pair is the desktop's — bold caps title, then the director
+     in small tracked caps at 30% black (index.html .wtitle / .wdir). */
+  .tile .t { font-weight: 700; font-size: 14px; line-height: 17px; letter-spacing: -0.14px; margin-top: 10px; text-transform: uppercase; }
+  .tile .d { font-size: 9.5px; line-height: 13px; letter-spacing: 0.57px; text-transform: uppercase; color: rgba(0,0,0,0.3); margin-top: 1px; }
   .grid.g2 .tile .t { font-size: 12px; margin-top: 7px; }
-  .grid.g2 .tile .d { font-size: 9px; }
+  .grid.g2 .tile .d { font-size: 8.5px; }
+  /* the tap law's ghost: the rest of the grid dims while one tile plays */
+  .tile { transition: opacity 0.35s ease; }
+  .grid.ghost .tile:not(.playing) { opacity: 0.15; }
 
   /* tabs — site language: text + 1px underline the width of the word (Figma 551:951-954) */
   .tabs { display: flex; gap: 44px; margin: 28px 0 40px; flex-wrap: wrap; }
@@ -390,6 +399,8 @@
   .kv { margin-top: 44px; }
   .kv .k { font-size: 12px; line-height: 16px; color: #6b6b6b; }
   .kv .v { font-weight: 700; font-size: 14px; line-height: 17px; letter-spacing: -0.28px; margin-top: 4px; }
+  .kv .v + .v { margin-top: 14px; }
+  .kv .v .r { display: block; font-weight: 400; font-size: 12px; line-height: 16px; letter-spacing: 0; color: #6b6b6b; margin-top: 2px; }
 </style>
 <script src="directors.js?v=20260904a"></script>
 </head>
@@ -722,47 +733,56 @@ const DIRS = window.SX_DIRECTORS || {};
 const esc = s => String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 const splitT = t => { const p = String(t||'').split(/\s+[–—-]\s+/); return { brand:(p[0]||'').toUpperCase(), proj:p.slice(1).join(' – ') }; };
 
-/* ================= THE MORPH (header lettermark, h26, NO scale) =================
-   Same choreography as logomorph.js, one size: q=0 full SIX26, q=1 compact SX.
-   Beat 1 (q 0-0.4): I/2/6 fade in place. Beat 2 (q 0.4-1): the X glides
-   left into the S; the (R) vanishes with the letters and returns after lock. */
-const LM_H = 26, LM_K = LM_H / 107.9;
-const LM = [
-  { k:'s',  x: 0,     w: 140.8 },
-  { k:'i',  x: 148.4, w: 39.6,  fade: true },
-  { k:'x',  x: 184.8, w: 154.7, glide: true },
-  { k:'n2', x: 334.1, w: 133.8, fade: true },
-  { k:'n6', x: 474,   w: 140,   fade: true },
-];
-const svgInner = s => String(s).replace(/^[\s\S]*?<svg[^>]*>/, '').replace(/<\/svg>\s*$/, '');
+/* ================= THE MORPH (header lettermark, h26): JOEL'S FILM =================
+   9/14: the desktop's logomorph.js v3 law — the header draws a frame of
+   SX ANIMATION.mp4 (assets/sxanim/, 73 alpha WebPs) on a canvas, scrubbed
+   by the scroll. q=0 full SIX26 (the big S 26 tall, the word 152 wide as
+   before), q=1 the compact SX (17.5 tall, centred on the old 26 box). */
+const LM_H = 26;
+const LM_T = [[127,322,1163],[127,322,1163],[127,322,1163],[127,322,1163],[127,322,1157],[127,322,1133],[127,322,1109],[127,322,1086],[127,322,1062],[127,322,1038],[127,322,1014],[127,322,990],[127,322,967],[127,322,943],[127,322,919],[127,322,895],[127,322,872],[127,322,848],[127,322,824],[127,322,800],[127,322,777],[127,322,753],[127,322,729],[127,322,705],[127,322,682],[127,322,658],[127,322,634],[127,322,610],[127,322,596],[127,322,596],[127,322,596],[127,322,596],[126,321,596],[126,321,595],[126,320,594],[126,320,592],[126,319,590],[125,317,587],[125,316,584],[124,314,580],[124,312,576],[123,309,571],[122,306,565],[121,303,558],[120,300,551],[119,296,543],[118,292,535],[117,288,526],[115,283,517],[114,279,508],[113,275,499],[112,271,490],[111,267,482],[110,263,475],[109,260,468],[108,257,462],[107,255,457],[106,252,452],[106,251,448],[105,249,445],[105,248,442],[105,247,440],[104,246,438],[104,245,437],[104,245,436],[104,244,435],[104,244,435],[104,244,435],[104,244,435],[104,244,435],[104,244,435],[104,244,435],[104,244,435]];
+const LM_N = LM_T.length, LM_VW = 1180, LM_VH = 338, LM_X0 = 21;
+const LM_KF = LM_H / (LM_T[0][1] - LM_T[0][0]);
+const LM_H1 = (LM_T[LM_N - 1][1] - LM_T[LM_N - 1][0]) * LM_KF;
 const lmEl = document.getElementById('lm');
-lmEl.innerHTML = LM.map(l => `<span data-k="${l.k}" style="left:${(l.x * LM_K).toFixed(1)}px;">${LSVG[l.k]}</span>`).join('') +
-  /* the (R) is ONE svg (ring + R in the same viewBox). Two nested spans at a
-     4.5px size got pixel-snapped independently by Safari and the R drifted
-     off-centre inside the ring (Joel 9/8, "the R is still broken"). */
-  `<span data-k="r" style="left:${(608.5 * LM_K).toFixed(1)}px; width:${(28.6 * LM_K).toFixed(1)}px; height:${(18.7 * LM_K).toFixed(1)}px;">
-     <svg viewBox="0 0 29 19" style="width:100%;height:100%;display:block;overflow:visible;shape-rendering:geometricPrecision;">${svgInner(LSVG.rr)}<g transform="translate(7.4 4.56) scale(1 0.975)">${svgInner(LSVG.rm)}</g></svg>
-   </span>`;
-const lmSpans = {}; lmEl.querySelectorAll(':scope > span').forEach(sp => lmSpans[sp.dataset.k] = sp);
+lmEl.innerHTML = '';
+const lmCv = document.createElement('canvas');
+lmCv.width = LM_VW; lmCv.height = LM_VH;
+lmCv.setAttribute('role', 'img'); lmCv.setAttribute('aria-label', 'SIXTWENTYSIX');
+lmCv.style.cssText = `position:absolute; left:${(-LM_X0 * LM_KF).toFixed(2)}px; top:0; width:${(LM_VW * LM_KF).toFixed(2)}px; height:${(LM_VH * LM_KF).toFixed(2)}px; display:block; pointer-events:none;`;
+lmEl.appendChild(lmCv);
+const lmCtx = lmCv.getContext('2d');
+const lmCache = [];
+function lmFrame(i, onReady) {
+  let im = lmCache[i];
+  if (!im) { im = new Image(); im.decoding = 'async'; im.src = 'assets/sxanim/f' + String(i).padStart(2, '0') + '.webp'; lmCache[i] = im; }
+  if (im.complete && im.naturalWidth) return im;
+  if (onReady) im.addEventListener('load', onReady, { once: true });
+  return null;
+}
 const citiesEl = document.getElementById('hdrCities');
-const q5 = t => { t = Math.max(0, Math.min(1, t)); return t*t*t*(t*(t*6-15)+10); };
-const X_BIG = 184.8 * LM_K, X_COMPACT = 140.8 * LM_K * 0.958;
-let lmQ = -1;
+let lmQ = -1, lmDrawn = -1, lmWant = 0;
+function lmDraw() {
+  const im = lmFrame(lmWant, lmDraw);
+  if (!im || lmDrawn === lmWant) return;
+  lmCtx.clearRect(0, 0, LM_VW, LM_VH);
+  lmCtx.drawImage(im, 0, 0);
+  lmDrawn = lmWant;
+}
 function renderLM(q) {
   q = Math.max(0, Math.min(1, q));
   if (Math.abs(q - lmQ) < 0.004) return;
   lmQ = q;
-  const ka = q5(q / 0.4);
-  const kg = q5((q - 0.4) / 0.6);
-  ['i', 'n2', 'n6'].forEach(k => { lmSpans[k].style.opacity = String(1 - ka); });
-  lmSpans.x.style.transform = `translateX(${(-(X_BIG - X_COMPACT) * kg).toFixed(2)}px)`;
-  /* cities ride the morph: beside SIX26 (186) at rest, beside SX (121) when compact */
-  citiesEl.style.left = (186 - 65 * kg).toFixed(1) + 'px';
-  const r = lmSpans.r;
-  if (q >= 0.995) { r.style.transition = 'opacity 0.3s ease 0.1s'; r.style.opacity = '1';
-    r.style.transform = `translateX(${(X_COMPACT + (154.7 * LM_K) + 3 - 608.5 * LM_K).toFixed(1)}px) translateY(-2px)`; }
-  else { r.style.transition = 'none'; r.style.opacity = String(1 - ka); r.style.transform = 'none'; }
+  const i = Math.round(q * (LM_N - 1));
+  const sh = (LM_T[i][1] - LM_T[i][0]) * LM_KF;                       // the S's height at this frame
+  const shrink = Math.max(0, Math.min(1, (LM_H - sh) / (LM_H - LM_H1)));
+  /* the big S sits on the box top; the compact S centres in the 26 box */
+  lmCv.style.top = ((LM_H - sh) / 2 * shrink - LM_T[i][0] * LM_KF).toFixed(2) + 'px';
+  /* cities ride the word's right edge: beside SIX26 (186) at rest, beside the compact SX (100) */
+  const kg = Math.max(0, Math.min(1, (LM_T[0][2] - LM_T[i][2]) / (LM_T[0][2] - LM_T[LM_N - 1][2])));
+  citiesEl.style.left = (186 - 86 * kg).toFixed(1) + 'px';
+  if (i !== lmWant) { lmWant = i; lmDraw(); } else if (lmDrawn !== i) lmDraw();
 }
+for (let i = 0; i < LM_N; i++) lmFrame(i);
 /* damped drive so fast scrolls glide, never snap (the desktop damper law) */
 let lmTarget = 0, lmDisp = 0, lmAnim = false, lmLast = 0;
 function lmTick(now) {
@@ -921,28 +941,44 @@ function armToggles() {
 }
 const gridOpen = () => `<div class="grid${density === 2 ? ' g2' : ''}">`;
 
-/* THE LOOP LAW, mobile: the tile most in view plays its own loop */
-let loopIO = null;
-function armLoops() {
-  if (loopIO) loopIO.disconnect();
-  loopIO = new IntersectionObserver(es => es.forEach(e => {
-    const tile = e.target;
-    if (e.intersectionRatio >= 0.6) {
-      let v = tile.querySelector('video');
-      if (!v && tile.dataset.loop) {
-        v = document.createElement('video');
-        v.muted = true; v.loop = true; v.playsInline = true; v.preload = 'none';
-        v.src = tile.dataset.loop;
-        tile.querySelector('.ph').appendChild(v);
-      }
-      if (v) { v.play().then(() => tile.classList.add('playing')).catch(() => {}); }
-    } else {
-      const v = tile.querySelector('video');
-      if (v && !v.paused) { v.pause(); tile.classList.remove('playing'); }
-    }
-  }), { threshold: [0, 0.6] });
-  document.querySelectorAll('.tile[data-loop]').forEach(t => loopIO.observe(t));
+/* THE LOOP LAW, mobile (9/14, Joel: "on mobile i want to switch the logic
+   to how i have it on ipad where you click the video and the loop plays
+   then click again and go to video, and that's a universal note across the
+   board"): nothing plays on its own any more. The first tap on a tile plays
+   its loop and ghosts the rest of its grid; the second tap on the same tile
+   opens the work; a tap anywhere else, or a real scroll, lets it go. A tile
+   with no loop opens on the first tap. */
+let mHeld = null, mHeldY = 0;
+function mRelease() {
+  if (!mHeld) return;
+  const v = mHeld.querySelector('video');
+  if (v && !v.paused) v.pause();
+  mHeld.classList.remove('playing');
+  const g = mHeld.closest('.grid');
+  if (g) g.classList.remove('ghost');
+  mHeld = null;
 }
+function armLoops() { mRelease(); }
+document.addEventListener('click', e => {
+  const tile = e.target.closest && e.target.closest('.tile[data-loop]');
+  if (!tile) { mRelease(); return; }
+  if (mHeld === tile) { mRelease(); return; } /* second tap: the link opens the work */
+  e.preventDefault(); e.stopPropagation();
+  mRelease();
+  let v = tile.querySelector('video');
+  if (!v) {
+    v = document.createElement('video');
+    v.muted = true; v.loop = true; v.playsInline = true; v.preload = 'none';
+    v.src = tile.dataset.loop;
+    tile.querySelector('.ph').appendChild(v);
+  }
+  mHeld = tile; mHeldY = window.scrollY;
+  tile.classList.add('playing');
+  const g = tile.closest('.grid');
+  if (g) g.classList.add('ghost');
+  v.play().catch(() => {});
+}, true);
+window.addEventListener('scroll', () => { if (mHeld && Math.abs(window.scrollY - mHeldY) > 40) mRelease(); }, { passive: true });
 
 /* instant-landing law: tapping a tile stashes its art for the film page */
 document.addEventListener('click', e => {
@@ -1141,13 +1177,36 @@ R.careers = () => `
   </div>
   ${FOOTER}`;
 
+/* 9/14 (Joel: "information for contact is wrong on the mobile version"):
+   the phone's contact page now carries exactly what the desktop contact
+   page carries (contact.html) — the statement, mail and phone, HQ, careers,
+   follow, more, the team with their roles, and representation. The drafted
+   "Let's make something that moves" and the New York line are gone. */
+const CT_TEAM = [
+  ['Austin Barbera', 'Co-Founder / Managing Director'],
+  ['Jake Krask', 'Co-Founder / Managing Partner'],
+  ['Carleigh Finch', 'Executive Producer / Head of Business Development'],
+  ['Jonny Edwards', 'Chief Executive Producer'],
+  ['Sarah Donnenberg', 'Executive Producer / Special Projects'],
+  ['Jay Wert', 'Executive Producer'],
+];
+const CT_REPS = [
+  ['West Coast', 'Stephanie Stephens Reps'],
+  ['Midwest', 'The House of Representatives'],
+  ['East Coast', 'Moustache'],
+  ['Music Video', 'Labuda'],
+];
 R.contact = () => `
   <div class="wrap">
-    <p class="ct-title">Let’s make<br>something that moves.</p>
-    <div class="kv"><p class="k">New Business</p><p class="v"><a href="mailto:hello@sixtwentysix.co">hello@sixtwentysix.co</a></p></div>
+    <p class="ct-title">No matter where you are in your creative and production journey, we're ready to dive in and get to work.</p>
+    <div class="kv"><p class="k">Email</p><p class="v"><a href="mailto:hello@sixtwentysix.co">hello@sixtwentysix.co</a></p></div>
+    <div class="kv"><p class="k">Phone</p><p class="v"><a href="tel:+18182330518">818-233-0518</a></p></div>
+    <div class="kv"><p class="k">Headquarters</p><p class="v"><a href="https://www.google.com/maps/search/?api=1&query=5976+Washington+Blvd,+Culver+City,+CA+90232" target="_blank" rel="noopener">5976 Washington Blvd,<br>Culver City, CA 90232</a></p></div>
     <div class="kv"><p class="k">Careers</p><p class="v"><a href="mailto:careers@sixtwentysix.co">careers@sixtwentysix.co</a></p></div>
-    <div class="kv"><p class="k">Los Angeles</p><p class="v"><a href="https://www.google.com/maps/search/?api=1&query=5976+Washington+Blvd,+Culver+City,+CA+90232" target="_blank" rel="noopener">5976 Washington Blvd,<br>Culver City, CA 90232</a></p></div>
-    <div class="kv"><p class="k">New York</p><p class="v">New York, NY</p></div>
+    <div class="kv"><p class="k">Follow us</p><p class="v"><a href="https://www.instagram.com/sixtwentysixco/" target="_blank" rel="noopener">Instagram</a><br><a href="https://www.linkedin.com/company/sixtwentysix/" target="_blank" rel="noopener">LinkedIn</a></p></div>
+    <div class="kv"><p class="k">More</p><p class="v"><a href="mailto:hello@sixtwentysix.co?subject=Capabilities%20deck%20request">Request our capabilities deck</a><br><a href="mailto:hello@sixtwentysix.co?subject=Newsletter">Subscribe to our newsletter</a></p></div>
+    <div class="kv"><p class="k">Team</p>${CT_TEAM.map(([n, r]) => `<p class="v">${esc(n)}<span class="r">${esc(r)}</span></p>`).join('')}</div>
+    <div class="kv"><p class="k">Representation</p>${CT_REPS.map(([n, r]) => `<p class="v">${esc(n)}<span class="r">${esc(r)}</span></p>`).join('')}</div>
   </div>
   ${FOOTER}`;
 
