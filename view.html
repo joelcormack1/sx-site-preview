@@ -165,21 +165,41 @@
   const curtain = document.createElement('div');
   curtain.id = 'curtain';
   curtain.style.cssText = 'position:fixed; left:0; top:0; width:100%; height:100%; z-index:9; pointer-events:none;' +
-    ' opacity:0; background:#000; transition:opacity 0.12s ease;';
+    ' opacity:0; background:#000; transition:opacity 0.12s ease; overflow:hidden;';
+  /* the art rides as a real <img> whose decode() is awaited on THIS element,
+     so the curtain never opens on a black frame (a CSS background decoded
+     elsewhere still painted one frame late on the iPad, 9/14) */
+  const curtainArt = document.createElement('img');
+  curtainArt.alt = '';
+  curtainArt.style.cssText = 'position:absolute; left:0; top:0; width:100%; height:100%; object-fit:cover; object-position:center; display:none;';
+  curtain.appendChild(curtainArt);
   document.body.appendChild(curtain);
   let holding = false, curtainT = null;
   const DARK_PAGES = /(case-study\.html\?work=|director\.html)/;
-  const curtainOn = (dark, art) => {
-    curtain.style.background = dark
-      ? ('#000' + (art ? ' url("' + String(art).replace(/"/g, '%22') + '") center / cover no-repeat' : ''))
-      : '#fff';
+  /* a curtain raised by a click drops itself after 1.2s unless the frame
+     really starts leaving (its pagehide confirms it); a confirmed curtain
+     waits for the new page, 8s at most (9/14, second pass) */
+  const curtainOn = (dark, art, confirmed) => {
+    curtain.style.background = dark ? '#000' : '#fff';
     curtain.style.transition = 'opacity 0.12s ease';
-    curtain.style.opacity = '1';
+    /* the art is decoded before the curtain shows, so it never opens on a
+       black frame with the picture popping in a beat later (9/14) */
+    let shown = false;
+    const show = () => { if (shown) return; shown = true; curtain.style.opacity = '1'; };
+    curtainArt.style.display = 'none';
+    if (dark && art) {
+      curtainArt.src = String(art);
+      curtainArt.style.display = 'block';
+      const ready = curtainArt.decode ? curtainArt.decode() : Promise.resolve();
+      ready.then(() => requestAnimationFrame(show), () => { curtainArt.style.display = 'none'; show(); });
+      setTimeout(show, 150);
+    } else show();
     clearTimeout(curtainT);
-    curtainT = setTimeout(curtainOff, 6000);
+    curtainT = setTimeout(curtainOff, confirmed ? 8000 : 1200);
   };
+  const confirmNav = () => { clearTimeout(curtainT); curtainT = setTimeout(curtainOff, 8000); };
   const curtainOff = () => {
-    clearTimeout(curtainT); holding = false;
+    clearTimeout(curtainT); curtainT = null; holding = false;
     curtain.style.transition = 'opacity 0.35s ease';
     curtain.style.opacity = '0';
   };
@@ -193,7 +213,7 @@
     try {
       const w = f.contentWindow;
       const here = w.location.pathname.split('/').pop() + w.location.search;
-      w.addEventListener('pagehide', () => { if (curtain.style.opacity !== '1') curtainOn(DARK_PAGES.test(here), ''); });
+      w.addEventListener('pagehide', () => { if (curtain.style.opacity === '1' || curtainT) confirmNav(); else curtainOn(DARK_PAGES.test(here), '', true); });
     } catch (e) {}
     requestAnimationFrame(() => requestAnimationFrame(() => { if (!holding) curtainOff(); }));
   });

@@ -120,7 +120,16 @@
      it can cover the blank beat between documents — black with the clicked
      tile's art on the way into a work or a director, white to a light page.
      A modified click (new tab) or an external / mail link says nothing. */
-  document.addEventListener('click', function (e) {
+  /* 9/14 (second pass, Joel: "when i click on any thumbnail now on the ipad
+     its going full screen and glitching"): this used to run in the CAPTURE
+     phase, i.e. BEFORE the grid's own click law had decided that a first
+     tap only previews — so the preview tap raised the curtain with the
+     tile's art over the whole screen, and nothing navigated under it until
+     the failsafe dropped it. It now listens on the window in the BUBBLE
+     phase, last of all: a tap the tile laws swallowed (preventDefault /
+     stopPropagation) never reaches it, and only a click that will really
+     navigate raises the curtain. */
+  window.addEventListener('click', function (e) {
     if (e.defaultPrevented || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button) return;
     const a = e.target.closest && e.target.closest('a[href]');
     if (!a || a.target === '_blank' || window.parent === window) return;
@@ -131,7 +140,7 @@
     try {
       window.parent.postMessage({ sx: 'curtain', dark: dark, art: dark ? ((img && (img.currentSrc || img.src)) || '') : '' }, '*');
     } catch (err) {}
-  }, true);
+  });
 })();
 
 

@@ -95,8 +95,8 @@ html.sx-arriving::before {
     z-index: 50;
   }
   .hdr-bg {
-    position: absolute; left: 0; top: 0; width: 1728px; height: 210px;
-    background: #fff; transition: background 0.6s ease; /* opacity is scroll-scrubbed inline (Joel 8/23) */
+    position: absolute; left: 0; top: 0; width: 1728px; height: 158px;
+    background: #fff; transition: background 0.6s ease; /* opacity is scroll-scrubbed inline (Joel 8/23); 158 = the big band (9/14) */
   }
   /* THE REEL MOMENT (Joel 8/21): while the shrunk header floats over the
      full-screen sizzle, its white goes to ZERO — just the mark and white
@@ -125,7 +125,7 @@ html.sx-arriving::before {
   .hdr-tagline {
     /* 8/24: top 91 — the two-line block ends flush with the big word's
        base (y141), the datum everything on the line hangs from */
-    position: absolute; left: 1140px; top: 91px; width: 374px;
+    position: absolute; left: 1140px; top: 64px; width: 374px; /* 9/14: the word's base is 114.7 now (top gap = bottom gap) */
     font-weight: 500; font-size: 22px; line-height: 25px;
     letter-spacing: -0.66px; color: #000;
     transition: color 0.9s ease;
@@ -613,7 +613,13 @@ function paintHeader(p) {
      bottom-align to the word, 8/24), leading it slightly so they settle
      softly rather than sprinting the last third */
   const kg = kc;
-  const bandH = lerp(159.9 + 25, 92.95 + 25, kc);
+  /* 9/14 (Joel: "make the space at the top of the logo the same size as
+     the space at the bottom"): the big word's cap top sits at y43 — the
+     same line the compact SX holds — so the band is 43 + the word (71.7)
+     + 43 = 158 instead of 185, and the whole right side of the line
+     (cities, tagline, burger) rides 27px up with the word's base (114.7).
+     Compact seats unchanged: S bottom 92.95, band 118. */
+  const bandH = lerp(158, 92.95 + 25, kc);
   hdrEls.bg.style.height = bandH + 'px';
   /* Joel 8/23: the reel box is ALWAYS full-screen — the shrinking band
      simply reveals more of a stable frame. (The old fill-frame reframed
@@ -642,17 +648,17 @@ function paintHeader(p) {
      (0.35..1), slightly behind the letters' movement, settling into the
      top with zero slope AND zero curvature. Going home they leave the top
      just as gently and re-seat on the word's baseline as it returns. */
-  hdrEls.cityLa.style.top = lerp(91, 43, kg) + 'px';
-  hdrEls.cityNy.style.top = lerp(116, 68, kg) + 'px';
+  hdrEls.cityLa.style.top = lerp(64, 43, kg) + 'px';
+  hdrEls.cityNy.style.top = lerp(89, 68, kg) + 'px';
   /* Joel 8/21 (round 2): the hamburger DOES ride the morph with the scroll;
      it is the menu's X that pins itself wherever the hamburger was at the
      moment of the click (menu.js stages it from the live position).
      8/24: big seats bottom-aligned to the word's base (bottom line on
      y139..141), riding kg with the cities so the whole right side of the
      line travels as one. */
-  hdrEls.burgers[0].style.top = lerp(117, 56, kg) + 'px';
-  hdrEls.burgers[1].style.top = lerp(128, 64, kg) + 'px';
-  hdrEls.burgers[2].style.top = lerp(139, 72, kg) + 'px';
+  hdrEls.burgers[0].style.top = lerp(90, 56, kg) + 'px';
+  hdrEls.burgers[1].style.top = lerp(101, 64, kg) + 'px';
+  hdrEls.burgers[2].style.top = lerp(112, 72, kg) + 'px';
 }
 // The reel stays put; the white page simply scrolls over it. (The 8/8
 // "squeeze" experiment is reverted per Joel, 8/10 — it wasn't working.)

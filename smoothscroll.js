@@ -109,7 +109,11 @@
       if (target > current + lim) { target = current + lim; wanted = target; }
       else if (target < current - lim) { target = current - lim; wanted = target; }
     }
-    current += (target - current) * (1 - Math.exp(-DECAY * dt));
+    /* 9/14 (Joel: "the whole website is scrolling a little too slow when
+       you finger slide"): while a finger is on the glass the damper closes
+       on it at 11 instead of 4.6 — the page keeps up with the hand (a
+       ~5-frame lag instead of ~13) — and lets go at the site's own tempo. */
+    current += (target - current) * (1 - Math.exp(-(riding ? 11 : DECAY) * dt));
     var pacing = (cap != null && wanted > target) || (pull != null && current > target) ||
                  (window.SX_SCROLL_DRIVE != null); // still riding: stay alive
     if (Math.abs(target - current) < 0.6 && !pacing) {
@@ -241,6 +245,21 @@
        swipe's direction instead of flinging through three of them. Wheel
        and trackpad keep the continuous scrub. */
     var snapK = null, snapDir = 0, snapMoved = 0, snapLo = -Infinity, snapHi = Infinity, snapZ = null;
+    /* THE GATE (9/14, second pass): a gesture that starts OUTSIDE a zone
+       can drag or fling at most to the next zone's first step (or, going
+       up, the previous zone's last step) — the zone is entered on its
+       boundary, never mid-step. The faster finger damper exposed this: the
+       old cap read the page's position at release, and a page that now
+       keeps up with the hand had already run into the zone by then. */
+    var gateHi = Infinity, gateLo = -Infinity;
+    function zoneGates(y0) {
+      gateHi = Infinity; gateLo = -Infinity;
+      snapZones().forEach(function (z) {
+        var land = z.land || 1, zEnd = z.start + z.count * z.step;
+        if (z.start > y0) gateHi = Math.min(gateHi, z.start + land);
+        if (zEnd <= y0) gateLo = Math.max(gateLo, z.start + (z.count - 1) * z.step + land);
+      });
+    }
     /* a page may publish one zone (SX_SNAP) or several (SX_SNAPS); the zone
        a gesture belongs to is the one the finger is in, or within one step
        above or below it (so a swipe from just above the zone lands on its
@@ -278,6 +297,7 @@
       /* the snap zone: remember which step the finger started on and hold
          the gesture to one step either way */
       var z = snapZone(window.scrollY);
+      zoneGates(window.scrollY);
       snapK = null; snapDir = 0; snapMoved = 0; snapLo = -Infinity; snapHi = Infinity; snapZ = z;
       if (z) {
         var land = z.land || 1;
@@ -313,6 +333,7 @@
         if (dy) snapDir = dy > 0 ? 1 : -1;
         wanted = Math.max(snapLo, Math.min(snapHi, wanted));
       }
+      wanted = Math.max(gateLo, Math.min(gateHi, wanted));
     }, { passive: false });
 
     /* SELF-HEALING (9/14, Joel: "on iPad its not scrolling at all on the
@@ -360,21 +381,12 @@
          still subject to every SX_SCROLL_* limit inside the tick. */
       if (performance.now() - tT < 100 && Math.abs(tV) > 200) {
         var dir = tV > 0 ? 1 : -1;
-        push(Math.max(-4200, Math.min(4200, tV)) / DECAY);
+        push(Math.max(-6500, Math.min(6500, tV)) / DECAY); /* 9/14: a flick carries further (was 4200) */
         /* a fling never sails THROUGH a stepping section: it lands on the
            next zone's first step (or last step when swiping back up), so
-           the reel -> core values swipe opens on value one, not value four */
-        var y0 = window.scrollY, nz = null, best = Infinity;
-        snapZones().forEach(function (z) {
-          var zEnd = z.start + z.count * z.step;
-          if (dir > 0 && z.start > y0 && z.start - y0 < best) { best = z.start - y0; nz = z; }
-          if (dir < 0 && zEnd <= y0 && y0 - zEnd < best) { best = y0 - zEnd; nz = z; }
-        });
-        if (nz) {
-          var landN = nz.land || 1;
-          if (dir > 0) wanted = Math.min(wanted, nz.start + landN);
-          else wanted = Math.max(wanted, nz.start + (nz.count - 1) * nz.step + landN);
-        }
+           the reel -> core values swipe opens on value one, not value four.
+           The gates were fixed where the gesture BEGAN (zoneGates). */
+        wanted = Math.max(gateLo, Math.min(gateHi, wanted));
       }
       /* the strike: the finger asked for real travel, nothing held the page,
          the page can scroll, and it did not move */

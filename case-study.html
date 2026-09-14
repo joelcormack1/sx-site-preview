@@ -94,6 +94,12 @@
   /* ===================== HERO (film + player chrome) ===================== */
   .cs-hero {
     position: absolute; left: 0; top: 0; width: 1728px; height: 980px;
+    /* 9/14: the hero is the whole viewport from the FIRST paint (the JS
+       later writes the same max(700, innerHeight) in px). Until the CMS
+       answered it sat at the frame's 980 and the tapped tile's art showed at
+       a different crop, white beneath it, then jumped — the last cut in the
+       tap transition on the iPad. */
+    height: max(700px, 100vh);
     overflow: hidden; background: #000;
   }
   .cs-hero img.bg {
@@ -238,18 +244,32 @@
    the video starts"): the template paints its built-in demo content first,
    then the CMS fetch swaps the real work in — the wrong film flashed for a
    beat. A ?work= load now opens under BLACK until the data lands. */
+window.SX_HANDOFF = '';
 if (new URLSearchParams(location.search).get('work')) {
   document.documentElement.classList.add('cs-loading');
   /* the shell keeps its curtain up until this page says ready (9/14) */
   try { if (window.parent !== window) window.parent.postMessage({ sx: 'hold' }, '*'); } catch (e) {}
-  /* the clicked tile's art (stashed by footerlaw.js on the way in) paints
-     THIS instant as the page background — the work lands immediately
-     instead of a black beat (Joel 9/3) */
+  /* the clicked tile's art (stashed by footerlaw.js on the way in) is the
+     hero's poster from the FIRST paint (Joel 9/3: the work lands at once).
+     9/14 (Joel, iPad: "its going full screen and glitching"): it used to be
+     painted as the html background, which iPadOS cannot pin to the viewport
+     (no fixed attachment), so the art showed at one crop under the shell's
+     curtain, another once the page took over, then the CMS still, then the
+     film — four cuts. Now the art goes straight into the hero's own image at
+     the hero's own crop (the same centred cover the curtain paints), stays
+     as the film's poster, and the curtain lifts the moment it has decoded. */
   try {
     const art = JSON.parse(sessionStorage.getItem('sx-cs-art') || '{}');
-    if (art.src && Date.now() - (art.t || 0) < 15000)
-      document.documentElement.style.background = '#000 url("' + art.src.replace(/"/g, '%22') + '") center / cover no-repeat fixed';
+    if (art.src && Date.now() - (art.t || 0) < 15000) window.SX_HANDOFF = art.src;
   } catch (e) {}
+  if (window.SX_HANDOFF) document.addEventListener('DOMContentLoaded', () => {
+    const im = document.querySelector('.cs-hero img.bg');
+    if (!im) return;
+    im.src = window.SX_HANDOFF;
+    im.style.opacity = '';
+    const ready = () => { try { if (window.parent !== window) window.parent.postMessage({ sx: 'ready' }, '*'); } catch (e) {} };
+    (im.decode ? im.decode().catch(() => {}) : Promise.resolve()).then(() => requestAnimationFrame(() => requestAnimationFrame(ready)));
+  });
   /* failsafe: a hung CMS fetch must never strand a black page */
   setTimeout(() => {
     document.documentElement.classList.remove('cs-loading');
@@ -259,7 +279,10 @@ if (new URLSearchParams(location.search).get('work')) {
 </script>
 <style>
   html.cs-loading, html.cs-loading body { background: #000; }
-  html.cs-loading .page { visibility: hidden; }
+  /* while the CMS loads: only the hero's poster shows — the ledger, the
+     chrome and the header wait (9/14) */
+  html.cs-loading .page > :not(.cs-hero) { visibility: hidden; }
+  html.cs-loading .cs-hero > :not(img.bg) { visibility: hidden; }
 </style>
 </head>
 <body>
@@ -505,12 +528,17 @@ document.querySelectorAll('.fd').forEach(el => io.observe(el));
   let heroFromGallery = false;
   let src = cs.featuredImage && cs.featuredImage.node && cs.featuredImage.node.sourceUrl;
   if (!src && !(meta.featuredvimeoid || '').trim() && galleryNodes.length) { src = galleryNodes[0].sourceUrl; heroFromGallery = true; }
-  if (src) img.src = src; else img.style.display = 'none';
+  /* 9/14: under a film the clicked tile's art stays as the poster (no cut
+     to a second still before the film); a work with no film shows its own
+     still, decoded before it appears */
+  const keepHandoff = !!window.SX_HANDOFF && !!String(meta.featuredvimeoid || '').trim();
+  if (keepHandoff) { /* the hero already holds the art */ }
+  else if (src) img.src = src; else if (!window.SX_HANDOFF) img.style.display = 'none';
   img.alt = cs.title || '';
   /* the still is shown only once it has actually decoded — the box stays on
      the clicked tile's art (the head guard) until then, never on anything
      that belongs to another work */
-  const stillReady = src ? Promise.race([img.decode().catch(() => {}), new Promise(r => setTimeout(r, 900))]) : Promise.resolve();
+  const stillReady = (src && !keepHandoff) ? Promise.race([img.decode().catch(() => {}), new Promise(r => setTimeout(r, 900))]) : Promise.resolve();
   stillReady.then(() => { img.style.opacity = ''; });
   document.title = 'SIXTWENTYSIX \u2014 ' + (cs.title || 'Work');
   const parts = String(cs.title || '').split(/\s+[\u2013\u2014|]\s+/);

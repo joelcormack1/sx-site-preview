@@ -14,9 +14,9 @@
    - the big word is 1142 film px wide -> the header's narrow big 420 (the
      8/24 law), so one film px = 0.3678 site px; the S's left edge (film
      x21) seats at the container's x0 (page x63)
-   - the big S cap top seats at y70 (BIG_TOP), the compact S at y43.05 —
-     the film's own upward drift is short of the header's, so the frame
-     rides up by the difference across the shrink
+   - the big S cap top seats at y43 (BIG_TOP), the compact S at y43.05 —
+     one cap line for both (9/14, equal space above and below the word), so
+     the frame rides only by the film's own drift across the shrink
    API as before: SXLogo.build(container) -> render(q) (q 0 = big, 1 =
    compact), render.up(t) (the reverse: frames backwards), plus
    render.shrinkAt(q) for the chrome that rides the shrink and
@@ -27,7 +27,9 @@
   const VW = 1180, VH = 338, X0 = 21;
   const T = [[127,322,1163],[127,322,1163],[127,322,1163],[127,322,1163],[127,322,1157],[127,322,1133],[127,322,1109],[127,322,1086],[127,322,1062],[127,322,1038],[127,322,1014],[127,322,990],[127,322,967],[127,322,943],[127,322,919],[127,322,895],[127,322,872],[127,322,848],[127,322,824],[127,322,800],[127,322,777],[127,322,753],[127,322,729],[127,322,705],[127,322,682],[127,322,658],[127,322,634],[127,322,610],[127,322,596],[127,322,596],[127,322,596],[127,322,596],[126,321,596],[126,321,595],[126,320,594],[126,320,592],[126,319,590],[125,317,587],[125,316,584],[124,314,580],[124,312,576],[123,309,571],[122,306,565],[121,303,558],[120,300,551],[119,296,543],[118,292,535],[117,288,526],[115,283,517],[114,279,508],[113,275,499],[112,271,490],[111,267,482],[110,263,475],[109,260,468],[108,257,462],[107,255,457],[106,252,452],[106,251,448],[105,249,445],[105,248,442],[105,247,440],[104,246,438],[104,245,437],[104,245,436],[104,244,435],[104,244,435],[104,244,435],[104,244,435],[104,244,435],[104,244,435],[104,244,435],[104,244,435]];
   const N = T.length;
-  const BIG_W = 420, BIG_TOP = 70, COMPACT_TOP = 43.05;
+  /* 9/14 (Joel: equal space above and below the big word): the big cap top
+     is the compact cap line, y43 — the film only shrinks, it never travels */
+  const BIG_W = 420, BIG_TOP = 43, COMPACT_TOP = 43.05;
   const K = BIG_W / (T[0][2] - X0);                 // film px -> site px
   const H0 = T[0][1] - T[0][0], H1 = T[N - 1][1] - T[N - 1][0];
   const frameOf = q => Math.round(clamp01(q) * (N - 1));
