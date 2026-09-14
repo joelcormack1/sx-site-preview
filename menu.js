@@ -43,7 +43,7 @@
       transition: height ${EASE}, box-shadow ${EASE};
       font-family: ${FONT};
     }
-    #menu-overlay.open .menu-sheet { height: 645px; box-shadow: 0 18px 40px rgba(0,0,0,0.10); }
+    #menu-overlay.open .menu-sheet { height: 585px; box-shadow: 0 18px 40px rgba(0,0,0,0.10); }
 
     /* the one logo — the real letter morph (logomorph.js), tweened on q */
     .menu-logomorph {
@@ -67,8 +67,12 @@
       transition: top ${EASE}, left 0.45s cubic-bezier(0.33, 1, 0.68, 1);
     }
     .menu-label {
-      /* 9/3: block lifted 20px (224 -> 204) — Joel: 40 was too tight, this splits it */
-      position: absolute; top: 204px;
+      /* 9/3: block lifted 20px (224 -> 204) — Joel: 40 was too tight, this splits it.
+         9/14 (Joel: "the white space between the logo and the menu ... cut it
+         by 30% on the top and the bottom"): logo ink ends at 93, the block
+         sat at 204 (111px); now 171 (78px). Every seat below rides the same
+         33px, and the foot row closes 30% of ITS gap to the links (see below). */
+      position: absolute; top: 171px;
       font-weight: 400; font-size: 18px; line-height: 21.5px;
       letter-spacing: -0.72px; color: #000; white-space: nowrap;
     }
@@ -84,7 +88,7 @@
     .menu-link.here { opacity: 0.35; }
 
     #menu-search {
-      position: absolute; left: 1140px; top: 204px; width: 519px;
+      position: absolute; left: 1140px; top: 171px; width: 519px;
       border: 0; outline: none; background: transparent;
       font-family: ${FONT};
       font-weight: 400; font-size: 22px; line-height: 26.2px;
@@ -92,7 +96,7 @@
     }
     #menu-search::placeholder { color: #a4a4a4; }
     .menu-searchrule {
-      position: absolute; left: 1144.5px; top: 245px; width: 514px; height: 0;
+      position: absolute; left: 1144.5px; top: 212px; width: 514px; height: 0;
       border-top: 1px solid #a4a4a4;
     }
     /* Joel 8/22: REAL search — results render under the rule.
@@ -101,7 +105,7 @@
        smoothscroll.js lets the wheel through for this element while the
        menu holds the page locked. */
     #menu-results {
-      position: absolute; left: 1144.5px; top: 261px; width: 514px;
+      position: absolute; left: 1144.5px; top: 228px; width: 514px;
       max-height: 285px; overflow-y: auto; overscroll-behavior: contain;
       scrollbar-width: thin; scrollbar-color: #d8d8d8 transparent;
     }
@@ -119,7 +123,7 @@
       letter-spacing: 0.2px; color: #a4a4a4; text-transform: uppercase;
     }
     .menu-foot {
-      position: absolute; top: 570px;
+      position: absolute; top: 510px; /* 9/14: was 570 (see the block note) */
       font-weight: 400; font-size: 17px; line-height: 20.3px;
       letter-spacing: -0.17px; color: #000; white-space: nowrap;
       text-decoration: none;
@@ -182,7 +186,7 @@
   const here = (location.pathname.split('/').pop() || 'index.html');
   const linkHtml = (arr, x, cls) => arr.map(([label, href], i) =>
     `<a class="menu-link ${cls}${href === here ? ' here' : ''}" data-label="${label.toLowerCase()}"
-        href="${href}" style="left:${x}px; top:${204 + i * 60}px;">${label}</a>`).join('');
+        href="${href}" style="left:${x}px; top:${171 + i * 60}px;">${label}</a>`).join('');
 
   overlay.innerHTML = `
     <div class="menu-catch" data-close></div>
@@ -491,7 +495,7 @@
      columns (directors = reel poster, works + news = their WP still). */
   const prev = document.createElement('div');
   prev.id = 'menu-preview';
-  prev.style.cssText = 'position:absolute; left:63px; top:204px; width:480px; height:270px;' +
+  prev.style.cssText = 'position:absolute; left:63px; top:171px; width:480px; height:270px;' +
     ' overflow:hidden; opacity:0; transition:opacity 0.35s ease; pointer-events:none; z-index:2; background:#000;';
   prev.innerHTML = '<img style="width:100%; height:100%; object-fit:cover; display:block;" alt="">';
   overlay.querySelector('.menu-sheet').appendChild(prev);

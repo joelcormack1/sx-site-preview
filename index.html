@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=1728">
-<script src="footerlaw.js?v=20260825a"></script>
-<script src="gridhover.js?v=20260912a"></script>
+<script src="footerlaw.js?v=20260914a"></script>
+<script src="gridhover.js?v=20260914a"></script>
 <title>SIXTWENTYSIX</title>
 <script>
 /* SX-wipe arrival guard (Joel 8/22): when landing from an interior SX
@@ -856,18 +856,21 @@ window.addEventListener('scroll', () => {
 // x,y,w,h = thumb rect; lx = label x; tt = title top; dt = director top
 /* REAL work list transferred from sixtwentysix.co (8/21): the live
    'Latest and Greatest' nine plus Palms / Turo / Credit Karma from the
-   live case-studies page; directors per the work ledger. */
+   live case-studies page; directors per the work ledger.
+   9/14 (content parity): the live nine now open with Cardi B – AH HA, so
+   it leads the grid; Squarespace (on no live page) gave up its tile and
+   stays reachable through search and Miles & AJ's page. */
 const WORKS = [
-  { n:'001', t:'PRICELINE', d:'Evan Bourque', img:'assets/live/cs-priceline.jpg', x:75, y:1742, w:291.508, h:164, lx:75, tt:1921.2, dt:1939 },
-  { n:'002', t:'DUNKIN’', d:'Luke Orlando', img:'assets/live/cs-dunkin-pump.jpg', x:504.16, y:1742, w:291.508, h:164, lx:503.94, tt:1921.2, dt:1939 },
-  { n:'003', t:'HERA', d:'Savannah O’Leary', img:'assets/live/cs-hera.jpg', x:933.33, y:1742, w:291.508, h:164, lx:932.89, tt:1921.2, dt:1939 },
-  { n:'004', t:'PURA', d:'Nolan Goff', img:'assets/live/cs-pura.jpg', x:1362.49, y:1748, w:291.508, h:164, lx:1361.83, tt:1921.2, dt:1939 },
-  { n:'005', t:'DUNKIN’', d:'SixTwentySix', img:'assets/live/cs-dunkin-affleck.png', x:75, y:2024, w:291.508, h:164, lx:75, tt:2200.9, dt:2218.8 },
-  { n:'006', t:'EAT PECANS', d:'Evan Bourque', img:'assets/live/cs-eatpecans.jpg', x:504.16, y:2018, w:291.508, h:164, lx:503.94, tt:2200.9, dt:2218.8 },
-  { n:'007', t:'MEGAN THEE STALLION', d:'SixTwentySix', img:'assets/live/cs-megan.jpg', x:933.33, y:2018, w:291.508, h:164, lx:932.89, tt:2200.9, dt:2218.8 },
-  { n:'008', t:'LIQUID I.V.', d:'SixTwentySix', img:'assets/live/cs-liquidiv.jpg', x:1361.5, y:2023, w:291.508, h:164, lx:1361.83, tt:2200.9, dt:2218.8 },
-  { n:'009', t:'SQUARESPACE', d:'Miles & AJ', img:'assets/live/cs-squarespace.jpg', x:75, y:2297.8, w:291.508, h:164, lx:75, tt:2476.6, dt:2493.6 },
-  { n:'010', t:'PALMS CASINO', d:'Nolan Goff', img:'assets/live/cs-palms.jpg', x:504.16, y:2297.8, w:290.5, h:163, lx:503.94, tt:2476.6, dt:2493.6 },
+  { n:'001', t:'CARDI B', d:'SixTwentySix', img:'assets/live/cs-cardi.jpg', x:75, y:1742, w:291.508, h:164, lx:75, tt:1921.2, dt:1939 },
+  { n:'002', t:'PRICELINE', d:'Evan Bourque', img:'assets/live/cs-priceline.jpg', x:504.16, y:1742, w:291.508, h:164, lx:503.94, tt:1921.2, dt:1939 },
+  { n:'003', t:'DUNKIN’', d:'Luke Orlando', img:'assets/live/cs-dunkin-pump.jpg', x:933.33, y:1742, w:291.508, h:164, lx:932.89, tt:1921.2, dt:1939 },
+  { n:'004', t:'HERA', d:'Savannah O’Leary', img:'assets/live/cs-hera.jpg', x:1362.49, y:1748, w:291.508, h:164, lx:1361.83, tt:1921.2, dt:1939 },
+  { n:'005', t:'PURA', d:'Nolan Goff', img:'assets/live/cs-pura.jpg', x:75, y:2024, w:291.508, h:164, lx:75, tt:2200.9, dt:2218.8 },
+  { n:'006', t:'DUNKIN’', d:'SixTwentySix', img:'assets/live/cs-dunkin-affleck.png', x:504.16, y:2018, w:291.508, h:164, lx:503.94, tt:2200.9, dt:2218.8 },
+  { n:'007', t:'EAT PECANS', d:'Evan Bourque', img:'assets/live/cs-eatpecans.jpg', x:933.33, y:2018, w:291.508, h:164, lx:932.89, tt:2200.9, dt:2218.8 },
+  { n:'008', t:'MEGAN THEE STALLION', d:'SixTwentySix', img:'assets/live/cs-megan.jpg', x:1361.5, y:2023, w:291.508, h:164, lx:1361.83, tt:2200.9, dt:2218.8 },
+  { n:'009', t:'LIQUID I.V.', d:'SixTwentySix', img:'assets/live/cs-liquidiv.jpg', x:75, y:2297.8, w:291.508, h:164, lx:75, tt:2476.6, dt:2493.6 },
+  { n:'010', t:'PALMS CASINO RESORT', d:'Nolan Goff', img:'assets/live/cs-palms.jpg', x:504.16, y:2297.8, w:290.5, h:163, lx:503.94, tt:2476.6, dt:2493.6 },
   { n:'011', t:'TURO', d:'Miles & AJ', img:'assets/live/cs-turo.jpg', x:933.33, y:2297.8, w:290.5, h:163, lx:932.89, tt:2476.6, dt:2493.6 },
   { n:'012', t:'CREDIT KARMA', d:'Miles & AJ', img:'assets/live/cs-creditkarma.jpg', x:1361.5, y:2302.8, w:291.508, h:164, lx:1361.83, tt:2476.6, dt:2493.6 }
 ];
@@ -880,15 +883,15 @@ const WORKS = [
    instead (Joel 8/24). If a signature ever 403s, re-pull from
    sixtwentysix.co. */
 const WORK_LOOPS = {
-  '001': 'https://player.vimeo.com/progressive_redirect/playback/1191279752/rendition/1080p/file.mp4%20%281080p%29.mp4?loc=external&log_user=0&signature=b2a3fce188f6bbd5fb6933419b9d79e6508f6afc3a27cce1d8d9455596710be7',
-  '002': 'https://player.vimeo.com/progressive_redirect/playback/1152401903/rendition/1080p/file.mp4%20%281080p%29.mp4?loc=external&log_user=0&signature=308b00f490c2f6e53533b0a02bde34faf2cc1a1505ab749c7e93509bec3862c9',
-  '003': 'https://player.vimeo.com/progressive_redirect/playback/1151638122/rendition/1080p/file.mp4%20%281080p%29.mp4?loc=external&log_user=0&signature=6b7991643db1c95ac1e1c985d693ee0f5ba68754f43250516225593eb886c2bd',
-  '004': 'https://player.vimeo.com/progressive_redirect/playback/1006416097/rendition/1080p/file.mp4?loc=external&log_user=0&signature=64fa71b252b9bfbac835dd46aeffaf4c8bbb012eab0e70ce58747a01f58d86e1',
-  '005': 'https://player.vimeo.com/progressive_redirect/playback/1125246930/rendition/1080p/file.mp4?loc=external&log_user=0&signature=2129a26fac9c81464a0a24faaff8a1522ee90985634b7f89855f5c5eba24da70',
-  '006': 'https://player.vimeo.com/progressive_redirect/playback/996433212/rendition/1080p/file.mp4?loc=external&log_user=0&signature=b1fa4987f20d4f9d170bcfae75826cf6fb124137ac8e2787f799b8eae4a93291',
-  '007': 'https://player.vimeo.com/progressive_redirect/playback/946016464/rendition/1080p/file.mp4?loc=external&log_user=0&signature=99c30ffec4cf29d294f9bd11f32a5203d2b48a43409f9377f12bac6516ad2322',
-  '008': 'https://player.vimeo.com/progressive_redirect/playback/991779444/rendition/1080p/file.mp4?loc=external&log_user=0&signature=c6bc59979b513da2ba84624c3574e96f80b14dfad96e2106f03886802f19f9c2',
-  '009': 'assets/live/loop-squarespace.mp4',
+  '001': 'https://player.vimeo.com/progressive_redirect/playback/1222148840/rendition/1080p/file.mp4%20%281080p%29.mp4?loc=external&log_user=0&signature=97307ea1af626c74468883f42cee725a1a1e516809b85cf32d899953658bd0c4',
+  '002': 'https://player.vimeo.com/progressive_redirect/playback/1191279752/rendition/1080p/file.mp4%20%281080p%29.mp4?loc=external&log_user=0&signature=b2a3fce188f6bbd5fb6933419b9d79e6508f6afc3a27cce1d8d9455596710be7',
+  '003': 'https://player.vimeo.com/progressive_redirect/playback/1152401903/rendition/1080p/file.mp4%20%281080p%29.mp4?loc=external&log_user=0&signature=308b00f490c2f6e53533b0a02bde34faf2cc1a1505ab749c7e93509bec3862c9',
+  '004': 'https://player.vimeo.com/progressive_redirect/playback/1151638122/rendition/1080p/file.mp4%20%281080p%29.mp4?loc=external&log_user=0&signature=6b7991643db1c95ac1e1c985d693ee0f5ba68754f43250516225593eb886c2bd',
+  '005': 'https://player.vimeo.com/progressive_redirect/playback/1006416097/rendition/1080p/file.mp4?loc=external&log_user=0&signature=64fa71b252b9bfbac835dd46aeffaf4c8bbb012eab0e70ce58747a01f58d86e1',
+  '006': 'https://player.vimeo.com/progressive_redirect/playback/1125246930/rendition/1080p/file.mp4?loc=external&log_user=0&signature=2129a26fac9c81464a0a24faaff8a1522ee90985634b7f89855f5c5eba24da70',
+  '007': 'https://player.vimeo.com/progressive_redirect/playback/996433212/rendition/1080p/file.mp4?loc=external&log_user=0&signature=b1fa4987f20d4f9d170bcfae75826cf6fb124137ac8e2787f799b8eae4a93291',
+  '008': 'https://player.vimeo.com/progressive_redirect/playback/946016464/rendition/1080p/file.mp4?loc=external&log_user=0&signature=99c30ffec4cf29d294f9bd11f32a5203d2b48a43409f9377f12bac6516ad2322',
+  '009': 'https://player.vimeo.com/progressive_redirect/playback/991779444/rendition/1080p/file.mp4?loc=external&log_user=0&signature=c6bc59979b513da2ba84624c3574e96f80b14dfad96e2106f03886802f19f9c2',
   '010': 'https://player.vimeo.com/progressive_redirect/playback/1201495653/rendition/1080p/file.mp4%20%281080p%29.mp4?loc=external&log_user=0&signature=43288f8230fc7601951964b3046033e7c02ca670694c8ad9504d5642602dfe38',
   '011': 'https://player.vimeo.com/progressive_redirect/playback/766676269/rendition/1080p/file.mp4?loc=external&log_user=0&signature=99929a4c148e35ce60df8ce7eaec7ae66adc027d6e38cbfbed7b49517c9d0942',
   '012': 'https://player.vimeo.com/progressive_redirect/playback/1179304184/rendition/1080p/file.mp4%20%281080p%29.mp4?loc=external&log_user=0&signature=5d5d3eac22153ec0e6d6c3f8296c623a147954b9fc3d6b37c1861cfa93457aed',
@@ -899,15 +902,15 @@ WORKS.forEach(w => { w.loop = WORK_LOOPS[w.n] || null; });
    is WP-driven now — ?work=<slug> loads that work's real copy. Slugs
    joined from the live site's tile objects + WP featuredvimeoid. */
 const WORK_SLUGS = {
-  '001': 'priceline-new-negotiator',
-  '002': 'dunkin-dunk-n-pump',
-  '003': 'hera-age-your-way',
-  '004': 'pura-hands-on',
-  '005': 'dunkin-the-value-affleck',
-  '006': 'eat-pecans-surprisingly-snackable',
-  '007': 'megan-thee-stallion-boa',
-  '008': 'liquid-iv-ice-cream',
-  '009': 'squarespace-courses',
+  '001': 'cardi-b-ah-ha',
+  '002': 'priceline-new-negotiator',
+  '003': 'dunkin-dunk-n-pump',
+  '004': 'hera-age-your-way',
+  '005': 'pura-hands-on',
+  '006': 'dunkin-the-value-affleck',
+  '007': 'eat-pecans-surprisingly-snackable',
+  '008': 'megan-thee-stallion-boa',
+  '009': 'liquid-iv-ice-cream',
   '010': 'palms-casino-resort-this-is-that-vegas',
   '011': 'turo-open-the-door-to-extraordinary',
   '012': 'credit-karma-card-optimizer',
@@ -1129,10 +1132,62 @@ const PRESS = [
   let drift = 0, paused = false, lastT = 0, nudge = 0;
   host.addEventListener('mouseenter', () => { paused = true; });   // hover: stop + image appears
   host.addEventListener('mouseleave', () => { paused = false; });
+  /* 9/14 (Joel: "need to be able to slide on the news and features - it
+     will speed up and then go back to standard speed"): the rail can be
+     DRAGGED (mouse, trackpad-click, or finger). While the pointer holds it
+     the cards follow the hand; on release the fling velocity is added to
+     the roll and decays back to the standard 24px/s over ~0.45s, either
+     direction. A real drag swallows the click that would have lit a card
+     or opened an article. Same law as the phone rails (armDrag, 9/8). */
+  let boost = 0, drag = null;
+  host.style.touchAction = 'pan-y';
+  host.style.cursor = 'grab';
+  host.addEventListener('pointerdown', e => {
+    if (e.button !== undefined && e.button !== 0) return;
+    drag = { x0: e.clientX, y0: e.clientY, d0: drift, moved: false, hist: [[performance.now(), e.clientX]], id: e.pointerId, touch: e.pointerType === 'touch', decided: !(e.pointerType === 'touch') };
+    boost = 0; nudge = 0;
+  });
+  host.addEventListener('pointermove', e => {
+    if (!drag || e.pointerId !== drag.id) return;
+    const dx = e.clientX - drag.x0, dy = e.clientY - drag.y0;
+    if (!drag.decided) {
+      if (Math.abs(dx) < 6 && Math.abs(dy) < 6) return;
+      if (Math.abs(dy) > Math.abs(dx)) { drag = null; return; } /* a vertical swipe scrolls the page instead */
+      drag.decided = true;
+    }
+    if (!drag.moved && Math.abs(dx) > 4) {
+      drag.moved = true;
+      host.style.cursor = 'grabbing';
+      try { host.setPointerCapture(e.pointerId); } catch (err) {}
+    }
+    if (!drag.moved) return;
+    drift = drag.d0 - dx;
+    const now = performance.now();
+    drag.hist.push([now, e.clientX]);
+    while (drag.hist.length > 2 && now - drag.hist[0][0] > 90) drag.hist.shift();
+  });
+  const endDrag = e => {
+    if (!drag || (e && e.pointerId !== undefined && e.pointerId !== drag.id)) return;
+    const d = drag; drag = null;
+    host.style.cursor = 'grab';
+    if (!d.moved) return;
+    const now = performance.now();
+    const h0 = d.hist[0], h1 = d.hist[d.hist.length - 1];
+    const dt = Math.max(16, h1[0] - h0[0]);
+    if (now - h1[0] < 80) boost = Math.max(-3500, Math.min(3500, -(h1[1] - h0[1]) / dt * 1000));
+    /* the click that ends a drag must not light a card or open an article */
+    const swallow = ev => { ev.stopPropagation(); ev.preventDefault(); };
+    host.addEventListener('click', swallow, { capture: true, once: true });
+    setTimeout(() => host.removeEventListener('click', swallow, { capture: true }), 300);
+  };
+  host.addEventListener('pointerup', endDrag);
+  host.addEventListener('pointercancel', endDrag);
+  host.addEventListener('lostpointercapture', endDrag);
   function roll(now) {
     const dt = Math.min(0.05, (now - lastT) / 1000) || 0;
     lastT = now;
-    if (!paused) drift += 24 * dt;
+    if (!paused && !drag) drift += 24 * dt;
+    if (boost) { drift += boost * dt; boost *= Math.exp(-dt / 0.45); if (Math.abs(boost) < 2) boost = 0; }
     if (nudge !== 0) { const step = Math.sign(nudge) * Math.min(Math.abs(nudge), 700 * dt); drift += step; nudge -= step; }
     /* normalized modulo so a backward nudge (negative drift) still seats
        inside the periodic rail instead of exposing its left edge */
@@ -1203,8 +1258,8 @@ document.querySelectorAll('.fd').forEach(el => io.observe(el));
   } catch (e) {}
 })();
 </script>
-<script src="smoothscroll.js?v=20260912a"></script>
-<script src="menu.js?v=20260824c"></script>
+<script src="smoothscroll.js?v=20260914a"></script>
+<script src="menu.js?v=20260914a"></script>
 <script src="hoverlaw.js?v=20260819095356"></script>
 <script>
 /* Safari back-forward cache restores dead builds from memory - always reload */

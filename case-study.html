@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=1728">
-<script src="footerlaw.js?v=20260825a"></script>
+<script src="footerlaw.js?v=20260914a"></script>
 <title>SIXTWENTYSIX — Priceline: The Negotiator</title>
 <!--
   CASE STUDY — rebuilt from scratch 2026-08-18 to Full Site frame 89:1711
@@ -134,6 +134,12 @@
     color: #000; white-space: nowrap;
   }
   .cs-title b { font-weight: 700; }
+  .cs-headline {
+    position: absolute; left: 93px; width: 1100px;
+    font-family: 'HelveticaNeueCyr', 'Helvetica Neue', Helvetica, sans-serif;
+    font-weight: 400; font-size: 26px; line-height: 32px; letter-spacing: -0.5px; color: #000;
+  }
+  .cs-headline .sub { display: block; margin-top: 8px; font-size: 17px; line-height: 27px; letter-spacing: -0.26px; color: #5a5a5a; }
   .cs-badges { position: absolute; left: 900px; top: 1218px; width: 185.7px; height: 20.2px; }
   .cs-badges img { width: 100%; height: 100%; }
 
@@ -154,6 +160,52 @@
     font-weight: 400; font-size: 17px; line-height: 27px; letter-spacing: -0.26px;
     color: #5a5a5a;
   }
+  .cs-copy b { font-weight: 700; color: #000; }
+
+  /* ===================== EVERYTHING ELSE THE CMS HOLDS (9/14) =====================
+     Sections under the ledger, each one absolutely seated container (.cs-x) so
+     the async Director row can shift them together. Same rail (93 -> 1576),
+     same labels, same tile + caption language as the grids. */
+  .cs-x { position: absolute; left: 0; width: 1728px; }
+  .cs-tile {
+    position: absolute; overflow: hidden; background: #d9d9d9; cursor: pointer; display: block; border-radius: 0;
+    transition: left 0.7s ease-in-out, top 0.7s ease-in-out, width 0.7s ease-in-out, height 0.7s ease-in-out, opacity 0.5s ease;
+  }
+  .cs-tile img { width: 100%; height: 100%; object-fit: cover; pointer-events: none; display: block; transition: transform 0.5s ease; }
+  .cs-tcap {
+    position: absolute;
+    font-family: 'HelveticaNeueCyr', 'Helvetica Neue', Helvetica, sans-serif;
+    font-weight: 400; font-size: 14.422px; line-height: 19.263px; letter-spacing: -0.1442px;
+    text-transform: uppercase; color: #000;
+    transition: opacity 0.3s ease, left 0.7s ease-in-out, top 0.7s ease-in-out;
+  }
+  .cs-tcap b { font-weight: 700; }
+  /* the white ghost hover, scoped to the section the tile lives in */
+  .cs-x.ghost .cs-tile:not(.is-hover) { opacity: 0.15 !important; }
+  .cs-x.ghost .cs-tile:not(.is-hover) img { transform: scale(1.09); }
+  .cs-x.ghost .cs-tile.is-hover { z-index: 20; }
+  .cs-x.ghost .cs-tcap:not(.is-hover) { opacity: 0.17 !important; }
+  .cs-tcap.is-hover { z-index: 21; }
+  /* photo carousels: justified rows; a hover image swaps in when the CMS has one */
+  .cs-ph { position: absolute; overflow: hidden; background: #d9d9d9; }
+  .cs-ph img { position: absolute; left: 0; top: 0; width: 100%; height: 100%; object-fit: cover; }
+  .cs-ph .hv { opacity: 0; transition: opacity 0.35s ease; }
+  .cs-ph:hover .hv { opacity: 1; }
+  /* behind-the-scenes rails: drag or step with the chevrons */
+  .cs-rail { position: absolute; left: 0; width: 1728px; overflow: hidden; touch-action: pan-y; cursor: grab; user-select: none; -webkit-user-select: none; }
+  .cs-rail.drag { cursor: grabbing; }
+  .cs-rail img, .cs-rail iframe { pointer-events: none; }
+  .cs-rchev { position: absolute; width: 30px; height: 30px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: opacity 0.2s ease; }
+  .cs-rchev:hover { opacity: 0.5; }
+  /* click-to-play films: the CMS poster, the site's play glyph, then Vimeo */
+  .cs-vclick { position: absolute; background: #000; overflow: hidden; cursor: pointer; }
+  .cs-vclick .pl { position: absolute; left: 50%; top: 50%; width: 44px; height: 56px; margin: -28px 0 0 -22px; z-index: 2; transition: transform 0.3s ease; }
+  .cs-vclick:hover .pl { transform: scale(1.08); }
+  .cs-vclick iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+  .cs-vlink { position: absolute; font-family: 'HelveticaNeueCyr', 'Helvetica Neue', Helvetica, sans-serif; font-size: 14px; line-height: 20px; color: #000; text-decoration: underline; text-underline-position: from-font; }
+  /* award badge (the CMS "watermark"), top right of the film, rides the chrome fade */
+  .cs-badge { position: absolute; right: 63px; top: 137px; height: 56px; width: auto; z-index: 5; pointer-events: none; }
+  .cs-copy a { color: inherit; text-decoration: underline; text-underline-position: from-font; }
 
   /* ---------- Footer (black, SIX26) — THE FOOTER LAW: on every page ---------- */
   @font-face {
@@ -337,9 +389,10 @@ const io = new IntersectionObserver(entries => {
 }, { threshold: [0, 0.15] });
 document.querySelectorAll('.fd').forEach(el => io.observe(el));
 </script>
-<script src="smoothscroll.js?v=20260912a"></script>
+<script src="smoothscroll.js?v=20260914a"></script>
 <script src="logomorph.js?v=20260824a"></script>
-<script src="menu.js?v=20260824c"></script>
+<script src="menu.js?v=20260914a"></script>
+<script src="gridhover.js?v=20260914a"></script>
 <script>
 /* ================= THE REAL WORK PAGE (Joel 8/24) =================
    "when you click on a work ... it needs to be the page for that actual
@@ -381,7 +434,23 @@ document.querySelectorAll('.fd').forEach(el => io.observe(el));
     const r = await fetch('https://api.sixtwentysix.co/graphql', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ query:
-        '{ caseStudy(id: ' + JSON.stringify(slug) + ', idType: SLUG) { title pageMeta { headline subHeadline featuredvimeoid services { name } intro { introBlocks { title body } theChallenge theSpark theDelivery results awards } } featuredImage { node { sourceUrl } } } }' })
+        /* 9/14: the WHOLE work — reach, award badge, campaign spots, sub-spots,
+           photo carousel, the flexible content layouts, you-might-also-like.
+           Fragments keep the shape readable; every field is optional. */
+        'fragment M on MediaItem { sourceUrl srcSet altText caption mimeType mediaDetails { width height } imageMeta { videoUrl } } ' +
+        'fragment W on CaseStudy { __typename title slug featuredImage { node { sourceUrl imageMeta { videoUrl } } } pageMeta { featuredvimeoid } } ' +
+        '{ caseStudy(id: ' + JSON.stringify(slug) + ', idType: SLUG) { title pageMeta { headline subHeadline featuredvimeoid services { name } ' +
+        'intro { introBlocks { title body } theChallenge theSpark theDelivery results awards } ' +
+        'reach { platform } watermark { node { sourceUrl mediaDetails { width height } } } ' +
+        'campaigns { title works { nodes { ...W } } } subContent { nodes { ...W } } recommended { nodes { ...W } } ' +
+        'imageCarousel { nodes { ...M } } imageCarouselHover { nodes { ...M } } ' +
+        'content { fieldGroupName ' +
+        '... on PageMetaContentMediaGridLayout { layout layoutPresets media { vimeoVideoId image { node { ...M } } } } ' +
+        '... on PageMetaContentMediaCarouselLayout { media { vimeoVideoId image { node { ...M } } } } ' +
+        '... on PageMetaContentVimeovideoonclickLayout { videoid linkText linkUrl image { node { ...M } } } ' +
+        '... on PageMetaContentTestimonialsLayout { testimonials { title body reviewername reviewertitle reviewerbrand } } ' +
+        '... on PageMetaContentNewsLayout { articles { nodes { ... on Post { title link } } } } } ' +
+        '} featuredImage { node { sourceUrl } } } }' })
     });
     cs = (await r.json()).data.caseStudy;
   } catch (e) { /* offline: the demo page stands */ }
@@ -413,14 +482,32 @@ document.querySelectorAll('.fd').forEach(el => io.observe(el));
 
   /* ---- hero image + title ---- */
   const img = hero.querySelector('img.bg');
-  const src = cs.featuredImage && cs.featuredImage.node && cs.featuredImage.node.sourceUrl;
-  if (src) img.src = src;
+  /* 9/14: a photography work (Angel City, St. Lucia) can carry NO featured
+     image and no film — its first carousel still stands in as the hero,
+     and nothing ever falls through to the template's Priceline art. */
+  const galleryNodes = (((meta.imageCarousel || {}).nodes) || []).filter(n => n && n.sourceUrl);
+  let heroFromGallery = false;
+  let src = cs.featuredImage && cs.featuredImage.node && cs.featuredImage.node.sourceUrl;
+  if (!src && !(meta.featuredvimeoid || '').trim() && galleryNodes.length) { src = galleryNodes[0].sourceUrl; heroFromGallery = true; }
+  if (src) img.src = src; else img.style.display = 'none';
   img.alt = cs.title || '';
   document.title = 'SIXTWENTYSIX \u2014 ' + (cs.title || 'Work');
   const parts = String(cs.title || '').split(/\s+[\u2013\u2014|]\s+/);
   document.querySelector('.cs-title').innerHTML = parts.length > 1
     ? '<b>' + esc(parts[0]) + '</b> ' + esc(parts.slice(1).join(' '))
     : '<b>' + esc(cs.title) + '</b>';
+  /* 9/14 (content parity): the CMS headline ("Beyond the Casino Floor")
+     and subheadline sit under the title — they were only ever shown as the
+     fallback 'Big Idea' row on works without intro blocks. */
+  const hl = String(meta.headline || '').trim(), shl = String(meta.subHeadline || '').trim();
+  if (hl || shl) {
+    const titleEl = document.querySelector('.cs-title');
+    const hEl = document.createElement('p');
+    hEl.className = 'cs-headline fd seen';
+    hEl.style.top = (parseFloat(titleEl.style.top || getComputedStyle(titleEl).top) + 64) + 'px';
+    hEl.innerHTML = esc(hl) + (shl ? '<span class="sub">' + esc(shl) + '</span>' : '');
+    page.appendChild(hEl);
+  }
   /* 9/3 (Joel): the title also lives UP TOP, above "Back to work" — you
      always know what you're watching without scrolling (matters most on
      the no-copy pages, which are film-only now). Fades with the chrome. */
@@ -457,7 +544,6 @@ document.querySelectorAll('.fd').forEach(el => io.observe(el));
     if (intro.awards && !blockTitles.some(t => t.includes('award'))) rows.push(['Awards', intro.awards, true]);
   } else {
     rows = [
-      ['Big Idea', meta.headline, false],
       ['Challenge', intro.theChallenge, false],
       ['The Spark', intro.theSpark, false],
       ['The Delivery', intro.theDelivery, false],
@@ -467,33 +553,86 @@ document.querySelectorAll('.fd').forEach(el => io.observe(el));
   }
   const svcNames = (meta.services || []).map(x => x && x.name && x.name.trim()).filter(Boolean);
   if (svcNames.length) rows.push(['Services', svcNames.join(', '), false]);
+  /* 9/14 REACH (the doc: "Where are all the additional assets... Reach"):
+     the platforms the work ran on, written out in the ledger's own words */
+  const REACH_NAMES = { ctv: 'CTV', youtube: 'YouTube', meta: 'Meta', ooh: 'OOH', linear: 'Linear TV', x: 'X',
+    linkedin: 'LinkedIn', snapchat: 'Snapchat', tiktok: 'TikTok', instagram: 'Instagram', hulu: 'Hulu', twitch: 'Twitch' };
+  const reachLabels = [...new Set((meta.reach || []).flatMap(r => (r && r.platform) || [])
+    .map(p => REACH_NAMES[String(p).toLowerCase()] || String(p).toUpperCase()))];
+  if (reachLabels.length) rows.push(['Reach', reachLabels.join(', '), false]);
   rows = rows.filter(r => r[1] && String(r[1]).trim());
+  /* ================= 9/14 EVERYTHING THE CMS HOLDS =================
+     Joel: "we have a ton of content in each case study that isn't there...
+     make sure that everything inside each case study is reflected on the
+     new site." The ledger used to stop at the copy. Per work WordPress
+     also carries: Reach (in the ledger above), an award badge (watermark),
+     campaign spots + sub-spots (the other cuts of the campaign), a photo
+     carousel (for the photography works this IS the work), the flexible
+     content layouts (media grids, behind-the-scenes rails, click-to-play
+     films, testimonials, press), and "you might also like". Every section
+     below renders only when the CMS has it, in the CMS's own order. */
+  const RAIL_L = 93, RAIL_W = 1483, RAIL_R = RAIL_L + RAIL_W; /* the ledger rail */
+  const GUT = 45, SEC_GAP = 120;
+  const tileW = n => (RAIL_W - (n - 1) * GUT) / n;            /* 2-up = 719, the site's tile */
+  const nodesOf = c => ((c && c.nodes) || []).filter(Boolean);
+  const csNodes = c => nodesOf(c).filter(n => n.__typename === 'CaseStudy' && n.slug);
+  /* the hero already shows the first still when it had to borrow it */
+  const GALLERY = heroFromGallery ? galleryNodes.slice(1) : galleryNodes;
+  const GALLERY_HOVER = heroFromGallery ? nodesOf(meta.imageCarouselHover).slice(1) : nodesOf(meta.imageCarouselHover);
+  const LAYOUTS = (meta.content || []).filter(Boolean);
+  const seenSlug = new Set([slug]);
+  const SPOTS = [];
+  (meta.campaigns || []).forEach(c => csNodes(c && c.works).forEach(n => { if (!seenSlug.has(n.slug)) { seenSlug.add(n.slug); SPOTS.push(n); } }));
+  csNodes(meta.subContent).forEach(n => { if (!seenSlug.has(n.slug)) { seenSlug.add(n.slug); SPOTS.push(n); } });
+  const RECS = csNodes(meta.recommended).filter(n => n.slug !== slug);
+  const hasExtras = !!(GALLERY.length || LAYOUTS.length || SPOTS.length || RECS.length);
+
+  /* award badge: the CMS "watermark" (Telly / Clio / VMA art) sits top right
+     of the film, opposite Back to work, and fades with the rest of the chrome */
+  const wm = meta.watermark && meta.watermark.node && meta.watermark.node.sourceUrl;
+  let badgeEl = null;
+  if (wm) {
+    badgeEl = document.createElement('img');
+    badgeEl.className = 'cs-badge';
+    badgeEl.src = wm; badgeEl.alt = 'Award';
+    hero.appendChild(badgeEl);
+  }
+
   let y = 1526 + delta;
   let rowCount = 0;
-  const addRow = (label, copy, isHtml, first) => {
+  /* one ledger row (rule, bold label at 93, copy at 900) into HOST at TOP;
+     returns the height it took. The page's own rows and the sections below
+     share this exact form. */
+  const rowInto = (host, top, label, copy, isHtml, first) => {
     const rule = document.createElement('div');
     rule.className = 'cs-rule ' + (first ? 'black' : 'gray') + ' fd seen';
-    rule.style.top = y + 'px';
-    page.appendChild(rule);
+    rule.style.top = top + 'px';
+    host.appendChild(rule);
     const lab = document.createElement('p');
     lab.className = 'cs-label fd seen';
-    lab.style.top = (y + 25) + 'px';
+    lab.style.top = (top + 25) + 'px';
     lab.textContent = label;
-    page.appendChild(lab);
+    host.appendChild(lab);
     const cop = document.createElement('p');
     cop.className = 'cs-copy fd seen';
-    cop.style.top = (y + 25) + 'px';
+    cop.style.top = (top + 25) + 'px';
     if (isHtml) { cop.innerHTML = copy; cop.querySelectorAll('[style]').forEach(n => n.removeAttribute('style')); }
     else cop.textContent = copy;
-    page.appendChild(cop);
-    y += 25 + Math.max(cop.offsetHeight, 24) + 27;
+    host.appendChild(cop);
+    return 25 + Math.max(cop.offsetHeight, 24) + 27;
+  };
+  const addRow = (label, copy, isHtml, first) => {
+    y += rowInto(page, y, label, copy, isHtml, first);
     rowCount++;
   };
   /* 9/3 (Joel, round 2: "just remove this entirely, like how it is on our
      current website"): a work with NO copy is the FILM and the FOOTER,
-     nothing between — no white band, no title, no director row. */
+     nothing between — no white band, no title, no director row.
+     9/14: "nothing" now means no copy AND nothing else in the CMS; a work
+     that carries spots, a gallery or media keeps its title and shows them. */
   const hasCopy = rows.length > 0;
-  if (!hasCopy) {
+  const hasBody = hasCopy || hasExtras;
+  if (!hasBody) {
     document.querySelector('.cs-title').style.display = 'none';
     /* 9/3: no copy below means nothing to scroll to — the down chevron
        goes too */
@@ -502,8 +641,287 @@ document.querySelectorAll('.fd').forEach(el => io.observe(el));
     y = heroH;
   }
   rows.forEach(([label, copy, isHtml], i) => addRow(label, copy, isHtml, i === 0));
+  let yLedgerEnd = y;   /* the async Director row lands here and shifts the sections */
+
+  /* ---- section plumbing ---- */
+  const extras = [];
+  const fd = el => { el.classList.add('fd'); try { io.observe(el); } catch (e) { el.classList.add('seen'); } return el; };
+  const sec = () => {
+    const el = document.createElement('div');
+    el.className = 'cs-x';
+    el.style.cssText = 'position:absolute; left:0; top:' + y + 'px; width:1728px; height:0;';
+    page.appendChild(el);
+    extras.push(el);
+    return el;
+  };
+  const endSec = (el, h) => { el.style.height = h + 'px'; y += h + SEC_GAP; };
+  const labelRow = (host, top, text) => {
+    const rule = document.createElement('div');
+    rule.className = 'cs-rule black'; rule.style.top = top + 'px';
+    host.appendChild(fd(rule));
+    const lab = document.createElement('p');
+    lab.className = 'cs-label'; lab.style.top = (top + 25) + 'px'; lab.textContent = text;
+    host.appendChild(fd(lab));
+    return top + 25 + 24 + 40;
+  };
+  const dims = n => { const md = (n && n.mediaDetails) || {}; return (md.width > 0 && md.height > 0) ? { w: md.width, h: md.height } : { w: 16, h: 9 }; };
+  const imgEl = (node, w, h) => {
+    const im = document.createElement('img');
+    im.src = node.sourceUrl;
+    /* the CMS keeps sized renditions; ask for ~1.5x the seat so the shell's
+       fill-width scaling on wide screens still lands a sharp file */
+    if (node.srcSet) { im.srcset = node.srcSet; im.sizes = Math.round(w * 1.5) + 'px'; }
+    im.alt = node.altText || ''; im.loading = 'lazy'; im.decoding = 'async';
+    im.style.cssText = 'position:absolute; left:0; top:0; width:' + w + 'px; height:' + h + 'px; object-fit:cover; display:block; background:#d9d9d9;';
+    return im;
+  };
+  const bgVideo = (id, w, h) => {
+    /* a silent looping Vimeo (background mode) for the clips inside grids and rails */
+    const fr = document.createElement('iframe');
+    fr.src = 'https://player.vimeo.com/video/' + encodeURIComponent(String(id).trim()) + '?background=1&autoplay=1&loop=1&muted=1&dnt=1';
+    fr.allow = 'autoplay; fullscreen; picture-in-picture';
+    fr.loading = 'lazy';
+    fr.style.cssText = 'position:absolute; left:0; top:0; border:0; width:' + w + 'px; height:' + h + 'px; background:#000;';
+    return fr;
+  };
+  const mediaNode = m => (m && m.image && m.image.node && m.image.node.sourceUrl) ? m.image.node : null;
+  const splitTitle = t => {
+    const p = String(t || '').split(/\s+[–—|-]\s+/);
+    return p.length > 1 ? '<b>' + esc(p[0]) + '</b> ' + esc(p.slice(1).join(' – ')) : '<b>' + esc(t) + '</b>';
+  };
+
+  /* ---- photo carousel: justified rows on the rail (Kate's photography
+     works are exactly this — 10 stills, no film) ---- */
+  const gallery = (nodes, hovers) => {
+    const G = 24, TARGET = 480;
+    const host = sec();
+    let row = [], rowW = 0, top = 0;
+    const flush = last => {
+      if (!row.length) return;
+      const gaps = (row.length - 1) * G;
+      const scale = (last && rowW < RAIL_W - gaps) ? 1 : (RAIL_W - gaps) / rowW;
+      const h = Math.round(TARGET * scale);
+      let x = RAIL_L;
+      row.forEach(({ node, w, idx }, k) => {
+        const ww = (k === row.length - 1 && scale !== 1) ? (RAIL_R - x) : Math.round(w * scale);
+        const box = document.createElement('div');
+        box.className = 'cs-ph';
+        box.style.cssText = 'left:' + x + 'px; top:' + top + 'px; width:' + ww + 'px; height:' + h + 'px;';
+        box.appendChild(imgEl(node, ww, h));
+        const hv = hovers[idx];
+        if (hv && hv.sourceUrl) { const im2 = imgEl(hv, ww, h); im2.className = 'hv'; box.appendChild(im2); }
+        host.appendChild(fd(box));
+        x += ww + G;
+      });
+      top += h + G; row = []; rowW = 0;
+    };
+    nodes.forEach((node, idx) => {
+      const d = dims(node); const w = TARGET * d.w / d.h;
+      if (row.length && rowW + w + row.length * G > RAIL_W) flush(false);
+      row.push({ node, w, idx }); rowW += w;
+    });
+    flush(true);
+    endSec(host, top - G);
+  };
+
+  /* ---- media grid: the CMS's 12-column layout string ("6-6-12" = two
+     halves then a full width), images at their own proportions, clips as
+     silent loops ---- */
+  const mediaGrid = L => {
+    const items = (L.media || []).filter(m => m && (mediaNode(m) || m.vimeoVideoId));
+    if (!items.length) return;
+    const spans = String(L.layout || (L.layoutPresets && L.layoutPresets[0]) || '12').split('-')
+      .map(t => Math.max(1, Math.min(12, parseInt(t, 10) || 12)));
+    const G = 24, UNIT = (RAIL_W - 11 * G) / 12;
+    const host = sec();
+    let used = 0, rowTop = 0, rowH = 0;
+    items.forEach((m, i) => {
+      const sp = spans[i % spans.length];
+      if (used + sp > 12) { rowTop += rowH + G; used = 0; rowH = 0; }
+      const w = sp * UNIT + (sp - 1) * G;
+      const node = mediaNode(m);
+      const d = dims(node);
+      const h = Math.round(w * d.h / d.w);
+      const el = m.vimeoVideoId ? bgVideo(m.vimeoVideoId, w, h) : imgEl(node, w, h);
+      el.style.left = (RAIL_L + used * (UNIT + G)) + 'px';
+      el.style.top = rowTop + 'px';
+      host.appendChild(fd(el));
+      used += sp; rowH = Math.max(rowH, h);
+    });
+    endSec(host, rowTop + rowH);
+  };
+
+  /* ---- behind-the-scenes rail: stills at one height, drag or step with
+     the chevrons (the site's rails never scroll on the wheel — the page
+     owns the wheel) ---- */
+  const mediaRail = L => {
+    const items = (L.media || []).filter(m => m && (mediaNode(m) || m.vimeoVideoId));
+    if (!items.length) return;
+    const H = 520, G = 24, HEAD = 56;
+    const host = sec();
+    const rail = document.createElement('div');
+    rail.className = 'cs-rail';
+    rail.style.cssText += 'top:' + HEAD + 'px; height:' + H + 'px;';
+    const track = document.createElement('div');
+    track.style.cssText = 'position:absolute; left:' + RAIL_L + 'px; top:0; height:' + H + 'px; will-change:transform;';
+    let x = 0;
+    items.forEach(m => {
+      const node = mediaNode(m); const d = dims(node);
+      const w = Math.round(H * d.w / d.h);
+      const el = m.vimeoVideoId ? bgVideo(m.vimeoVideoId, w, H) : imgEl(node, w, H);
+      el.style.left = x + 'px';
+      track.appendChild(fd(el));
+      x += w + G;
+    });
+    const trackW = x - G;
+    track.style.width = trackW + 'px';
+    rail.appendChild(track);
+    host.appendChild(rail);
+    const maxOff = Math.max(0, trackW - RAIL_W);
+    let off = 0, drag = null;
+    const setOff = (v, anim) => {
+      off = Math.max(0, Math.min(maxOff, v));
+      track.style.transition = anim ? 'transform 0.6s cubic-bezier(0.16,1,0.3,1)' : 'none';
+      track.style.transform = 'translateX(' + (-off) + 'px)';
+    };
+    rail.addEventListener('pointerdown', e => {
+      drag = { x: e.clientX, off, moved: false };
+      rail.classList.add('drag');
+      try { rail.setPointerCapture(e.pointerId); } catch (err) {}
+    });
+    rail.addEventListener('pointermove', e => {
+      if (!drag) return;
+      const dx = e.clientX - drag.x;
+      if (Math.abs(dx) > 4) drag.moved = true;
+      setOff(drag.off - dx, false);
+    });
+    const endDrag = () => { drag = null; rail.classList.remove('drag'); setOff(off, true); };
+    rail.addEventListener('pointerup', endDrag);
+    rail.addEventListener('pointercancel', endDrag);
+    /* chevrons top right, the thin site chevron, stepping most of a rail */
+    const chev = (dir, left) => {
+      const c = document.createElement('div');
+      c.className = 'cs-rchev';
+      c.style.cssText = 'left:' + left + 'px; top:8px;';
+      c.innerHTML = '<svg width="14" height="24" viewBox="0 0 14 24" fill="none"><path d="' + (dir < 0 ? 'M12 2L2 12l10 10' : 'M2 2l10 10L2 22') + '" stroke="#000" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+      c.addEventListener('click', () => setOff(off + dir * RAIL_W * 0.6, true));
+      host.appendChild(c);
+    };
+    if (maxOff > 0) { chev(-1, RAIL_R - 68); chev(1, RAIL_R - 30); }
+    endSec(host, HEAD + H);
+  };
+
+  /* ---- click-to-play film: the CMS poster with the site's play glyph;
+     one click swaps in Vimeo's player ---- */
+  const vimeoClick = L => {
+    const node = mediaNode(L);
+    const vidId = String(L.videoid || '').trim();
+    if (!node && !vidId) return;
+    const w = RAIL_W, h = Math.round(w * 9 / 16);
+    const host = sec();
+    const box = document.createElement('div');
+    box.className = 'cs-vclick';
+    box.style.cssText += 'left:' + RAIL_L + 'px; top:0; width:' + w + 'px; height:' + h + 'px;';
+    if (node) box.appendChild(imgEl(node, w, h));
+    if (vidId) {
+      const pl = document.createElement('img');
+      pl.className = 'pl'; pl.src = 'assets/cs-play.svg'; pl.alt = 'Play';
+      box.appendChild(pl);
+      box.addEventListener('click', () => {
+        box.innerHTML = '';
+        box.style.cursor = '';
+        const fr = document.createElement('iframe');
+        fr.src = 'https://player.vimeo.com/video/' + encodeURIComponent(vidId) + '?autoplay=1&title=0&byline=0&portrait=0&dnt=1';
+        fr.allow = 'autoplay; fullscreen; picture-in-picture';
+        fr.allowFullscreen = true;
+        box.appendChild(fr);
+      }, { once: true });
+    }
+    host.appendChild(fd(box));
+    let H = h;
+    if (L.linkText && L.linkUrl) {
+      const a = document.createElement('a');
+      a.className = 'cs-vlink'; a.href = L.linkUrl; a.target = '_blank'; a.rel = 'noopener';
+      a.textContent = L.linkText;
+      a.style.cssText += 'left:' + RAIL_L + 'px; top:' + (h + 20) + 'px;';
+      host.appendChild(fd(a));
+      H = h + 44;
+    }
+    endSec(host, H);
+  };
+
+  /* ---- testimonials: ledger rows, the brand as the label, the quote and
+     its attribution as the copy ---- */
+  const testimonials = L => {
+    (L.testimonials || []).forEach(t => {
+      if (!t || !String(t.body || '').trim()) return;
+      const host = sec();
+      const who = [t.reviewername, [t.reviewertitle, t.reviewerbrand].filter(Boolean).join(', ')].filter(Boolean);
+      const html = esc(String(t.body).trim()) +
+        (who.length ? '<br><br><b>' + esc(who[0]) + '</b>' + (who[1] ? '<br>' + esc(who[1]) : '') : '');
+      const h = rowInto(host, 0, t.reviewerbrand || t.title || 'Testimonial', html, true, true);
+      endSec(host, h);
+    });
+  };
+
+  /* ---- press layout: article links in a ledger row ---- */
+  const news = L => {
+    const arts = nodesOf(L.articles).filter(a => a && a.title && a.link);
+    if (!arts.length) return;
+    const host = sec();
+    const html = arts.map(a => '<a href="' + esc(a.link) + '" target="_blank" rel="noopener">' + esc(a.title) + '</a>').join('<br>');
+    endSec(host, rowInto(host, 0, 'Press', html, true, true));
+  };
+
+  /* ---- tiles: campaign spots and "you might also like", the grids' tile
+     + caption language, the site's hover law and loop law via gridhover ---- */
+  const tileRow = (label, items) => {
+    if (!items.length) return;
+    const cols = items.length >= 3 ? 3 : 2;
+    const w = tileW(cols), h = Math.round(w * 9 / 16), CAPGAP = 19, PITCH = h + 100;
+    const host = sec();
+    const top = labelRow(host, 0, label);
+    const tiles = [];
+    items.forEach((it, i) => {
+      const col = i % cols, row = Math.floor(i / cols);
+      const x = RAIL_L + col * (w + GUT), ty = top + row * PITCH;
+      const a = document.createElement('a');
+      a.className = 'cs-tile';
+      a.href = 'case-study.html?work=' + encodeURIComponent(it.slug);
+      a.style.cssText = 'left:' + x + 'px; top:' + ty + 'px; width:' + w + 'px; height:' + h + 'px;';
+      const fi = it.featuredImage && it.featuredImage.node;
+      const still = fi && fi.sourceUrl;
+      const loop = fi && fi.imageMeta && fi.imageMeta.videoUrl;
+      if (still) a.innerHTML = '<img src="' + esc(still) + '" alt="' + esc(it.title) + '" loading="lazy">';
+      if (loop) a.dataset.loop = loop;
+      const cap = document.createElement('p');
+      cap.className = 'cs-tcap';
+      cap.innerHTML = splitTitle(it.title);
+      cap.style.cssText = 'left:' + x + 'px; top:' + (ty + h + CAPGAP) + 'px; width:' + w + 'px;';
+      host.appendChild(fd(a));
+      host.appendChild(fd(cap));
+      tiles.push({ el: a, caps: [{ el: cap, gap: CAPGAP }] });
+    });
+    const rowsN = Math.ceil(items.length / cols);
+    endSec(host, top + (rowsN - 1) * PITCH + h + CAPGAP + 40);
+    if (window.SXGrid) SXGrid.attach({ tiles, ghost: { el: host, cls: 'ghost' }, bounds: { left: RAIL_L, right: RAIL_R } });
+  };
+
+  if (hasExtras) y += 60;
+  if (GALLERY.length) gallery(GALLERY, GALLERY_HOVER);
+  LAYOUTS.forEach(L => {
+    const g = String(L.fieldGroupName || '');
+    if (/MediaGrid/i.test(g)) mediaGrid(L);
+    else if (/MediaCarousel/i.test(g)) mediaRail(L);
+    else if (/Vimeovideoonclick/i.test(g)) vimeoClick(L);
+    else if (/Testimonials/i.test(g)) testimonials(L);
+    else if (/News/i.test(g)) news(L);
+  });
+  if (SPOTS.length) tileRow('More from the campaign', SPOTS);
+  if (RECS.length) tileRow('You might also like', RECS);
+  if (extras.length) y -= SEC_GAP; /* the last section's gap is the footer rhythm below */
   reveal(); /* the right work is on the page — lift the flash guard */
-  const PAD = hasCopy ? 300 : 0;
+  const PAD = hasBody ? 300 : 0;
   const seatPage = () => {
     page.style.height = (y + PAD + 349) + 'px'; /* the footer law re-pins from this */
     const foot = document.querySelector('.footer');
@@ -512,8 +930,9 @@ document.querySelectorAll('.fd').forEach(el => io.observe(el));
   seatPage();
 
   /* Director credit — the same real credit the grids show, from the
-     roster's own work lists. Appended once resolved; absent if unclaimed. */
-  if (hasCopy) fetch('https://api.sixtwentysix.co/graphql', {
+     roster's own work lists. Lands at the end of the ledger once resolved
+     (the sections below step down together); absent if unclaimed. */
+  if (hasBody) fetch('https://api.sixtwentysix.co/graphql', {
     method: 'POST', headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ query: '{ creatives(first: 50) { nodes { title creativePageMeta { works { works { nodes { ... on ContentNode { slug } } } } } } } }' })
   }).then(r => r.json()).then(d => {
@@ -524,7 +943,10 @@ document.querySelectorAll('.fd').forEach(el => io.observe(el));
       });
     });
     if (!director) return;
-    addRow('Director', director, false, rowCount === 0);
+    const h = rowInto(page, yLedgerEnd, 'Director', director, false, rowCount === 0);
+    rowCount++;
+    yLedgerEnd += h; y += h;
+    extras.forEach(el => { el.style.top = (parseFloat(el.style.top) + h) + 'px'; });
     seatPage();
   }).catch(() => {});
 
@@ -558,6 +980,9 @@ document.querySelectorAll('.fd').forEach(el => io.observe(el));
      While the film plays, chrome (icons + SX header + Back) fades after
      a still moment and wakes on mouse movement — the live site's law. */
   const vid = (meta.featuredvimeoid || '').trim();
+  /* 9/14: a work with no film (the photography works) shows its still with
+     no player chrome — play, speaker and the hairline belong to the film */
+  if (!vid) document.querySelectorAll('.cs-play, .cs-audio, .cs-track, .cs-progress').forEach(el => { el.style.display = 'none'; });
   if (vid) {
     const playBtn = document.querySelector('.cs-play');
     const audioBtn = document.querySelector('.cs-audio');
@@ -731,7 +1156,7 @@ document.querySelectorAll('.fd').forEach(el => io.observe(el));
 
     /* cinema fade: while playing, chrome sleeps after 2.2s still,
        any mouse movement wakes it (the SX reappears on hover — Joel) */
-    const chrome = [playBtn, audioBtn, track, progress, hdrEl, backEl, chevEl, fsBtn, hit, document.querySelector('.cs-toptitle')].filter(Boolean);
+    const chrome = [playBtn, audioBtn, track, progress, hdrEl, backEl, chevEl, fsBtn, hit, document.querySelector('.cs-toptitle'), document.querySelector('.cs-badge')].filter(Boolean);
     let idleT = 0;
     let chromeOn = true; /* 9/3: repaint ONLY on state change — every-move
        style writes restarted the opacity transitions and made the chrome

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=1728">
-<script src="footerlaw.js?v=20260825a"></script>
+<script src="footerlaw.js?v=20260914a"></script>
 <title>SIXTWENTYSIX — Services</title>
 <!--
   SERVICES — synced 1:1 to Full Site frame 220:1353 + stepper states
@@ -258,6 +258,8 @@
     font-weight: 700; font-size: 27px; line-height: 32px; letter-spacing: -0.8px;
     color: #000; white-space: nowrap;
   }
+  .tst-brand--wrap { white-space: normal; width: 257px; top: 12px; font-size: 22px; line-height: 27px; letter-spacing: -0.6px; }
+  .tst-av img { filter: grayscale(1); } /* 9/14: the rail is black and white, CMS headshots arrive in colour */
   .tst-q {
     position: absolute; left: 1px; top: 111px;
     font-weight: 700; font-size: 44.486px; line-height: 44.5px; letter-spacing: -0.89px;
@@ -430,7 +432,7 @@ const io = new IntersectionObserver(entries => {
       { t: 'Research',   x: 63,  y: 0, w: 234, b: 'We study trends, markets, competition, inspirations, and insights so you don’t have to.' },
       { t: 'Concepting', x: 371.8,  y: 0, w: 259, b: 'We’ve mastered the art of the brainstorm, delivering concepts that disrupt any category.' },
       { t: 'Strategy',   x: 708.7,  y: 0, w: 324, b: 'Planning makes perfect. We take a look at the lay of the land and inform you where the best place to plant the seed is.' },
-      { t: 'Scripting',  x: 1118.6, y: 0, w: 255, b: 'We open on. cut to, fade to black, and most importantly, always get the story straight.' },
+      { t: 'Scripting',  x: 1118.6, y: 0, w: 255, b: 'We open on, cut to, fade to black, and most importantly, always get the story straight.' },
       { t: 'Ideation',   x: 1451, y: 0, w: 214, b: 'Big ideas require big thinkers. And there’s no shortage of that here.' },
     ]},
     { items: [
@@ -456,6 +458,7 @@ const io = new IntersectionObserver(entries => {
       { t: 'Livestream',       x: 1227, y: 1,   w: 438, b: 'We produce seamless live broadcasts, extending the reach of events to global audiences in real time.' },
       { t: 'Fabrication',      x: 63,  y: 202, w: 300, b: 'We design and build custom installations, transforming spaces into immersive brand experiences.' },
       { t: 'BTS',              x: 645,  y: 202, w: 438, b: 'We document behind-the-scenes content that pulls back the curtain, showcasing the energy and creativity behind the experience.' },
+      { t: 'Event recap',      x: 1227, y: 202, w: 438, b: 'We craft compelling highlight videos that capture the essence of the event and keep the momentum going long after it\u2019s over.' },
       { t: 'Event recap',      x: 1227, y: 202, w: 438, b: 'We craft compelling highlight videos that capture the essence of the event and keep the momentum going long after it’s over.' },
     ]},
   ];
@@ -716,6 +719,15 @@ const io = new IntersectionObserver(entries => {
     { name: 'Chris Froelich', role: 'Creative Director', av: 'assets/svc-av-chris.png',
       logo: 'assets/svc-logo-kizik.png', lw: 104, lh: 54,
       q: 'Where to start? You guys were such a positive, organized, and creative group to work with. Your attention to detail was incredible. I was in awe with how much effort you put into every part of the process. You worked with our budget constraints and still made something beautiful.' },
+    /* 9/14 (content parity): the live services page carries seven; these
+       three were missing. Headshots hotlinked from the CMS, greyed by the
+       rail filter (no apostrophes in this block: inject-m.py scans it). */
+    { name: 'Resh Sidhu', role: 'Global Director', av: 'https://api.sixtwentysix.co/wp-content/uploads/2024/06/Resh-Sidhu-Director-of-Arcadia-AR-Creative-Studio.jpg', brand: 'Arcadia AR Creative Studio',
+      q: 'Working with SixTwentySix on the Samsung Gift Wrapped project was nothing short of exceptional. Their innovative approach and creative execution brought our vision to life, resulting in a campaign that not only resonated with our audience but also set a new standard in digital advertising.' },
+    { name: 'Rachel Stone', role: 'Integrated Producer', av: 'https://api.sixtwentysix.co/wp-content/uploads/2025/04/1740081098611.jpeg', brand: 'Back Market',
+      q: 'As I work on an in-house creative team as a brand, the flexibility of being able to work with a production company that has excellent directorial talent, a fantastic post team, and music supervision, in addition to a best-in-class production team is super valuable. SixTwentySix and Iris were fantastic creative collaborators, and we\u2019re very proud of the work we produced.' },
+    { name: 'Lauren Langfitt', role: 'Executive Producer', av: 'https://api.sixtwentysix.co/wp-content/uploads/2025/04/1691075601515.jpeg', brand: 'Signal Theory',
+      q: 'I don\u2019t know if any production can ever be classified as, \u201cPerfect,\u201d But our experience with SixTwentySix was just about that. They provided an extremely buttoned up preproduction schedule and approach. They hired a fabulous casting director and location scout. The art department and wardrobe were spot on to the directors vision. And, their customer service while we in person and on set was top notch. The SixTwentySix production team also scheduled our shoot days perfectly, with zero fear of any over time, and deliverables that were executed EXACTLY as visualized in the treatment. I can not say enough good things about this experience.' },
   ];
   const PITCH = 660, PERIOD = PITCH * PEOPLE.length; /* Joel 8/22 round 2: air, but a touch tighter */
   const WIN_TOP = 2813, CARD_TOP = 70, LEFT0 = 114;
@@ -729,7 +741,7 @@ const io = new IntersectionObserver(entries => {
       <div class="tst-av" style="left:14px; top:0; width:85px; height:85px;"><img src="${p.av}" alt="${p.name}"></div>
       ${p.logo
         ? `<div class="tst-logo" style="left:188px; top:${(85 - p.lh) / 2}px; width:${p.lw}px; height:${p.lh}px;"><img src="${p.logo}" alt=""></div>`
-        : `<p class="tst-brand">${p.brand}</p>`}
+        : `<p class="tst-brand${p.brand && p.brand.length > 14 ? ' tst-brand--wrap' : ''}">${p.brand}</p>`}
       <p class="tst-q">&ldquo;</p>
       <p class="tst-quote" style="width:408px;">${p.q}</p>
       <div class="tst-rule"></div>
@@ -739,6 +751,24 @@ const io = new IntersectionObserver(entries => {
   track.innerHTML =
     PEOPLE.map((p, k) => card(p, LEFT0 + k * PITCH)).join('') +
     PEOPLE.map((p, k) => card(p, LEFT0 + (k + PEOPLE.length) * PITCH)).join('');
+  /* 9/14: the sign-off (rule / name / role) sits at the frame's 405 unless
+     the quote runs past it — then it steps down to clear the quote (Lauren
+     Langfitt's is twice the length the frame was drawn for). Measured once
+     the webfont has settled. */
+  const seatSignoffs = () => {
+    track.querySelectorAll('.tst-card').forEach(c => {
+      const q = c.querySelector('.tst-quote'); if (!q) return;
+      const need = 155 + q.offsetHeight + 26;
+      const d = Math.max(0, need - 405);
+      c.querySelector('.tst-rule').style.top = (405 + d) + 'px';
+      c.querySelector('.tst-name').style.top = (409 + d) + 'px';
+      c.querySelector('.tst-role').style.top = (435 + d) + 'px';
+      c.style.height = (452 + d) + 'px';
+    });
+  };
+  seatSignoffs();
+  window.addEventListener('load', seatSignoffs);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(seatSignoffs);
 
   let drift = 0, nudge = 0, nudgeT = 0, paused = false, last = 0;
   /* pause ONLY while the cursor is on an actual card — hovering the empty
@@ -761,9 +791,9 @@ const io = new IntersectionObserver(entries => {
 
 document.querySelectorAll('.fd').forEach(el => io.observe(el));
 </script>
-<script src="smoothscroll.js?v=20260912a"></script>
+<script src="smoothscroll.js?v=20260914a"></script>
 <script src="logomorph.js?v=20260824a"></script>
-<script src="menu.js?v=20260824c"></script>
+<script src="menu.js?v=20260914a"></script>
 <script>
 /* Safari back-forward cache restores dead builds from memory - always reload */
 window.addEventListener('pageshow', function (e) { if (e.persisted) location.reload(); });

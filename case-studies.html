@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=1728">
-<script src="footerlaw.js?v=20260825a"></script>
-<script src="gridhover.js?v=20260912a"></script>
+<script src="footerlaw.js?v=20260914a"></script>
+<script src="gridhover.js?v=20260914a"></script>
 <title>SIXTWENTYSIX — Case Studies</title>
 <!--
   CASE STUDIES — synced 1:1 to Full Site frame 234:1667 (2026-08-18).
@@ -291,18 +291,20 @@ const io = new IntersectionObserver(entries => {
      (cs = creative studio, live = live action). */
   const WORKS = [
     { t: 'PRICELINE',        img: 'assets/live/cs-priceline.jpg',      cats: ['live'] },
-    { t: 'PALMS CASINO',     img: 'assets/live/cs-palms.jpg',          cats: ['live'] },
-    { t: 'EX BY TRUTH INITIATIVE', img: 'assets/live/cs-truth.png',    cats: ['live'] },
-    { t: 'HERA',             img: 'assets/live/cs-hera.jpg',           cats: ['cs'] },
+    { t: 'PALMS CASINO RESORT', img: 'assets/live/cs-palms.jpg',       cats: ['live'] },
+    { t: 'EX PROGRAM BY TRUTH INITIATIVE', img: 'assets/live/cs-truth.png', cats: ['live'] },
+    { t: 'HERA',             img: 'assets/live/cs-hera.jpg',           cats: ['cs', 'live'] },
+    { t: 'PURA',             img: 'assets/live/cs-pura.jpg',           cats: ['cs'] },
     { t: 'DUNKIN\u2019',    img: 'assets/live/cs-dunkin-pump.jpg',    cats: ['live'] },
     { t: 'VISIT LAUDERDALE', img: 'assets/live/cs-lauderdale.jpg',     cats: ['live'] },
-    { t: 'EAT PECANS',       img: 'assets/live/cs-eatpecans.jpg',      cats: ['cs', 'live'] },
+    { t: 'EAT PECANS',       img: 'assets/live/cs-eatpecans.jpg',      cats: ['live'] },
     { t: 'CREDIT KARMA',     img: 'assets/live/cs-creditkarma.jpg',    cats: ['live'] },
     { t: 'DUNKIN\u2019',    img: 'assets/live/cs-dunkin-affleck.png', cats: ['live'] },
     { t: 'PACIFICO',         img: 'assets/live/cs-pacifico.jpg',       cats: ['live'] },
-    { t: 'TURO',             img: 'assets/live/cs-turo.jpg',           cats: ['cs'] },
+    { t: 'TURO',             img: 'assets/live/cs-turo.jpg',           cats: ['cs', 'live'] },
+    { t: 'LIQUID I.V.',      img: 'assets/live/cs-liquidiv-fuel.jpg',  cats: ['cs'] },
     { t: 'MEGAN THEE STALLION', img: 'assets/live/cs-megan.jpg',       cats: ['live'] },
-    { t: 'LIQUID I.V.',      img: 'assets/live/cs-liquidiv.jpg',       cats: ['cs', 'live'] },
+    { t: 'LIQUID I.V.',      img: 'assets/live/cs-liquidiv.jpg',       cats: ['live'] },
     { t: 'HEINEKEN',         img: 'assets/live/exp-heineken.png',      cats: ['exp'] },
     { t: 'FIVERR',           img: 'assets/live/exp-fiverr.jpg',        cats: ['exp'] },
     { t: 'TREE HUT',         img: 'assets/live/exp-treehut.jpg',       cats: ['exp'] },
@@ -321,6 +323,8 @@ const io = new IntersectionObserver(entries => {
     'cs-palms.jpg': 'palms-casino-resort-this-is-that-vegas',
     'cs-truth.png': 'ex-program-by-truth-initiative-outsmart-nicotine',
     'cs-hera.jpg': 'hera-age-your-way',
+    'cs-pura.jpg': 'pura-hands-on',
+    'cs-liquidiv-fuel.jpg': 'liquid-iv-fuel-your-play',
     'cs-dunkin-pump.jpg': 'dunkin-dunk-n-pump',
     'cs-lauderdale.jpg': 'visit-ft-lauderdale-never-lose-your-splash',
     'cs-eatpecans.jpg': 'eat-pecans-surprisingly-snackable',
@@ -349,6 +353,8 @@ const io = new IntersectionObserver(entries => {
     'cs-palms.jpg': 'https://player.vimeo.com/progressive_redirect/playback/1201495653/rendition/1080p/file.mp4%20%281080p%29.mp4?loc=external&log_user=0&signature=43288f8230fc7601951964b3046033e7c02ca670694c8ad9504d5642602dfe38',
     'cs-truth.png': 'https://player.vimeo.com/progressive_redirect/playback/1181325134/rendition/720p/file.mp4%20%28720p%29.mp4?loc=external&log_user=0&signature=930ee9957ebe89223e718e3aee8530b98aeb58d98f9861f8e468e0226ae186ed',
     'cs-hera.jpg': 'https://player.vimeo.com/progressive_redirect/playback/1151638122/rendition/1080p/file.mp4%20%281080p%29.mp4?loc=external&log_user=0&signature=6b7991643db1c95ac1e1c985d693ee0f5ba68754f43250516225593eb886c2bd',
+    'cs-pura.jpg': 'https://player.vimeo.com/progressive_redirect/playback/1006416097/rendition/1080p/file.mp4?loc=external&log_user=0&signature=64fa71b252b9bfbac835dd46aeffaf4c8bbb012eab0e70ce58747a01f58d86e1',
+    'cs-liquidiv-fuel.jpg': 'https://player.vimeo.com/progressive_redirect/playback/733336351/rendition/1080p/file.mp4?loc=external&signature=9fa19e48bc29341357a837921bf814012125597a525acad5516d3523ef45d3cf',
     'cs-dunkin-pump.jpg': 'https://player.vimeo.com/progressive_redirect/playback/1152401903/rendition/1080p/file.mp4%20%281080p%29.mp4?loc=external&log_user=0&signature=308b00f490c2f6e53533b0a02bde34faf2cc1a1505ab749c7e93509bec3862c9',
     'cs-lauderdale.jpg': 'https://player.vimeo.com/progressive_redirect/playback/1151638269/rendition/1080p/file.mp4%20%281080p%29.mp4?loc=external&log_user=0&signature=c403790375cd79d38091ef38c872436e174833ab4af4f37d5a8a0517509ca6bc',
     'cs-eatpecans.jpg': 'https://player.vimeo.com/progressive_redirect/playback/996433212/rendition/1080p/file.mp4?loc=external&log_user=0&signature=b1fa4987f20d4f9d170bcfae75826cf6fb124137ac8e2787f799b8eae4a93291',
@@ -509,9 +515,9 @@ document.querySelectorAll('.fd').forEach(el => io.observe(el));
   } catch (e) {}
 })();
 </script>
-<script src="smoothscroll.js?v=20260912a"></script>
+<script src="smoothscroll.js?v=20260914a"></script>
 <script src="logomorph.js?v=20260824a"></script>
-<script src="menu.js?v=20260824c"></script>
+<script src="menu.js?v=20260914a"></script>
 <script src="hoverlaw.js?v=20260819095356"></script>
 <script>
 /* Safari back-forward cache restores dead builds from memory - always reload */

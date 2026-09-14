@@ -24,7 +24,7 @@
 </style>
 </head>
 <body>
-<iframe id="frame" title="SIXTWENTYSIX"></iframe>
+<iframe id="frame" title="SIXTWENTYSIX" allow="autoplay; fullscreen; picture-in-picture; encrypted-media"></iframe>
 <script>
   /* MOBILE (9/4, Joel: "full mobile pass — everything is way too small"):
      phones get the phone-native build (m.html, from the Figma Full Site
@@ -149,6 +149,23 @@
 
   addEventListener('resize', fit);
   fit();
+  /* iPadOS TOUCH DELIVERY (9/14, Joel: "services and about still arent
+     scrolling" on the iPad). Bisected on the iPad simulator against the
+     deployed build: WebKit only forwards finger events INTO this scaled
+     iframe when the outer document itself has a touch listener. With none
+     here, Services and About received zero touch events (the engine's
+     readout showed 0/0/0) and nothing scrolled; the home page merely got
+     lucky. These no-op passive listeners are the switch. Permanent. */
+  ['touchstart', 'touchmove', 'touchend', 'touchcancel'].forEach(ev =>
+    addEventListener(ev, function () {}, { passive: true, capture: true }));
+  /* ?sxdebug: count the touches the SHELL sees, painted into the frame's readout */
+  if (location.search.indexOf('sxdebug') !== -1) {
+    const pt = { start: 0, move: 0, end: 0, target: '' };
+    ['touchstart', 'touchmove', 'touchend'].forEach(ev => addEventListener(ev, e => {
+      pt[ev.slice(5)]++; pt.target = (e.target && (e.target.id || e.target.tagName)) || '?';
+      try { f.contentWindow.SX_PARENT_TOUCH = JSON.stringify(pt); if (f.contentWindow.SX_HUD) f.contentWindow.SX_HUD(); } catch (err) {}
+    }, { passive: true, capture: true }));
+  }
 </script>
 <script>
 /* Safari back-forward cache restores dead builds from memory - always reload */

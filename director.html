@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=1728">
-<script src="footerlaw.js?v=20260825a"></script>
-<script src="gridhover.js?v=20260912a"></script>
+<script src="footerlaw.js?v=20260914a"></script>
+<script src="gridhover.js?v=20260914a"></script>
 <title>SIXTWENTYSIX &mdash; Evan Bourque</title>
 <!--
   SIXTWENTYSIX interior-page template.
@@ -188,6 +188,14 @@
     color: #fff; white-space: nowrap; cursor: pointer;
     transition: opacity 0.4s ease;
   }
+  /* 9/14 (Joel: "on miles and ajs page the text overlaps like crazy"):
+     a role line longer than its column (522 -> 820, the frame's seat before
+     AWARDS & ACCOLADES at 860) used to run straight under the other two
+     words. fitRoles() measures it on every fit and, when it cannot fit on
+     one line, wraps it inside its own column at the same type size — the
+     column below it is empty (awards start at 861, the hint sits at 53),
+     so the stacked lines never touch anything. */
+  .h-nav.wrap { white-space: normal; height: auto; line-height: 26px; top: 0; }
 
   .h-hint {
     position: absolute; left: 53px; top: 503px;
@@ -539,7 +547,7 @@
     <!-- Standardized cluster (4/3/2/1), right-aligned, no words (Joel 8/10).
          On director pages the single block is the ledger INDEX view. -->
     <div id="gtoggle" class="fd" style="--fd:0.15s;">
-            <div class="g-opt on" data-mode="3" style="left:0px; width:38px; height:28px;">
+            <div class="g-opt" data-mode="3" style="left:0px; width:38px; height:28px;">
         <i style="left:0px; top:0; width:11px; height:12px;"></i>
         <i style="left:0px; top:15px; width:11px; height:13px;"></i>
         <i style="left:13px; top:0; width:12px; height:12px;"></i>
@@ -547,7 +555,7 @@
         <i style="left:27px; top:0; width:11px; height:12px;"></i>
         <i style="left:27px; top:15px; width:11px; height:13px;"></i>
       </div>
-      <div class="g-opt" data-mode="2" style="left:47px; width:33px; height:28px;">
+      <div class="g-opt on" data-mode="2" style="left:47px; width:33px; height:28px;">
         <i style="left:0px; top:0; width:15px; height:12px;"></i>
         <i style="left:0px; top:15px; width:15px; height:13px;"></i>
         <i style="left:17px; top:0; width:16px; height:12px;"></i>
@@ -775,7 +783,21 @@ document.querySelectorAll('.fd').forEach(el => io.observe(el));
     document.querySelector('.h-about').style.top = (518 + d) + 'px';
     document.getElementById('grid').style.top = HERO_H + 'px';
     document.getElementById('ledger').style.top = (HERO_H + 183) + 'px';
+    fitRoles();
     fitAbout(518 + d, flTop);
+  }
+  /* 9/14: the role line keeps one line while it fits before the AWARDS
+     word (860, minus a 40px gutter); otherwise it wraps in its own column.
+     scrollWidth is the nowrap text width (the box is the frame's 380). */
+  function fitRoles() {
+    const el = navs[0];
+    el.classList.remove('wrap');
+    el.style.width = '';
+    const limit = (HAS_AWARDS ? 860 : 1258) - 40;
+    if (el.offsetLeft + el.scrollWidth > limit) {
+      el.classList.add('wrap');
+      el.style.width = (limit - el.offsetLeft) + 'px';
+    }
   }
   /* 9/11: the bio must end above the FEATURED WORK label. Steps, in order:
      design seat -> (no awards) both seats in two columns -> type down to
@@ -936,10 +958,13 @@ document.querySelectorAll('.fd').forEach(el => io.observe(el));
   const gridSec = document.getElementById('grid');
 
 
-  let cat = CATS[0], mode = '3', userMode = false;
-  /* THE ROW-COUNT LAW (Joel 8/25): <=6 works -> rows of 2, 7+ -> 3-up.
-     Automatic per category; a manual toggle click overrides it. */
-  const autoCols = n => n > 6 ? 3 : 2;
+  let cat = CATS[0], mode = '2', userMode = false;
+  /* ONE OPENING DENSITY (Joel 9/14: "make sure that each creatives' page
+     opens on the same layout setting"): every director opens two per row,
+     the middle option of the cluster, same as the case-studies page. The
+     8/25 per-count auto (7+ works -> 3-up) made Luke open 3-up and Jimmy
+     2-up, which read as a glitch. A manual toggle click still overrides. */
+  const autoCols = () => 2;
 
   /* Tabs, measured after paint so the underline matches the real text width. */
   tabsEl.innerHTML = CATS.map((c, i) =>
@@ -1137,9 +1162,9 @@ document.querySelectorAll('.fd').forEach(el => io.observe(el));
   } catch (e) {}
 })();
 </script>
-<script src="smoothscroll.js?v=20260912a"></script>
+<script src="smoothscroll.js?v=20260914a"></script>
 <script src="logomorph.js?v=20260824a"></script>
-<script src="menu.js?v=20260824c"></script>
+<script src="menu.js?v=20260914a"></script>
 <script src="hoverlaw.js?v=20260819095356"></script>
 <script>
 /* Safari back-forward cache restores dead builds from memory - always reload */

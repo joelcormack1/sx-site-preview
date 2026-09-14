@@ -222,6 +222,80 @@
         tile.el.addEventListener('mouseleave', () => leave(tile));
       }
     });
+
+    /* PRESS AND HOLD (9/14, Joel: "on the iPad or any touch screen, if you
+       press and hold on an image it will play the loop animation as hover on
+       the computer, and then when you click on it again it will take you to
+       the site itself"). A finger held still on a tile for 260ms gets the
+       full hover law — grow, ghost the rest, play its loop — and that press
+       does NOT open the work. The next tap on the held tile opens it; a tap
+       elsewhere, a scroll, or a hold on another tile releases it. The
+       finger's long-press callout (save image / open link) is suppressed so
+       the hold reads as a preview, not a menu. */
+    if (POINTER) {
+      if (!attach.holdCss) {
+        attach.holdCss = true;
+        const st = document.createElement('style');
+        st.textContent = '.sx-holdable { -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; }';
+        document.head.appendChild(st);
+      }
+      let held = null;      /* the tile currently previewing from a hold */
+      let timer = null, press = null;
+      const release = () => {
+        if (held) { const h = held; held = null; leave(h); }
+      };
+      const cancelPress = () => { clearTimeout(timer); timer = null; press = null; };
+      cfg.tiles.forEach(tile => {
+        tile.el.classList.add('sx-holdable');
+        tile.el.addEventListener('contextmenu', e => { if (window.SXInput && window.SXInput.mode === 'touch') e.preventDefault(); });
+        tile.el.addEventListener('pointerdown', e => {
+          if (!fromTouch(e)) return;
+          cancelPress();
+          if (held && held !== tile) release();
+          press = { tile, x: e.clientX, y: e.clientY, fired: false };
+          timer = setTimeout(() => {
+            if (!press || press.tile !== tile) return;
+            press.fired = true;
+            lock = false;
+            enter(tile);
+            held = tile;
+          }, 260);
+        });
+        tile.el.addEventListener('pointermove', e => {
+          if (!fromTouch(e) || !press || press.tile !== tile) return;
+          if (Math.abs(e.clientX - press.x) > 10 || Math.abs(e.clientY - press.y) > 10) cancelPress();
+        });
+        tile.el.addEventListener('pointerup', e => { if (fromTouch(e)) { clearTimeout(timer); timer = null; } });
+        tile.el.addEventListener('pointercancel', () => cancelPress());
+        /* the click that ends the hold is not a click on the work */
+        tile.el.addEventListener('click', e => {
+          if (((window.SXInput && window.SXInput.mode) || 'mouse') !== 'touch') return;
+          if (press && press.tile === tile && press.fired) {
+            e.preventDefault(); e.stopPropagation();
+            press = null;
+            return;
+          }
+          press = null;
+          /* a plain tap on a tile that is NOT being held: on a touch screen
+             the first tap previews (same as the hold), the second opens */
+          if (held !== tile) {
+            e.preventDefault(); e.stopPropagation();
+            if (held) release();
+            lock = false;
+            enter(tile);
+            held = tile;
+          }
+        }, true);
+      });
+      /* a tap anywhere else, or a real scroll, ends the preview */
+      document.addEventListener('pointerdown', e => {
+        if (!fromTouch(e) || !held) return;
+        if (!held.el.contains(e.target)) release();
+      }, true);
+      window.addEventListener('scroll', () => {
+        if (held && Math.abs(window.scrollY - startScrollY) > 40) release();
+      }, { passive: true });
+    }
     touchLoops(cfg.tiles); // idle unless the last input was a real finger
 
     window.addEventListener('scroll', () => {

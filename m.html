@@ -249,11 +249,34 @@
   .cs-head { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; margin-top: 13px; }
   .cs-head .brand { font-weight: 700; font-size: 30px; line-height: 36px; letter-spacing: -0.9px; }
   .cs-head .proj { font-size: 28px; line-height: 28px; letter-spacing: -0.6px; }
+  .cs-headline { font-size: 20px; line-height: 25px; letter-spacing: -0.6px; margin-top: 22px; }
+  .cs-headline .sub { display: block; margin-top: 6px; font-size: 13px; line-height: 18px; color: #6b6b6b; }
   .cs-led { margin-top: 80px; }
   .cs-led .lab { font-weight: 700; font-size: 14px; line-height: 17px; letter-spacing: -0.28px; margin-top: 42px; }
   .cs-led .lab:first-child { margin-top: 0; }
   .cs-led .cp { font-size: 12px; line-height: 17px; letter-spacing: -0.26px; color: #000; margin-top: 11px; }
   .cs-led .cp p { margin-bottom: 8px; }
+  /* 9/14: everything else the CMS holds for a work (desktop case-study.html
+     translated to 390): reach in the ledger, then galleries, media grids,
+     behind-the-scenes rails, click-to-play films, testimonials, campaign
+     spots and you-might-also-like as the site's own tiles */
+  .cs-extra .lab { font-weight: 700; font-size: 14px; line-height: 17px; letter-spacing: -0.28px; margin: 42px 0 14px; }
+  .cs-extra .cp { font-size: 12px; line-height: 17px; letter-spacing: -0.26px; color: #000; }
+  .cs-extra .cp b { font-weight: 700; }
+  .cs-extra .mimg { display: block; width: 100%; height: auto; margin-top: 10px; background: #d9d9d9; }
+  .cs-extra .mvid { position: relative; width: 100%; background: #000; margin-top: 10px; }
+  .cs-extra .mvid iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+  .cs-extra .stack { margin-top: 32px; }
+  .cs-extra .stack > :first-child { margin-top: 0; }
+  .x-rail { display: flex; gap: 10px; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; margin: 32px -20px 0; padding: 0 20px; -webkit-overflow-scrolling: touch; }
+  .x-rail::-webkit-scrollbar { display: none; }
+  .x-rail > * { flex: 0 0 auto; scroll-snap-align: start; height: 260px; }
+  .x-rail img { height: 260px; width: auto; display: block; background: #d9d9d9; }
+  .x-rail .mvid { margin-top: 0; }
+  .vclick { position: relative; width: 100%; aspect-ratio: 16/9; background: #000 center/cover no-repeat; margin-top: 32px; overflow: hidden; }
+  .vclick .pl { position: absolute; left: 50%; top: 50%; width: 22px; height: 28px; margin: -14px 0 0 -11px; }
+  .vclick iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+  .cs-extra .grid { margin-top: 14px; }
 
   /* creatives ledger rows (desktop cre-row language) */
   .cre { display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #e0e0e0; padding: 20px 0 21px; }
@@ -427,10 +450,10 @@ const SVG_W = `<svg preserveAspectRatio="none" overflow="visible" style="display
 </g>
 </svg>`;
 const HP_COPY = [
-    'Every experience starts with a question, not a set piece. We interrogate the brief, find the cultural tension worth stepping into, and build the concept that earns your audience’s attention before a single element is fabricated.\n\nStrategy is not a deck we hand over. It is the argument every later decision has to answer to, and it is what keeps a big idea from collapsing into a nice-looking booth.',
-    'The proof is in the production. With unrivaled designs, striking visuals, and seamless logistics, we bring experiences to life with unmatched expertise. We believe our work together should be as effortless as it is unforgettable.\n\nThat’s why every detail is meticulously planned and flawlessly executed, ensuring your activation not only runs smoothly but leaves a lasting impression with audiences. From the boldest creative elements to the smallest logistical details, we deliver precision, style, and cultural impact.',
-    'A crowd is not an audience until something asks them to participate. We design the moment that turns a passerby into a participant, and a participant into someone who tells the story for you.\n\nEvery touchpoint is built to be entered, handled, and shared, so the experience keeps working long after your guest has walked back onto the street.',
-    'The room empties and the work is only half done. We capture the experience while it is live, with crews briefed on the story rather than a shot list, so what leaves the venue is footage worth cutting.\n\nThen we amplify: social edits, brand assets, and press-ready material built from the same idea, so a single day of activation feeds a whole campaign.'
+    "Our process starts by immersing ourselves in your brand, deeply understanding your audience, and aligning with your objectives. From there, we craft a strategic foundation that not only sets the direction but ensures every detail serves a bigger purpose. Our goal is to always uncover the insight or opportunity - both creatively and for production - that others might miss.\n\nOnce we’re strategically aligned, we move to concepting bold, breakthrough ideas designed to captivate attention, spark conversation, and drive meaningful engagement. By understanding your audience, we know what excites them so our concepts are impossible to ignore and unforgettable to experience.",
+    "The proof is in the production. With unrivaled designs, striking visuals, and seamless logistics, we bring experiences to life with unmatched expertise. We believe our work together should be as effortless as it is unforgettable. \n\nThat’s why every detail is meticulously planned and flawlessly executed, ensuring your activation not only runs smoothly but leaves a lasting impression with audiences. From the boldest creative elements to the smallest logistical details, we deliver precision, style, and cultural impact.",
+    "Whether it’s a pop-up, live event, or immersive experience, we create unforgettable moments that excite and engage. By fostering genuine connections, curating the right influencers, and delivering stunning visuals and thoughtful touchpoints, we make your brand part of their story—online and offline.",
+    "\"You just had to be there.\" Well, not anymore. We capture your experience with the same stylish, cinematic flair that defines our studio, ensuring the magic of the moment doesn’t end when the event does. \n\nThrough expertly crafted photography, video, and social-friendly assets, we transform your activation into a story that lives far beyond the day - or night - itself. With a suite of dynamic captures in hand, your experience transforms into a “content factory,” driving engagement, building momentum, sparking conversations – and taking on a life of its own online."
   ];
 const TST = [
     { name: 'Andrew Mok', role: 'Chief Marketing Officer', av: 'assets/live/av-andrew-mok.jpg', brand: 'Turo',
@@ -446,17 +469,26 @@ const TST = [
     { name: 'Chris Froelich', role: 'Creative Director', av: 'assets/svc-av-chris.png',
       logo: 'assets/svc-logo-kizik.png', lw: 104, lh: 54,
       q: 'Where to start? You guys were such a positive, organized, and creative group to work with. Your attention to detail was incredible. I was in awe with how much effort you put into every part of the process. You worked with our budget constraints and still made something beautiful.' },
+    /* 9/14 (content parity): the live services page carries seven; these
+       three were missing. Headshots hotlinked from the CMS, greyed by the
+       rail filter (no apostrophes in this block: inject-m.py scans it). */
+    { name: 'Resh Sidhu', role: 'Global Director', av: 'https://api.sixtwentysix.co/wp-content/uploads/2024/06/Resh-Sidhu-Director-of-Arcadia-AR-Creative-Studio.jpg', brand: 'Arcadia AR Creative Studio',
+      q: 'Working with SixTwentySix on the Samsung Gift Wrapped project was nothing short of exceptional. Their innovative approach and creative execution brought our vision to life, resulting in a campaign that not only resonated with our audience but also set a new standard in digital advertising.' },
+    { name: 'Rachel Stone', role: 'Integrated Producer', av: 'https://api.sixtwentysix.co/wp-content/uploads/2025/04/1740081098611.jpeg', brand: 'Back Market',
+      q: 'As I work on an in-house creative team as a brand, the flexibility of being able to work with a production company that has excellent directorial talent, a fantastic post team, and music supervision, in addition to a best-in-class production team is super valuable. SixTwentySix and Iris were fantastic creative collaborators, and we\u2019re very proud of the work we produced.' },
+    { name: 'Lauren Langfitt', role: 'Executive Producer', av: 'https://api.sixtwentysix.co/wp-content/uploads/2025/04/1691075601515.jpeg', brand: 'Signal Theory',
+      q: 'I don\u2019t know if any production can ever be classified as, \u201cPerfect,\u201d But our experience with SixTwentySix was just about that. They provided an extremely buttoned up preproduction schedule and approach. They hired a fabulous casting director and location scout. The art department and wardrobe were spot on to the directors vision. And, their customer service while we in person and on set was top notch. The SixTwentySix production team also scheduled our shoot days perfectly, with zero fear of any over time, and deliverables that were executed EXACTLY as visualized in the treatment. I can not say enough good things about this experience.' },
   ];
 const WORK_LOOPS = {
-  '001': 'https://player.vimeo.com/progressive_redirect/playback/1191279752/rendition/1080p/file.mp4%20%281080p%29.mp4?loc=external&log_user=0&signature=b2a3fce188f6bbd5fb6933419b9d79e6508f6afc3a27cce1d8d9455596710be7',
-  '002': 'https://player.vimeo.com/progressive_redirect/playback/1152401903/rendition/1080p/file.mp4%20%281080p%29.mp4?loc=external&log_user=0&signature=308b00f490c2f6e53533b0a02bde34faf2cc1a1505ab749c7e93509bec3862c9',
-  '003': 'https://player.vimeo.com/progressive_redirect/playback/1151638122/rendition/1080p/file.mp4%20%281080p%29.mp4?loc=external&log_user=0&signature=6b7991643db1c95ac1e1c985d693ee0f5ba68754f43250516225593eb886c2bd',
-  '004': 'https://player.vimeo.com/progressive_redirect/playback/1006416097/rendition/1080p/file.mp4?loc=external&log_user=0&signature=64fa71b252b9bfbac835dd46aeffaf4c8bbb012eab0e70ce58747a01f58d86e1',
-  '005': 'https://player.vimeo.com/progressive_redirect/playback/1125246930/rendition/1080p/file.mp4?loc=external&log_user=0&signature=2129a26fac9c81464a0a24faaff8a1522ee90985634b7f89855f5c5eba24da70',
-  '006': 'https://player.vimeo.com/progressive_redirect/playback/996433212/rendition/1080p/file.mp4?loc=external&log_user=0&signature=b1fa4987f20d4f9d170bcfae75826cf6fb124137ac8e2787f799b8eae4a93291',
-  '007': 'https://player.vimeo.com/progressive_redirect/playback/946016464/rendition/1080p/file.mp4?loc=external&log_user=0&signature=99c30ffec4cf29d294f9bd11f32a5203d2b48a43409f9377f12bac6516ad2322',
-  '008': 'https://player.vimeo.com/progressive_redirect/playback/991779444/rendition/1080p/file.mp4?loc=external&log_user=0&signature=c6bc59979b513da2ba84624c3574e96f80b14dfad96e2106f03886802f19f9c2',
-  '009': 'assets/live/loop-squarespace.mp4',
+  '001': 'https://player.vimeo.com/progressive_redirect/playback/1222148840/rendition/1080p/file.mp4%20%281080p%29.mp4?loc=external&log_user=0&signature=97307ea1af626c74468883f42cee725a1a1e516809b85cf32d899953658bd0c4',
+  '002': 'https://player.vimeo.com/progressive_redirect/playback/1191279752/rendition/1080p/file.mp4%20%281080p%29.mp4?loc=external&log_user=0&signature=b2a3fce188f6bbd5fb6933419b9d79e6508f6afc3a27cce1d8d9455596710be7',
+  '003': 'https://player.vimeo.com/progressive_redirect/playback/1152401903/rendition/1080p/file.mp4%20%281080p%29.mp4?loc=external&log_user=0&signature=308b00f490c2f6e53533b0a02bde34faf2cc1a1505ab749c7e93509bec3862c9',
+  '004': 'https://player.vimeo.com/progressive_redirect/playback/1151638122/rendition/1080p/file.mp4%20%281080p%29.mp4?loc=external&log_user=0&signature=6b7991643db1c95ac1e1c985d693ee0f5ba68754f43250516225593eb886c2bd',
+  '005': 'https://player.vimeo.com/progressive_redirect/playback/1006416097/rendition/1080p/file.mp4?loc=external&log_user=0&signature=64fa71b252b9bfbac835dd46aeffaf4c8bbb012eab0e70ce58747a01f58d86e1',
+  '006': 'https://player.vimeo.com/progressive_redirect/playback/1125246930/rendition/1080p/file.mp4?loc=external&log_user=0&signature=2129a26fac9c81464a0a24faaff8a1522ee90985634b7f89855f5c5eba24da70',
+  '007': 'https://player.vimeo.com/progressive_redirect/playback/996433212/rendition/1080p/file.mp4?loc=external&log_user=0&signature=b1fa4987f20d4f9d170bcfae75826cf6fb124137ac8e2787f799b8eae4a93291',
+  '008': 'https://player.vimeo.com/progressive_redirect/playback/946016464/rendition/1080p/file.mp4?loc=external&log_user=0&signature=99c30ffec4cf29d294f9bd11f32a5203d2b48a43409f9377f12bac6516ad2322',
+  '009': 'https://player.vimeo.com/progressive_redirect/playback/991779444/rendition/1080p/file.mp4?loc=external&log_user=0&signature=c6bc59979b513da2ba84624c3574e96f80b14dfad96e2106f03886802f19f9c2',
   '010': 'https://player.vimeo.com/progressive_redirect/playback/1201495653/rendition/1080p/file.mp4%20%281080p%29.mp4?loc=external&log_user=0&signature=43288f8230fc7601951964b3046033e7c02ca670694c8ad9504d5642602dfe38',
   '011': 'https://player.vimeo.com/progressive_redirect/playback/766676269/rendition/1080p/file.mp4?loc=external&log_user=0&signature=99929a4c148e35ce60df8ce7eaec7ae66adc027d6e38cbfbed7b49517c9d0942',
   '012': 'https://player.vimeo.com/progressive_redirect/playback/1179304184/rendition/1080p/file.mp4%20%281080p%29.mp4?loc=external&log_user=0&signature=5d5d3eac22153ec0e6d6c3f8296c623a147954b9fc3d6b37c1861cfa93457aed',
@@ -466,7 +498,7 @@ const SVC_STEPS = [
       { t: 'Research',   x: 63,  y: 0, w: 234, b: 'We study trends, markets, competition, inspirations, and insights so you don’t have to.' },
       { t: 'Concepting', x: 371.8,  y: 0, w: 259, b: 'We’ve mastered the art of the brainstorm, delivering concepts that disrupt any category.' },
       { t: 'Strategy',   x: 708.7,  y: 0, w: 324, b: 'Planning makes perfect. We take a look at the lay of the land and inform you where the best place to plant the seed is.' },
-      { t: 'Scripting',  x: 1118.6, y: 0, w: 255, b: 'We open on. cut to, fade to black, and most importantly, always get the story straight.' },
+      { t: 'Scripting',  x: 1118.6, y: 0, w: 255, b: 'We open on, cut to, fade to black, and most importantly, always get the story straight.' },
       { t: 'Ideation',   x: 1451, y: 0, w: 214, b: 'Big ideas require big thinkers. And there’s no shortage of that here.' },
     ]},
     { items: [
@@ -492,23 +524,26 @@ const SVC_STEPS = [
       { t: 'Livestream',       x: 1227, y: 1,   w: 438, b: 'We produce seamless live broadcasts, extending the reach of events to global audiences in real time.' },
       { t: 'Fabrication',      x: 63,  y: 202, w: 300, b: 'We design and build custom installations, transforming spaces into immersive brand experiences.' },
       { t: 'BTS',              x: 645,  y: 202, w: 438, b: 'We document behind-the-scenes content that pulls back the curtain, showcasing the energy and creativity behind the experience.' },
+      { t: 'Event recap',      x: 1227, y: 202, w: 438, b: 'We craft compelling highlight videos that capture the essence of the event and keep the momentum going long after it\u2019s over.' },
       { t: 'Event recap',      x: 1227, y: 202, w: 438, b: 'We craft compelling highlight videos that capture the essence of the event and keep the momentum going long after it’s over.' },
     ]},
   ];
 const CS_WORKS = [
     { t: 'PRICELINE',        img: 'assets/live/cs-priceline.jpg',      cats: ['live'] },
-    { t: 'PALMS CASINO',     img: 'assets/live/cs-palms.jpg',          cats: ['live'] },
-    { t: 'EX BY TRUTH INITIATIVE', img: 'assets/live/cs-truth.png',    cats: ['live'] },
-    { t: 'HERA',             img: 'assets/live/cs-hera.jpg',           cats: ['cs'] },
+    { t: 'PALMS CASINO RESORT', img: 'assets/live/cs-palms.jpg',       cats: ['live'] },
+    { t: 'EX PROGRAM BY TRUTH INITIATIVE', img: 'assets/live/cs-truth.png', cats: ['live'] },
+    { t: 'HERA',             img: 'assets/live/cs-hera.jpg',           cats: ['cs', 'live'] },
+    { t: 'PURA',             img: 'assets/live/cs-pura.jpg',           cats: ['cs'] },
     { t: 'DUNKIN\u2019',    img: 'assets/live/cs-dunkin-pump.jpg',    cats: ['live'] },
     { t: 'VISIT LAUDERDALE', img: 'assets/live/cs-lauderdale.jpg',     cats: ['live'] },
-    { t: 'EAT PECANS',       img: 'assets/live/cs-eatpecans.jpg',      cats: ['cs', 'live'] },
+    { t: 'EAT PECANS',       img: 'assets/live/cs-eatpecans.jpg',      cats: ['live'] },
     { t: 'CREDIT KARMA',     img: 'assets/live/cs-creditkarma.jpg',    cats: ['live'] },
     { t: 'DUNKIN\u2019',    img: 'assets/live/cs-dunkin-affleck.png', cats: ['live'] },
     { t: 'PACIFICO',         img: 'assets/live/cs-pacifico.jpg',       cats: ['live'] },
-    { t: 'TURO',             img: 'assets/live/cs-turo.jpg',           cats: ['cs'] },
+    { t: 'TURO',             img: 'assets/live/cs-turo.jpg',           cats: ['cs', 'live'] },
+    { t: 'LIQUID I.V.',      img: 'assets/live/cs-liquidiv-fuel.jpg',  cats: ['cs'] },
     { t: 'MEGAN THEE STALLION', img: 'assets/live/cs-megan.jpg',       cats: ['live'] },
-    { t: 'LIQUID I.V.',      img: 'assets/live/cs-liquidiv.jpg',       cats: ['cs', 'live'] },
+    { t: 'LIQUID I.V.',      img: 'assets/live/cs-liquidiv.jpg',       cats: ['live'] },
     { t: 'HEINEKEN',         img: 'assets/live/exp-heineken.png',      cats: ['exp'] },
     { t: 'FIVERR',           img: 'assets/live/exp-fiverr.jpg',        cats: ['exp'] },
     { t: 'TREE HUT',         img: 'assets/live/exp-treehut.jpg',       cats: ['exp'] },
@@ -523,6 +558,8 @@ const CS_SLUGS = {
     'cs-palms.jpg': 'palms-casino-resort-this-is-that-vegas',
     'cs-truth.png': 'ex-program-by-truth-initiative-outsmart-nicotine',
     'cs-hera.jpg': 'hera-age-your-way',
+    'cs-pura.jpg': 'pura-hands-on',
+    'cs-liquidiv-fuel.jpg': 'liquid-iv-fuel-your-play',
     'cs-dunkin-pump.jpg': 'dunkin-dunk-n-pump',
     'cs-lauderdale.jpg': 'visit-ft-lauderdale-never-lose-your-splash',
     'cs-eatpecans.jpg': 'eat-pecans-surprisingly-snackable',
@@ -546,6 +583,8 @@ const CS_LOOPS = {
     'cs-palms.jpg': 'https://player.vimeo.com/progressive_redirect/playback/1201495653/rendition/1080p/file.mp4%20%281080p%29.mp4?loc=external&log_user=0&signature=43288f8230fc7601951964b3046033e7c02ca670694c8ad9504d5642602dfe38',
     'cs-truth.png': 'https://player.vimeo.com/progressive_redirect/playback/1181325134/rendition/720p/file.mp4%20%28720p%29.mp4?loc=external&log_user=0&signature=930ee9957ebe89223e718e3aee8530b98aeb58d98f9861f8e468e0226ae186ed',
     'cs-hera.jpg': 'https://player.vimeo.com/progressive_redirect/playback/1151638122/rendition/1080p/file.mp4%20%281080p%29.mp4?loc=external&log_user=0&signature=6b7991643db1c95ac1e1c985d693ee0f5ba68754f43250516225593eb886c2bd',
+    'cs-pura.jpg': 'https://player.vimeo.com/progressive_redirect/playback/1006416097/rendition/1080p/file.mp4?loc=external&log_user=0&signature=64fa71b252b9bfbac835dd46aeffaf4c8bbb012eab0e70ce58747a01f58d86e1',
+    'cs-liquidiv-fuel.jpg': 'https://player.vimeo.com/progressive_redirect/playback/733336351/rendition/1080p/file.mp4?loc=external&signature=9fa19e48bc29341357a837921bf814012125597a525acad5516d3523ef45d3cf',
     'cs-dunkin-pump.jpg': 'https://player.vimeo.com/progressive_redirect/playback/1152401903/rendition/1080p/file.mp4%20%281080p%29.mp4?loc=external&log_user=0&signature=308b00f490c2f6e53533b0a02bde34faf2cc1a1505ab749c7e93509bec3862c9',
     'cs-lauderdale.jpg': 'https://player.vimeo.com/progressive_redirect/playback/1151638269/rendition/1080p/file.mp4%20%281080p%29.mp4?loc=external&log_user=0&signature=c403790375cd79d38091ef38c872436e174833ab4af4f37d5a8a0517509ca6bc',
     'cs-eatpecans.jpg': 'https://player.vimeo.com/progressive_redirect/playback/996433212/rendition/1080p/file.mp4?loc=external&log_user=0&signature=b1fa4987f20d4f9d170bcfae75826cf6fb124137ac8e2787f799b8eae4a93291',
@@ -568,9 +607,9 @@ const CV_COPY = [
     'Bring energy & enthusiasm into everything you do. Let your drive inspire others.',
     'Embrace new ideas and perspectives. Growth comes from exploring the unexpected.',
     'No obstacle is too big. Believe in your ability to make it happen.',
-    'Think past the next step. Every choice is made with the bigger picture in mind.',
-    'Trust is built on follow-through. If we commit to it, we deliver it. Every time.',
-    'Every project is a chance to make something that moves people. We never waste one.'
+    'Anticipate what\u2019s next. Think beyond the moment and be prepared for every challenge before it arrives.',
+    'If you say you\u2019re going to do something, do it. Say "no" when you can\u2019t, so your "yes" always matters.',
+    'Don\u2019t do something to just check a box. Focus on delivering real results that move the needle.'
   ];
 const TEAM = [
     { name: 'Austin Barbera',    role: 'Co-Founder / Managing Director',        img: null, w: 330, h: 689 },
@@ -632,18 +671,18 @@ const SEARCH_INDEX = [
 
 /* ================= data (desktop WORKS + slugs, loop law wired) ================= */
 const HOME_WORKS = [
-  { n:'001', t:'PRICELINE', d:'Evan Bourque', img:'assets/live/cs-priceline.jpg', slug:'priceline-new-negotiator' },
-  { n:'002', t:'DUNKIN’', d:'Luke Orlando', img:'assets/live/cs-dunkin-pump.jpg', slug:'dunkin-dunk-n-pump' },
-  { n:'003', t:'HERA', d:'Savannah O’Leary', img:'assets/live/cs-hera.jpg', slug:'hera-age-your-way' },
-  { n:'004', t:'PURA', d:'Nolan Goff', img:'assets/live/cs-pura.jpg', slug:'pura-hands-on' },
-  { n:'005', t:'DUNKIN’', d:'SixTwentySix', img:'assets/live/cs-dunkin-affleck.png', slug:'dunkin-the-value-affleck' },
-  { n:'006', t:'EAT PECANS', d:'Evan Bourque', img:'assets/live/cs-eatpecans.jpg', slug:'eat-pecans-surprisingly-snackable' },
-  { n:'007', t:'MEGAN THEE STALLION', d:'SixTwentySix', img:'assets/live/cs-megan.jpg', slug:'megan-thee-stallion-boa' },
-  { n:'008', t:'LIQUID I.V.', d:'SixTwentySix', img:'assets/live/cs-liquidiv.jpg', slug:'liquid-iv-ice-cream' },
-  { n:'009', t:'SQUARESPACE', d:'Miles & AJ', img:'assets/live/cs-squarespace.jpg', slug:'squarespace-courses' },
-  { n:'010', t:'PALMS CASINO', d:'Nolan Goff', img:'assets/live/cs-palms.jpg', slug:'palms-casino-resort-this-is-that-vegas' },
+  { n:'001', t:'CARDI B', d:'SixTwentySix', img:'assets/live/cs-cardi.jpg', slug:'cardi-b-ah-ha' },
+  { n:'002', t:'PRICELINE', d:'Evan Bourque', img:'assets/live/cs-priceline.jpg', slug:'priceline-new-negotiator' },
+  { n:'003', t:'DUNKIN’', d:'Luke Orlando', img:'assets/live/cs-dunkin-pump.jpg', slug:'dunkin-dunk-n-pump' },
+  { n:'004', t:'HERA', d:'Savannah O’Leary', img:'assets/live/cs-hera.jpg', slug:'hera-age-your-way' },
+  { n:'005', t:'PURA', d:'Nolan Goff', img:'assets/live/cs-pura.jpg', slug:'pura-hands-on' },
+  { n:'006', t:'DUNKIN’', d:'SixTwentySix', img:'assets/live/cs-dunkin-affleck.png', slug:'dunkin-the-value-affleck' },
+  { n:'007', t:'EAT PECANS', d:'Evan Bourque', img:'assets/live/cs-eatpecans.jpg', slug:'eat-pecans-surprisingly-snackable' },
+  { n:'008', t:'MEGAN THEE STALLION', d:'SixTwentySix', img:'assets/live/cs-megan.jpg', slug:'megan-thee-stallion-boa' },
+  { n:'009', t:'LIQUID I.V.', d:'SixTwentySix', img:'assets/live/cs-liquidiv.jpg', slug:'liquid-iv-ice-cream' },
+  { n:'010', t:'PALMS CASINO RESORT', d:'Nolan Goff', img:'assets/live/cs-palms.jpg', slug:'palms-casino-resort-this-is-that-vegas' },
   { n:'011', t:'TURO', d:'Miles & AJ', img:'assets/live/cs-turo.jpg', slug:'turo-open-the-door-to-extraordinary' },
-  { n:'012', t:'CREDIT KARMA', d:'Miles & AJ', img:'assets/live/cs-creditkarma.jpg', slug:'credit-karma-card-optimizer' },
+  { n:'012', t:'CREDIT KARMA', d:'Miles & AJ', img:'assets/live/cs-creditkarma.jpg', slug:'credit-karma-card-optimizer' }
 ];
 HOME_WORKS.forEach(w => { w.loop = WORK_LOOPS[w.n] || null; });
 const EXP_WORKS = [
@@ -653,6 +692,8 @@ const EXP_WORKS = [
   { t:'GOOGLE PLAY', img:'assets/live/exp-googleplay.jpg' },
   { t:'NIKE X CONCRETE BOYS', img:'assets/live/exp-nike.jpg' },
   { t:'REPUBLIC RECORDS', img:'assets/live/exp-republic.jpg' },
+  { t:'EBAY MOTORS', img:'assets/live/exp-ebay.jpg' },
+  { t:'APEROL', img:'assets/live/exp-aperol.jpg' },
 ];
 const PRESS_M = [
   { logo:'assets/logo-adage.svg', h:31, q:'Priceline revives The Negotiator, with Randall Park succeeding William Shatner.', url:'https://adage.com/creativity/work/aa-priceline-negotiator-handoff/', wipe:'assets/press-adage-wipe.png' },
@@ -1005,6 +1046,7 @@ R.work = slug => `
     <a class="back" style="color:#6b6b6b;" href="javascript:history.back()">Back to work</a>
     <div class="cs-head" id="csTitle"></div>
     <div class="cs-led" id="csLed"></div>
+    <div class="cs-extra" id="csExtra"></div>
   </div>
   ${FOOTER}`;
 
@@ -1484,29 +1526,108 @@ async function bootWork(slug) {
   try {
     const r = await fetch('https://api.sixtwentysix.co/graphql', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ query: '{ caseStudy(id: ' + JSON.stringify(slug) + ', idType: SLUG) { title pageMeta { headline featuredvimeoid intro { introBlocks { title body } theChallenge theSpark theDelivery results awards } } featuredImage { node { sourceUrl } } } }' })
+      body: JSON.stringify({ query:
+        'fragment M on MediaItem { sourceUrl srcSet altText mediaDetails { width height } } ' +
+        'fragment W on CaseStudy { __typename title slug featuredImage { node { sourceUrl imageMeta { videoUrl } } } } ' +
+        '{ caseStudy(id: ' + JSON.stringify(slug) + ', idType: SLUG) { title pageMeta { headline subHeadline featuredvimeoid services { name } ' +
+        'intro { introBlocks { title body } theChallenge theSpark theDelivery results awards } ' +
+        'reach { platform } campaigns { title works { nodes { ...W } } } subContent { nodes { ...W } } recommended { nodes { ...W } } ' +
+        'imageCarousel { nodes { ...M } } ' +
+        'content { fieldGroupName ' +
+        '... on PageMetaContentMediaGridLayout { layout layoutPresets media { vimeoVideoId image { node { ...M } } } } ' +
+        '... on PageMetaContentMediaCarouselLayout { media { vimeoVideoId image { node { ...M } } } } ' +
+        '... on PageMetaContentVimeovideoonclickLayout { videoid linkText linkUrl image { node { ...M } } } ' +
+        '... on PageMetaContentTestimonialsLayout { testimonials { title body reviewername reviewertitle reviewerbrand } } ' +
+        '... on PageMetaContentNewsLayout { articles { nodes { ... on Post { title link } } } } } ' +
+        '} featuredImage { node { sourceUrl } } } }' })
     });
     const cs = (await r.json()).data.caseStudy;
     if (!cs) return;
     const tt = splitT(cs.title || '');
     document.getElementById('csTitle').innerHTML =
       `<span class="brand">${esc((cs.title || '').split(/\s+[–—-]\s+/)[0])}</span>${tt.proj ? `<span class="proj">${esc(tt.proj)}</span>` : ''}`;
+    const metaHl = cs.pageMeta || {};
+    if ((metaHl.headline || '').trim() || (metaHl.subHeadline || '').trim())
+      document.getElementById('csTitle').insertAdjacentHTML('afterend',
+        `<p class="cs-headline">${esc((metaHl.headline || '').trim())}${(metaHl.subHeadline || '').trim() ? `<span class="sub">${esc(metaHl.subHeadline.trim())}</span>` : ''}</p>`);
     const meta = cs.pageMeta || {}, intro = meta.intro || {};
+    /* 9/14: a photography work with no film and no featured image opens on
+       its first carousel still (the desktop rule) */
+    let galNodes = (((meta.imageCarousel || {}).nodes) || []).filter(n => n && n.sourceUrl);
     if (meta.featuredvimeoid)
       document.getElementById('filmSlot').innerHTML =
         `<iframe src="https://player.vimeo.com/video/${esc(meta.featuredvimeoid)}?title=0&byline=0&portrait=0&dnt=1&autoplay=1&muted=1&playsinline=1" allow="autoplay; fullscreen" allowfullscreen></iframe>`;
     else if (cs.featuredImage && cs.featuredImage.node)
       document.getElementById('film').style.backgroundImage = `url("${cs.featuredImage.node.sourceUrl}")`;
+    else if (galNodes.length) {
+      document.getElementById('film').style.backgroundImage = `url("${galNodes[0].sourceUrl}")`;
+      galNodes = galNodes.slice(1);
+    }
     const blocks = (intro.introBlocks || []).filter(b => b && String(b.body || '').trim());
     let rows = blocks.length
       ? blocks.map(b => [b.title || '', b.body, true])
-      : [['Big Idea', meta.headline, false], ['Challenge', intro.theChallenge, false],
+      : [['Challenge', intro.theChallenge, false],
          ['The Spark', intro.theSpark, false], ['The Delivery', intro.theDelivery, false],
          ['Results', intro.results, false], ['Awards', intro.awards, true]];
+    const svc = (meta.services || []).map(x => x && x.name && x.name.trim()).filter(Boolean);
+    if (svc.length) rows.push(['Services', svc.join(', '), false]);
+    const REACH_NAMES = { ctv: 'CTV', youtube: 'YouTube', meta: 'Meta', ooh: 'OOH', linear: 'Linear TV', x: 'X',
+      linkedin: 'LinkedIn', snapchat: 'Snapchat', tiktok: 'TikTok', instagram: 'Instagram', hulu: 'Hulu', twitch: 'Twitch' };
+    const reach = [...new Set((meta.reach || []).flatMap(q => (q && q.platform) || [])
+      .map(x => REACH_NAMES[String(x).toLowerCase()] || String(x).toUpperCase()))];
+    if (reach.length) rows.push(['Reach', reach.join(', '), false]);
     rows = rows.filter(x => x[1] && String(x[1]).trim());
     /* no copy -> film straight to the footer (the desktop law) */
     document.getElementById('csLed').innerHTML = rows.map(([l, c, isHtml]) =>
       `<p class="lab">${esc(l)}</p><div class="cp">${isHtml ? c : '<p>' + esc(c) + '</p>'}</div>`).join('');
+
+    /* ---- 9/14: everything else the CMS holds, in the CMS's order (the
+       desktop sections, stacked for the phone) ---- */
+    const nodesOf = c => ((c && c.nodes) || []).filter(Boolean);
+    const csNodes = c => nodesOf(c).filter(n => n.__typename === 'CaseStudy' && n.slug);
+    const dims = n => { const md = (n && n.mediaDetails) || {}; return (md.width > 0 && md.height > 0) ? { w: md.width, h: md.height } : { w: 16, h: 9 }; };
+    const mNode = m => (m && m.image && m.image.node && m.image.node.sourceUrl) ? m.image.node : null;
+    const img = (n, cls) => `<img class="${cls}" loading="lazy" src="${esc(n.sourceUrl)}"${n.srcSet ? ` srcset="${esc(n.srcSet)}" sizes="600px"` : ''} width="${dims(n).w}" height="${dims(n).h}" alt="${esc(n.altText || '')}">`;
+    const bg = (id, n) => { const d = dims(n); return `<div class="mvid" style="aspect-ratio:${d.w}/${d.h};"><iframe loading="lazy" src="https://player.vimeo.com/video/${esc(String(id).trim())}?background=1&autoplay=1&loop=1&muted=1&dnt=1&playsinline=1" allow="autoplay; fullscreen"></iframe></div>`; };
+    const media = m => m.vimeoVideoId ? bg(m.vimeoVideoId, mNode(m)) : (mNode(m) ? img(mNode(m), 'mimg') : '');
+    const tile = w => { const fi = w.featuredImage && w.featuredImage.node; return tileHtml({ t: w.title, img: fi && fi.sourceUrl, slug: w.slug, loop: fi && fi.imageMeta && fi.imageMeta.videoUrl }); };
+    const tiles = (label, list) => list.length ? `<p class="lab">${esc(label)}</p>${gridOpen()}${list.map(tile).join('')}</div>` : '';
+    const seen = new Set([slug]);
+    const spots = [];
+    (meta.campaigns || []).forEach(c => csNodes(c && c.works).forEach(n => { if (!seen.has(n.slug)) { seen.add(n.slug); spots.push(n); } }));
+    csNodes(meta.subContent).forEach(n => { if (!seen.has(n.slug)) { seen.add(n.slug); spots.push(n); } });
+    const recs = csNodes(meta.recommended).filter(n => n.slug !== slug);
+    let x = '';
+    const gal = galNodes;
+    if (gal.length) x += `<div class="stack">${gal.map(n => img(n, 'mimg')).join('')}</div>`;
+    (meta.content || []).filter(Boolean).forEach(L => {
+      const g = String(L.fieldGroupName || '');
+      const items = (L.media || []).filter(m => m && (mNode(m) || m.vimeoVideoId));
+      if (/MediaGrid/i.test(g) && items.length) x += `<div class="stack">${items.map(media).join('')}</div>`;
+      else if (/MediaCarousel/i.test(g) && items.length) x += `<div class="x-rail">${items.map(media).join('')}</div>`;
+      else if (/Vimeovideoonclick/i.test(g) && (L.videoid || mNode(L))) {
+        const n = mNode(L);
+        x += `<div class="vclick" data-v="${esc(String(L.videoid || '').trim())}"${n ? ` style="background-image:url('${esc(n.sourceUrl)}')"` : ''}>${L.videoid ? '<img class="pl" src="assets/cs-play.svg" alt="Play">' : ''}</div>`;
+      }
+      else if (/Testimonials/i.test(g)) (L.testimonials || []).forEach(t => {
+        if (!t || !String(t.body || '').trim()) return;
+        const who = [t.reviewername, [t.reviewertitle, t.reviewerbrand].filter(Boolean).join(', ')].filter(Boolean);
+        x += `<p class="lab">${esc(t.reviewerbrand || t.title || 'Testimonial')}</p><div class="cp"><p>${esc(String(t.body).trim())}</p>${who.length ? `<p><b>${esc(who[0])}</b>${who[1] ? '<br>' + esc(who[1]) : ''}</p>` : ''}</div>`;
+      });
+      else if (/News/i.test(g)) {
+        const arts = nodesOf(L.articles).filter(a => a && a.title && a.link);
+        if (arts.length) x += `<p class="lab">Press</p><div class="cp">${arts.map(a => `<p><a href="${esc(a.link)}" target="_blank" rel="noopener">${esc(a.title)}</a></p>`).join('')}</div>`;
+      }
+    });
+    x += tiles('More from the campaign', spots);
+    x += tiles('You might also like', recs);
+    const extra = document.getElementById('csExtra');
+    extra.innerHTML = x;
+    extra.querySelectorAll('.vclick').forEach(v => v.addEventListener('click', () => {
+      if (!v.dataset.v) return;
+      v.innerHTML = `<iframe src="https://player.vimeo.com/video/${esc(v.dataset.v)}?autoplay=1&title=0&byline=0&portrait=0&dnt=1&playsinline=1" allow="autoplay; fullscreen" allowfullscreen></iframe>`;
+    }, { once: true }));
+    armAll();
   } catch (e) {}
 }
 
@@ -1542,6 +1663,15 @@ function armAll() {
    the header is clipped to BELOW the edge and the dark header to ABOVE it,
    so the white stripes back in bottom-up exactly on the sheet's edge. */
 const HOME_FADE_START = 96, HOME_FADE_LEN = 160, HDR_H = 60;
+/* 9/14 autoplay kick (see footerlaw.js): a reel the phone refused to start plays on the first gesture */
+(function () {
+  function kick() {
+    document.querySelectorAll('video[autoplay]').forEach(v => { if (v.paused) { v.muted = true; const p = v.play(); if (p && p.catch) p.catch(() => {}); } });
+  }
+  ['touchstart', 'pointerdown', 'scroll'].forEach(ev => window.addEventListener(ev, kick, { passive: true, capture: true }));
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) kick(); });
+  window.addEventListener('hashchange', () => setTimeout(kick, 300));
+})();
 let homeWipe = null;
 function clearHomeWipe() {
   const hdr = document.getElementById('hdr');

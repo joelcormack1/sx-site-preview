@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=1728">
-<script src="footerlaw.js?v=20260825a"></script>
-<script src="gridhover.js?v=20260912a"></script>
+<script src="footerlaw.js?v=20260914a"></script>
+<script src="gridhover.js?v=20260914a"></script>
 <title>SIXTWENTYSIX — Experiential</title>
 <!--
   EXPERIENTIAL — synced 1:1 to Full Site frame 98:2339 (2026-08-18).
@@ -39,7 +39,7 @@
   .page {
     position: relative;
     width: 1728px;
-    height: 3549px;
+    height: 3981px;
     margin: 0 auto;
     background: #fff;
   }
@@ -131,7 +131,7 @@
      hovered card's rectangle fades in and the other two fade back (the
      testimonial pattern). No scroll choreography. */
   .x-card {
-    position: absolute; top: 1810px; width: 503px; height: 392px;
+    position: absolute; top: 2242px; width: 503px; height: 392px;
     border: 1px solid rgba(0,0,0,0); border-radius: 1px;
     /* Joel 8/22: snappier + deeper — the dim answers the cursor instantly
        and the resting cards drop to the site's ghost value */
@@ -168,14 +168,14 @@
   .hp-row.on .hp-num { opacity: 1; }
   .hp-row.on .hp-title { color: #000; left: 58.6px; }
   #hpCopy {
-    position: absolute; left: 1185px; top: 2683px; width: 425px;
+    position: absolute; left: 1185px; top: 3115px; width: 425px;
     font-weight: 400; font-size: 16px; line-height: 21.6px; letter-spacing: -0.32px;
     color: #000; white-space: pre-line; transition: opacity 0.25s ease;
   }
 
   /* ---------- Footer (black, SIX26) ---------- */
   .footer {
-    position: absolute; left: 0; top: 3200px; width: 1728px; height: 349px;
+    position: absolute; left: 0; top: 3632px; width: 1728px; height: 349px;
     background: #000; overflow: hidden;
   }
   .foot-cta {
@@ -245,7 +245,7 @@
   <div id="xgrid"></div>
 
   <!-- ============ WHAT WE BRING TO LIFE ============ -->
-  <p class="x-h fd" style="top:1554px;">What we bring to life</p>
+  <p class="x-h fd" style="top:1986px;">What we bring to life</p>
 
   <div class="x-card fd" style="left:71px;">
     <h3 style="left:72px; top:79px; width:281px;">Experiential Campaigns</h3>
@@ -261,13 +261,13 @@
   </div>
 
   <!-- ============ HOW WE MAKE IT HAPPEN ============ -->
-  <p class="x-h fd" style="top:2410px;">How we make it happen</p>
+  <p class="x-h fd" style="top:2842px;">How we make it happen</p>
 
   <div id="hproc" class="fd">
-    <div class="hp-row" data-i="0" style="top:2666px;"><span class="hp-num">01</span><p class="hp-title">Strategy &amp; Concepting</p></div>
-    <div class="hp-row" data-i="1" style="top:2726px;"><span class="hp-num">02</span><p class="hp-title">Design &amp; Production</p></div>
-    <div class="hp-row" data-i="2" style="top:2790px;"><span class="hp-num">03</span><p class="hp-title">Audience Engagement</p></div>
-    <div class="hp-row" data-i="3" style="top:2854px;"><span class="hp-num">04</span><p class="hp-title">Event capture &amp; Amplification</p></div>
+    <div class="hp-row" data-i="0" style="top:3098px;"><span class="hp-num">01</span><p class="hp-title">Strategy &amp; Concepting</p></div>
+    <div class="hp-row" data-i="1" style="top:3158px;"><span class="hp-num">02</span><p class="hp-title">Design &amp; Production</p></div>
+    <div class="hp-row" data-i="2" style="top:3222px;"><span class="hp-num">03</span><p class="hp-title">Audience Engagement</p></div>
+    <div class="hp-row" data-i="3" style="top:3286px;"><span class="hp-num">04</span><p class="hp-title">Event capture &amp; Amplification</p></div>
   </div>
   <p id="hpCopy" class="fd" style="--fd:0.15s;"></p>
 
@@ -335,6 +335,11 @@ const io = new IntersectionObserver(entries => {
     { t: 'GOOGLE PLAY',         slug: 'google-play',                      img: 'assets/live/exp-googleplay.jpg', x: 71,   y: 1041 },
     { t: 'NIKE X CONCRETE BOYS', slug: 'nike-concrete-boys',              img: 'assets/live/exp-nike.jpg',       x: 658,  y: 1032 },
     { t: 'REPUBLIC RECORDS',    slug: 'republic-records-vma-after-party', img: 'assets/live/exp-republic.jpg',   x: 1223, y: 1032 },
+    /* 9/14 (Joel: content parity with the live site): the live experiential
+       page lists eight works; these two were missing. A third row, the pair
+       centered on the rail per the short-row law (8/22). */
+    { t: 'EBAY MOTORS',         slug: 'ebay-motors-snow-summitt',         img: 'assets/live/exp-ebay.jpg',       x: 353.5, y: 1464 },
+    { t: 'APEROL',              slug: 'aperol-camilas-perfect-day',       img: 'assets/live/exp-aperol.jpg',     x: 940.5, y: 1464 },
   ];
 
   /* THE LOOP LAW (Joel 8/24): every tile plays its own spot on hover.
@@ -346,6 +351,8 @@ const io = new IntersectionObserver(entries => {
     'exp-googleplay.jpg': 'https://player.vimeo.com/progressive_redirect/playback/1065964832/rendition/1080p/file.mp4?loc=external&log_user=0&signature=9a48cdd6ae7aa0b0d84ea1be8c73b7bf458df2582d6cded7cdfb722ff8027284&user_id=26828343',
     'exp-nike.jpg': 'https://player.vimeo.com/progressive_redirect/playback/1065679815/rendition/1080p/file.mp4?loc=external&log_user=0&signature=7c17e3990ef977b829fc6787800b0bcfe860254d5caa5f65d3eb12cf35058468&user_id=26828343',
     'exp-republic.jpg': 'https://player.vimeo.com/progressive_redirect/playback/1065679804/rendition/1080p/file.mp4?loc=external&log_user=0&signature=b4e9f026c42f5752c8526546d5d999b7729d21a759bb9f2806fc2d7ac27cf7ea&user_id=26828343',
+    'exp-ebay.jpg': 'https://player.vimeo.com/progressive_redirect/playback/1066025459/rendition/1080p/file.mp4?loc=external&log_user=0&signature=2ea280206dc4ed4e91faa5ac68d117c5f78072b36a726dc4ec7b8b0ef4e0ec8c&user_id=26828343',
+    'exp-aperol.jpg': 'https://player.vimeo.com/progressive_redirect/playback/967113990/rendition/1080p/file.mp4?loc=external&log_user=0&signature=4d45d5c51e1171c42cd5788ee773bc5ba83e250cac5e512214fd19727a4bcdb1',
   };
   TILES.forEach(w => { w.loop = LOOPS[w.img.split('/').pop()] || null; });
   const W = 431, H = 242, LABEL_GAP = 45, F = 1.3475, LEFT = 71, RIGHT = 1654; // component 508:740 scale
@@ -379,14 +386,14 @@ const io = new IntersectionObserver(entries => {
 /* ================= How we make it happen =================
    Active row carries its number and goes black (98:2339). Answers both
    scroll (steps as the section crosses the viewport) and click.
-   COPY STATUS: only "Design & Production" exists in Figma; the other three
-   are placeholders in its register, pending Sophee's rewrite. */
+   COPY STATUS (9/14): all four are the live site's own copy (CMS
+   Services layout on /experiential), replacing the drafted placeholders. */
 (() => {
   const COPY = [
-    'Every experience starts with a question, not a set piece. We interrogate the brief, find the cultural tension worth stepping into, and build the concept that earns your audience’s attention before a single element is fabricated.\n\nStrategy is not a deck we hand over. It is the argument every later decision has to answer to, and it is what keeps a big idea from collapsing into a nice-looking booth.',
-    'The proof is in the production. With unrivaled designs, striking visuals, and seamless logistics, we bring experiences to life with unmatched expertise. We believe our work together should be as effortless as it is unforgettable.\n\nThat’s why every detail is meticulously planned and flawlessly executed, ensuring your activation not only runs smoothly but leaves a lasting impression with audiences. From the boldest creative elements to the smallest logistical details, we deliver precision, style, and cultural impact.',
-    'A crowd is not an audience until something asks them to participate. We design the moment that turns a passerby into a participant, and a participant into someone who tells the story for you.\n\nEvery touchpoint is built to be entered, handled, and shared, so the experience keeps working long after your guest has walked back onto the street.',
-    'The room empties and the work is only half done. We capture the experience while it is live, with crews briefed on the story rather than a shot list, so what leaves the venue is footage worth cutting.\n\nThen we amplify: social edits, brand assets, and press-ready material built from the same idea, so a single day of activation feeds a whole campaign.'
+    "Our process starts by immersing ourselves in your brand, deeply understanding your audience, and aligning with your objectives. From there, we craft a strategic foundation that not only sets the direction but ensures every detail serves a bigger purpose. Our goal is to always uncover the insight or opportunity - both creatively and for production - that others might miss.\n\nOnce we’re strategically aligned, we move to concepting bold, breakthrough ideas designed to captivate attention, spark conversation, and drive meaningful engagement. By understanding your audience, we know what excites them so our concepts are impossible to ignore and unforgettable to experience.",
+    "The proof is in the production. With unrivaled designs, striking visuals, and seamless logistics, we bring experiences to life with unmatched expertise. We believe our work together should be as effortless as it is unforgettable. \n\nThat’s why every detail is meticulously planned and flawlessly executed, ensuring your activation not only runs smoothly but leaves a lasting impression with audiences. From the boldest creative elements to the smallest logistical details, we deliver precision, style, and cultural impact.",
+    "Whether it’s a pop-up, live event, or immersive experience, we create unforgettable moments that excite and engage. By fostering genuine connections, curating the right influencers, and delivering stunning visuals and thoughtful touchpoints, we make your brand part of their story—online and offline.",
+    "\"You just had to be there.\" Well, not anymore. We capture your experience with the same stylish, cinematic flair that defines our studio, ensuring the magic of the moment doesn’t end when the event does. \n\nThrough expertly crafted photography, video, and social-friendly assets, we transform your activation into a story that lives far beyond the day - or night - itself. With a suite of dynamic captures in hand, your experience transforms into a “content factory,” driving engagement, building momentum, sparking conversations – and taking on a life of its own online."
   ];
   const rows = [...document.querySelectorAll('.hp-row')];
   const copy = document.getElementById('hpCopy');
@@ -527,9 +534,9 @@ document.querySelectorAll('.fd').forEach(el => io.observe(el));
   } catch (e) {}
 })();
 </script>
-<script src="smoothscroll.js?v=20260912a"></script>
+<script src="smoothscroll.js?v=20260914a"></script>
 <script src="logomorph.js?v=20260824a"></script>
-<script src="menu.js?v=20260824c"></script>
+<script src="menu.js?v=20260914a"></script>
 <script src="hoverlaw.js?v=20260819095356"></script>
 <script>
 /* Safari back-forward cache restores dead builds from memory - always reload */

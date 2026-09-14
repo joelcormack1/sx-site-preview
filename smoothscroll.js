@@ -25,6 +25,40 @@
      constant reproduces lerp 0.1 per frame at 60fps: -ln(1 - 0.1) * 60. */
   var DECAY = 4.6; // Joel 8/21: slower, silkier tempo (was 6.3244 = Lenis lerp 0.1; this ~ lerp 0.074)
 
+  /* ---- DEBUG READOUT (9/14): ?sxdebug=1 paints the engine's state on the
+     page itself, for devices with no console (the iPad "not scrolling"
+     hunt). Harmless when absent. ---- */
+  var HUD = null;
+  var dbg = { ts: 0, tm: 0, te: 0, pushes: 0, lastDy: 0, lastErr: '', healed: false, coarse: null, riding: false, prevented: 0 };
+  if (location.search.indexOf('sxdebug=1') !== -1) {
+    HUD = document.createElement('div');
+    HUD.id = 'sxhud';
+    HUD.style.cssText = 'position:fixed; left:8px; top:130px; z-index:2147483647; background:rgba(0,0,0,0.85); color:#0f0;' +
+      ' font:15px/19px Menlo,monospace; padding:8px 10px; pointer-events:none; white-space:pre; max-width:1000px;';
+  }
+  function hudPaint() {
+    if (!HUD) return;
+    if (!HUD.parentNode && document.body) document.body.appendChild(HUD);
+    try {
+      HUD.textContent = 'mode ' + ((window.SXInput && window.SXInput.mode) || '?') + '  coarse ' + dbg.coarse + '  healed ' + dbg.healed +
+        '\ntouch start/move/end ' + dbg.ts + '/' + dbg.tm + '/' + dbg.te + '  riding ' + dbg.riding + '  prevented ' + dbg.prevented +
+        '\npushes ' + dbg.pushes + '  lastDy ' + (+dbg.lastDy).toFixed(1) +
+        '\nscrollY ' + Math.round(window.scrollY) + '  wanted ' + Math.round(wanted) + '  target ' + Math.round(target) + '  current ' + Math.round(current) + '  anim ' + animating +
+        '\nmax ' + Math.round(max()) + '  scrollH ' + document.documentElement.scrollHeight + '  innerH ' + window.innerHeight +
+        '  bodyH ' + Math.round(document.body ? document.body.getBoundingClientRect().height : -1) +
+        '\ncap ' + window.SX_SCROLL_CAP + '  maxv ' + window.SX_SCROLL_MAXV + '  drive ' + window.SX_SCROLL_DRIVE + '  locked ' + !!window.SX_SCROLL_LOCKED + '  pull ' + window.SX_SCROLL_PULL +
+        '\ntouch-action ' + getComputedStyle(document.documentElement).touchAction + '  frame ' + (window.self !== window.top) + '  ' + (navigator.userAgent.match(/OS \d+_\d+|Version\/[\d.]+/g) || []).join(' ') +
+        '\nparent touches ' + (window.SX_PARENT_TOUCH || 'none') + '  elAt(829,1968) ' + (function () { try { var el = document.elementFromPoint(829, Math.min(1968, window.innerHeight - 2)); return el ? (el.id || el.className || el.tagName).toString().slice(0, 28) : 'null'; } catch (e) { return '?'; } })() +
+        '\nerr ' + dbg.lastErr;
+    } catch (e) { HUD.textContent = 'hud error ' + e; }
+  }
+  window.SX_HUD = hudPaint;
+  if (HUD) {
+    window.addEventListener('error', function (e) { dbg.lastErr = (e.message || '') + ' @' + (e.filename || '').split('/').pop() + ':' + e.lineno; hudPaint(); });
+    window.addEventListener('scroll', hudPaint, { passive: true });
+    setTimeout(hudPaint, 0); setTimeout(hudPaint, 1500);
+  }
+
   function max() {
     return Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
   }
@@ -83,6 +117,7 @@
       animating = false;
     }
     window.scrollTo(0, Math.round(current));
+    if (HUD) hudPaint();
     if (animating) requestAnimationFrame(tick);
   }
 
@@ -91,6 +126,7 @@
      and the rAF tick (and therefore every cap and speed limit above) apply
      to touch and wheel by construction. They cannot drift apart again. */
   function push(dy) {
+    dbg.pushes++; dbg.lastDy = dy;
     if (!animating) { current = window.scrollY; }
     var z = window.SX_WHEEL_ZONE;
     if (z && current < z.until) {
@@ -189,6 +225,7 @@
 
     window.addEventListener('touchstart', function (e) {
       riding = e.touches.length === 1 && !inNative(e.target);
+      dbg.ts++; dbg.riding = riding; dbg.coarse = COARSE; if (HUD) hudPaint();
       if (!riding) return;
       tY = e.touches[0].clientY;
       tT = performance.now();
@@ -200,11 +237,14 @@
     }, { passive: true });
 
     window.addEventListener('touchmove', function (e) {
+      if (healed) return;
       if (!riding || e.touches.length !== 1) return;
       if (inNative(e.target)) return;
       if (window.SX_SCROLL_LOCKED) { e.preventDefault(); return; } // menu open
       e.preventDefault();
+      dbg.tm++; dbg.prevented++;
       var y = e.touches[0].clientY;
+      healAsked += Math.abs(tY - y);
       var now = performance.now();
       var dy = tY - y;                       // finger up = page down
       var dt = Math.max(1, now - tT);
@@ -217,9 +257,28 @@
       push(dy);
     }, { passive: false });
 
+    /* SELF-HEALING (9/14, Joel: "on iPad its not scrolling at all on the
+       services page / about"). The finger transport above only works if the
+       browser lets the engine own the gesture; when a device refuses (the
+       page does not move although the finger asked for 120px+ over two
+       swipes, and nothing was holding it), scrolling is handed back to the
+       browser for the rest of the visit — native feel beats no scroll.
+       ?nativescroll=1 forces the same hand-back. */
+    var healAsked = 0, healMoved = 0, healStrikes = 0, healed = false;
+    function heal() {
+      healed = true; dbg.healed = true;
+      riding = false;
+      st.textContent = '';
+      try { console.warn('SX scroll: touch transport handed back to the browser'); } catch (e) {}
+    }
+    window.addEventListener('touchstart', function (e) {
+      if (healed || e.touches.length !== 1) return;
+      healAsked = 0; healMoved = window.scrollY;
+    }, { passive: true });
     window.addEventListener('touchend', function () {
       if (!riding) return;
       riding = false;
+      dbg.te++; if (HUD) hudPaint();
       if (window.SX_SCROLL_LOCKED) return;
       /* Fling. The damper settles an offset of v/DECAY, so handing it
          v/DECAY reproduces the release velocity exactly and then eases out
@@ -228,6 +287,16 @@
       if (performance.now() - tT < 100 && Math.abs(tV) > 200) {
         push(Math.max(-4200, Math.min(4200, tV)) / DECAY);
       }
+      /* the strike: the finger asked for real travel, nothing held the page,
+         the page can scroll, and it did not move */
+      setTimeout(function () {
+        if (healed) return;
+        var free = window.SX_SCROLL_CAP == null && window.SX_SCROLL_PULL == null && !window.SX_SCROLL_LOCKED;
+        var room = max() > 0 && (healAsked > 0 ? (healMoved < max() - 2 || healAsked < 0) : false);
+        if (healAsked > 120 && free && room && Math.abs(window.scrollY - healMoved) < 4) {
+          if (++healStrikes >= 2) heal();
+        } else if (Math.abs(window.scrollY - healMoved) >= 4) healStrikes = 0;
+      }, 350);
     }, { passive: true });
 
     window.addEventListener('touchcancel', function () { riding = false; }, { passive: true });

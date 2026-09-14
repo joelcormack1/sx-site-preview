@@ -116,3 +116,29 @@
     } catch (err) {}
   }, true);
 })();
+
+
+/* ---- AUTOPLAY KICK (9/14, Joel: "there is a play button and it asks you to
+   play the sizzle reel, that cant happen. It needs to autoplay"). Every reel
+   on the site is muted + inline + autoplay, which is the only autoplay iOS
+   allows — but iPadOS still parks a play glyph on a video it decided not to
+   start (a tab opened in the background, Low Power Mode, a first load with
+   no gesture yet). The first touch, click, key or scroll re-issues play() on
+   every autoplay video that is still paused, and the visibility change back
+   to the tab does the same. Lives here because this file is on all pages. */
+(function () {
+  function kick() {
+    document.querySelectorAll('video[autoplay]').forEach(function (v) {
+      if (!v.paused) return;
+      v.muted = true;
+      v.setAttribute('playsinline', ''); v.setAttribute('webkit-playsinline', '');
+      var p = v.play(); if (p && p.catch) p.catch(function () {});
+    });
+  }
+  ['touchstart', 'pointerdown', 'keydown', 'scroll', 'wheel'].forEach(function (ev) {
+    window.addEventListener(ev, kick, { passive: true, capture: true });
+  });
+  document.addEventListener('visibilitychange', function () { if (!document.hidden) kick(); });
+  window.addEventListener('pageshow', kick);
+  window.addEventListener('load', function () { setTimeout(kick, 400); });
+})();
