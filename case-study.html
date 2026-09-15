@@ -99,7 +99,7 @@
        answered it sat at the frame's 980 and the tapped tile's art showed at
        a different crop, white beneath it, then jumped — the last cut in the
        tap transition on the iPad. */
-    height: max(700px, 100vh);
+    height: 972px; /* the film's 16:9 frame at full width — never cropped (9/14) */
     overflow: hidden; background: #000;
   }
   .cs-hero img.bg {
@@ -238,6 +238,7 @@
     color: #fff; text-transform: uppercase; word-break: break-word;
   }
   .foot-col .b, .foot-b { font-weight: 700; }
+  .foot-col .b { white-space: nowrap; } /* 9/14: FOLLOW US on one line */
 </style>
 <script>
 /* 9/3 flash fix (Joel: "any time i click on a video, this flashes before
@@ -278,7 +279,7 @@ if (new URLSearchParams(location.search).get('work')) {
 }
 </script>
 <style>
-  html.cs-loading, html.cs-loading body { background: #000; }
+  html.cs-loading, html.cs-loading body { background: #fff; } /* 9/14: white under the frame, like the page and the shell's curtain */
   /* while the CMS loads: only the hero's poster shows — the ledger, the
      chrome and the header wait (9/14) */
   html.cs-loading .page > :not(.cs-hero) { visibility: hidden; }
@@ -504,7 +505,15 @@ document.querySelectorAll('.fd').forEach(el => io.observe(el));
   const intro = meta.intro || {};
 
   /* ---- hero = exactly one screen (design units; the iframe runs at 1728) ---- */
-  const heroH = Math.max(700, Math.round(window.innerHeight));
+  /* 9/14 (Joel: "when you go to view full on any video, you cant mess up
+     the aspect ratio ... i just clicked on palms and the aspect ratio got
+     shrunken in to verdical. make that a universal rule across"): the hero
+     is the film's own frame — 16:9 at the full 1728 width, 972 tall, on
+     every viewport — never the viewport's height. The 8/24 cover-fit (a
+     100vh hero, the film sized to cover it) cropped 13% off the sides on a
+     laptop and left a vertical slice on a portrait iPad. The page begins
+     under the frame, as the Figma hero (980) always had it. */
+  const heroH = Math.round(1728 * 9 / 16);
   const delta = heroH - 980;
   const hero = document.querySelector('.cs-hero');
   hero.style.height = heroH + 'px';
@@ -972,7 +981,12 @@ document.querySelectorAll('.fd').forEach(el => io.observe(el));
   const rollRail = (label, cells) => {
     if (!cells.length) return;
     const host = sec();
-    const top = label ? labelRow(host, 0, label) : 0;
+    /* 9/14 (Joel, Palms: "the arrows are on top of the extra images. make
+       sure they are above"): an unlabelled rail keeps a 56px head band, so
+       its chevrons sit above the pictures, the way a labelled rail's sit in
+       its label row */
+    const HEAD = 56;
+    const top = label ? labelRow(host, 0, label) : HEAD;
     const railH = ROLL_H + (cells.some(c => c.cap) ? ROLL_CAP : 0);
     const rail = document.createElement('div');
     rail.className = 'cs-rail cs-roll';
@@ -1084,6 +1098,10 @@ document.querySelectorAll('.fd').forEach(el => io.observe(el));
     });
     document.addEventListener('pointerdown', e => {
       if (e.pointerType !== 'touch' || !armed) return;
+      /* a finger on another cell of THIS rail is a switch, done in one step
+         by that cell's tap (9/14: no brighten-and-dim between the two) */
+      const cell = e.target.closest && e.target.closest('.cs-rcell');
+      if (cell && rail.contains(cell)) return;
       if (!armed.contains(e.target)) { lightOff(armed); armed = null; }
     }, true);
     endSec(host, top + railH);
@@ -1245,7 +1263,10 @@ document.querySelectorAll('.fd').forEach(el => io.observe(el));
        fullscreen, where the film fits END TO END of the width. Only shown
        when the crop is actually happening. */
     let fsBtn = null;
-    if (heroH > Math.round(HERO_W * 9 / 16) + 24) {
+    /* 9/14: the hero never crops any more, so the button is the way to a
+       bigger picture on any window taller than the frame (native fullscreen
+       keeps the aspect ratio) */
+    if (window.innerHeight > heroH + 24) {
       fsBtn = document.createElement('div');
       fsBtn.className = 'cs-fs';
       fsBtn.style.cssText = 'position:absolute; left:1662px; top:' + (845 + delta) + 'px; width:30px; height:30px; cursor:pointer; z-index:4;';

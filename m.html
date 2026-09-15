@@ -111,7 +111,18 @@
   .m-link.dim { opacity: 0.18; }
   #mResults a { display: block; padding: 8px 0; font-weight: 500; font-size: 17px; }
   #mResults .k { color: #a4a4a4; font-size: 11px; text-transform: uppercase; margin-left: 8px; }
-  #mFoot { margin-top: auto; padding-top: 40px; font-size: 13px; line-height: 20px; }
+  #mFoot { margin-top: auto; padding-top: 40px; padding-bottom: env(safe-area-inset-bottom, 0px); font-size: 13px; line-height: 20px; }
+  /* 9/14 (Joel: "Linkedin in the footer is cut off"): on a short phone the
+     menu's foot row fell below the screen and the fixed sheet could not
+     scroll — the sheet scrolls now, and under 700px of height the links
+     tighten so the whole menu fits without scrolling */
+  #menu { overflow-y: auto; -webkit-overflow-scrolling: touch; }
+  @media (max-height: 700px) {
+    #menu { padding-top: 84px; }
+    .m-link { font-size: 26px; line-height: 40px; }
+    .m-label { margin-bottom: 6px; }
+    #mFoot { padding-top: 24px; }
+  }
 
   /* ================= shared ================= */
   #app { padding-top: 60px; min-height: 100vh; background: #fff; }
@@ -1182,13 +1193,13 @@ R.careers = () => `
    page carries (contact.html) — the statement, mail and phone, HQ, careers,
    follow, more, the team with their roles, and representation. The drafted
    "Let's make something that moves" and the New York line are gone. */
-const CT_TEAM = [
-  ['Austin Barbera', 'Co-Founder / Managing Director'],
-  ['Jake Krask', 'Co-Founder / Managing Partner'],
-  ['Carleigh Finch', 'Executive Producer / Head of Business Development'],
-  ['Jonny Edwards', 'Chief Executive Producer'],
-  ['Sarah Donnenberg', 'Executive Producer / Special Projects'],
-  ['Jay Wert', 'Executive Producer'],
+const CT_TEAM = [ /* 9/14: every name links out, the live site's mailtos */
+  ['Austin Barbera', 'Co-Founder / Managing Director', 'austin'],
+  ['Jake Krask', 'Co-Founder / Managing Partner', 'jake'],
+  ['Carleigh Finch', 'Executive Producer / Head of Business Development', 'carleigh'],
+  ['Jonny Edwards', 'Chief Executive Producer', 'jonny'],
+  ['Sarah Donnenberg', 'Executive Producer / Special Projects', 'sarah'],
+  ['Jay Wert', 'Executive Producer', 'jay'],
 ];
 const CT_REPS = [
   ['West Coast', 'Stephanie Stephens Reps'],
@@ -1204,8 +1215,8 @@ R.contact = () => `
     <div class="kv"><p class="k">Headquarters</p><p class="v"><a href="https://www.google.com/maps/search/?api=1&query=5976+Washington+Blvd,+Culver+City,+CA+90232" target="_blank" rel="noopener">5976 Washington Blvd,<br>Culver City, CA 90232</a></p></div>
     <div class="kv"><p class="k">Careers</p><p class="v"><a href="mailto:careers@sixtwentysix.co">careers@sixtwentysix.co</a></p></div>
     <div class="kv"><p class="k">Follow us</p><p class="v"><a href="https://www.instagram.com/sixtwentysixco/" target="_blank" rel="noopener">Instagram</a><br><a href="https://www.linkedin.com/company/sixtwentysix/" target="_blank" rel="noopener">LinkedIn</a></p></div>
-    <div class="kv"><p class="k">More</p><p class="v"><a href="mailto:hello@sixtwentysix.co?subject=Capabilities%20deck%20request">Request our capabilities deck</a><br><a href="mailto:hello@sixtwentysix.co?subject=Newsletter">Subscribe to our newsletter</a></p></div>
-    <div class="kv"><p class="k">Team</p>${CT_TEAM.map(([n, r]) => `<p class="v">${esc(n)}<span class="r">${esc(r)}</span></p>`).join('')}</div>
+    <div class="kv"><p class="k">More</p><p class="v"><a href="mailto:hello@sixtwentysix.co?subject=SX%20-%20Capabilities%20Deck%20Request&body=Hi!%20I%20am%20requesting%20the%20SixTwentySix%20capabilities%20deck.">Request our capabilities deck</a><br><a href="mailto:hello@sixtwentysix.co?subject=Newsletter">Subscribe to our newsletter</a></p></div>
+    <div class="kv"><p class="k">Team</p>${CT_TEAM.map(([n, r, u]) => `<p class="v"><a href="mailto:${u}@sixtwentysix.co">${esc(n)}<span class="r">${esc(r)}</span></a></p>`).join('')}</div>
     <div class="kv"><p class="k">Representation</p>${CT_REPS.map(([n, r]) => `<p class="v">${esc(n)}<span class="r">${esc(r)}</span></p>`).join('')}</div>
   </div>
   ${FOOTER}`;

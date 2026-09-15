@@ -261,6 +261,22 @@
       const release = () => {
         if (held) { const h = held; held = null; leave(h); }
       };
+      /* THE SWITCH (9/14, Joel: "when you click on one thumbnail then click
+         on another, for about half a second all of the opacity goes back to
+         100% before fading again"): moving the preview from one tile to
+         another used to release the first at pointerdown and light the
+         second at click — two events, a tap delay apart, so the ghost
+         dropped between them and every tile faded up and back down. The
+         hand-off now happens in ONE synchronous step (leave, then enter, in
+         the same task): the ghost class is removed and put back before the
+         browser ever paints, so the rest of the grid never brightens. */
+      const switchTo = tile => {
+        if (held && held !== tile) { const h = held; held = null; leave(h); }
+        lock = false;
+        enter(tile);
+        held = tile;
+      };
+      const onATile = target => cfg.tiles.some(t => t.el.contains(target));
       const cancelPress = () => { clearTimeout(timer); timer = null; press = null; };
       cfg.tiles.forEach(tile => {
         tile.el.classList.add('sx-holdable');
@@ -272,14 +288,11 @@
              "loops still sometimes play when you scroll") gets no hold
              timer and its click is swallowed below */
           if (window.SXInput && window.SXInput.stopper) { press = { tile, stopper: true }; return; }
-          if (held && held !== tile) release();
           press = { tile, x: e.clientX, y: e.clientY, fired: false };
           timer = setTimeout(() => {
             if (!press || press.tile !== tile) return;
             press.fired = true;
-            lock = false;
-            enter(tile);
-            held = tile;
+            switchTo(tile);
           }, 260);
         });
         tile.el.addEventListener('pointermove', e => {
@@ -306,17 +319,16 @@
              the first tap previews (same as the hold), the second opens */
           if (held !== tile) {
             e.preventDefault(); e.stopPropagation();
-            if (held) release();
-            lock = false;
-            enter(tile);
-            held = tile;
+            switchTo(tile);
           }
         }, true);
       });
       /* a tap anywhere else, or a real scroll, ends the preview */
       document.addEventListener('pointerdown', e => {
         if (!fromTouch(e) || !held) return;
-        if (!held.el.contains(e.target)) release();
+        /* a finger landing on ANOTHER tile of this grid is a switch, handled
+           in one step by that tile's own tap; only a tap elsewhere lets go */
+        if (!held.el.contains(e.target) && !onATile(e.target)) release();
       }, true);
       window.addEventListener('scroll', () => {
         if (held && Math.abs(window.scrollY - startScrollY) > 40) release();

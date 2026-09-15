@@ -362,6 +362,7 @@ html.sx-arriving::before {
     word-break: break-word; transition: color 0.5s ease;
   }
   .foot-col .b, .foot-b { font-weight: 700; }
+  .foot-col .b { white-space: nowrap; } /* 9/14: FOLLOW US on one line */
 
   /* Everything below the work grid shifts when the grid relayouts.
      The wrapper spans the whole page, so it must not eat mouse events —
@@ -1015,8 +1016,12 @@ document.querySelectorAll('#toggles .tbtn').forEach(btn => {
   });
 });
 
+/* the first layout is the page's opening state, not a change — no slide
+   (the 0.45s transform transition is for the cluster) */
+document.getElementById('below').style.transition = 'none';
 layout(defaultCols());
 markToggle(COLS);
+requestAnimationFrame(() => { document.getElementById('below').style.transition = ''; });
 
 window.addEventListener('resize', () => {
   fitHero();

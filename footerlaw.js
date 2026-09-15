@@ -93,6 +93,16 @@
     const mo = new MutationObserver(() => requestAnimationFrame(apply));
     mo.observe(pg, { attributes: true, attributeFilter: ['style'] });
     mo.observe(foot, { attributes: true, attributeFilter: ['style'] });
+    /* 9/14 (Joel: "when you reload and scroll down without toggling a
+       different grid view on the home page, the footer does not appear"):
+       the home's #below slides to its new seat on a 0.45s transform
+       transition, and this law measured the footer MID-slide — so it
+       corrected against a position that then kept moving, and the footer
+       ended a whole grid's height past the page's end (or above it).
+       Any transition that moves a box re-seats the footer once it lands. */
+    pg.addEventListener('transitionend', e => {
+      if (/^(transform|top|height)$/.test(e.propertyName)) requestAnimationFrame(apply);
+    });
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', arm);
   else arm();
@@ -136,9 +146,13 @@
     const href = a.getAttribute('href') || '';
     if (!/^[a-z-]+\.html(\?|#|$)/i.test(href)) return;
     const img = a.querySelector('img');
-    const dark = /(case-study\.html\?work=|director\.html)/.test(href);
+    /* a work opens on its film's frame: the tapped tile's art as a 16:9 band
+       at the top of a white curtain (the hero's exact crop, 9/14); a director
+       page opens dark */
+    const band = /case-study\.html\?work=/.test(href);
+    const dark = /director\.html/.test(href);
     try {
-      window.parent.postMessage({ sx: 'curtain', dark: dark, art: dark ? ((img && (img.currentSrc || img.src)) || '') : '' }, '*');
+      window.parent.postMessage({ sx: 'curtain', dark: dark, band: band, art: band ? ((img && (img.currentSrc || img.src)) || '') : '' }, '*');
     } catch (err) {}
   });
 })();

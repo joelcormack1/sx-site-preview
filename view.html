@@ -175,11 +175,11 @@
   curtain.appendChild(curtainArt);
   document.body.appendChild(curtain);
   let holding = false, curtainT = null;
-  const DARK_PAGES = /(case-study\.html\?work=|director\.html)/;
+  const DARK_PAGES = /director\.html/; /* a work page is white under its film's frame (9/14) */
   /* a curtain raised by a click drops itself after 1.2s unless the frame
      really starts leaving (its pagehide confirms it); a confirmed curtain
      waits for the new page, 8s at most (9/14, second pass) */
-  const curtainOn = (dark, art, confirmed) => {
+  const curtainOn = (dark, art, confirmed, band) => {
     curtain.style.background = dark ? '#000' : '#fff';
     curtain.style.transition = 'opacity 0.12s ease';
     /* the art is decoded before the curtain shows, so it never opens on a
@@ -187,7 +187,11 @@
     let shown = false;
     const show = () => { if (shown) return; shown = true; curtain.style.opacity = '1'; };
     curtainArt.style.display = 'none';
-    if (dark && art) {
+    if (band && art) {
+      /* the work page's hero is the film's 16:9 frame at full width: the
+         art sits in that exact band (56.25vw tall) on white, so the page
+         that arrives underneath is pixel-identical */
+      curtainArt.style.height = '56.25vw';
       curtainArt.src = String(art);
       curtainArt.style.display = 'block';
       const ready = curtainArt.decode ? curtainArt.decode() : Promise.resolve();
@@ -205,7 +209,7 @@
   };
   window.addEventListener('message', e => {
     const m = e.data || {};
-    if (m.sx === 'curtain') curtainOn(!!m.dark, m.art || '');
+    if (m.sx === 'curtain') curtainOn(!!m.dark, m.art || '', false, !!m.band);
     else if (m.sx === 'hold') holding = true;
     else if (m.sx === 'ready') curtainOff();
   });
