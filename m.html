@@ -173,11 +173,15 @@
   .grid.g2 .tile .d { font-size: 8.5px; }
   /* the tap law's ghost: the rest of the grid dims while one tile plays —
      and, 9/15 (Joel: "the other images should get smaller because of the
-     phone scale"), their pictures draw in a little too */
-  .tile { transition: opacity 0.35s ease; }
-  .tile .ph { transition: transform 0.45s cubic-bezier(0.16,1,0.3,1); transform-origin: center center; }
-  .grid.ghost .tile:not(.playing) { opacity: 0.15; }
-  .grid.ghost .tile:not(.playing) .ph { transform: scale(0.94); }
+     phone scale"), they recede. The first cut drew only the picture in by
+     6%, which at 15% opacity no eye can see (Joel, same day: "all of the
+     other thumbnails aren't shrinking smaller"): the WHOLE tile (picture
+     and caption) now steps back to 85%, a clear 12px inset on each side of
+     a two-up tile. The transition lives on .tile itself and names both
+     properties: the reveal (.fdm, 22px rise) shares the same transform, so
+     an opacity-only transition here would snap the rise. */
+  .tile { transition: opacity 0.45s cubic-bezier(0.16,1,0.3,1), transform 0.6s cubic-bezier(0.16,1,0.3,1); transform-origin: center center; }
+  .grid.ghost .tile:not(.playing) { opacity: 0.15; transform: scale(0.85); }
 
   /* tabs — site language: text + 1px underline the width of the word (Figma 551:951-954) */
   .tabs { display: flex; gap: 44px; margin: 28px 0 40px; flex-wrap: wrap; }
@@ -537,7 +541,7 @@ const SVC_STEPS = [
     { items: [
       { t: 'Commercial',   x: 63,  y: 0, w: 277, b: 'From :06s to :60s, we understand how to put brands - and their agencies - in the spotlight.' },
       { t: 'Social',       x: 402.6,  y: 0, w: 213, b: 'From captions to content, we’re always looking for a way to break the internet.' },
-      { t: 'Music videos', x: 673.9,  y: 0, w: 312, b: 'Every song needs a visual story. We collaborate with artists and labels to help bring their songs to life.' },
+      { t: 'Music Videos', x: 673.9,  y: 0, w: 312, b: 'Every song needs a visual story. We collaborate with artists and labels to help bring their songs to life.' },
       { t: 'Experiential', x: 1050.9, y: 0, w: 255, b: 'We create experiences that move people and move the needle for brands.' },
       { t: 'Branded',      x: 1367, y: 0, w: 298, b: 'We craft and create stories with deeper meaning, connecting with the audience beyond the “Presented by”.' },
     ]},
@@ -549,16 +553,15 @@ const SVC_STEPS = [
       { t: 'Color',     x: 63,    y: 210, w: 314.8, b: 'We set the perfect mood, grading footage to deliver ownable, distinct color stories to your content.' },
       { t: 'Music',     x: 492.1,  y: 210, w: 314.8, b: 'From original compositions to sourcing the next big track, we orchestrate cues and find hidden gems to set your content apart.' },
       { t: 'Sound',     x: 921.1,  y: 210, w: 314.8, b: 'Whooshes, vrooms, clicks, and clacks, we immerse audiences into the story through sound, adding depth and dimension to every moment.' },
-      { t: 'Motion graphics', x: 1350.2, y: 210, w: 314, b: 'Animating ideas into dynamic visual narratives, we combine design and movement to create impactful storytelling experiences.' },
+      { t: 'Motion Graphics', x: 1350.2, y: 210, w: 314, b: 'Animating ideas into dynamic visual narratives, we combine design and movement to create impactful storytelling experiences.' },
     ]},
     { items: [
-      { t: 'Event production', x: 63,  y: 1,   w: 438, b: 'We handle every logistical and creative detail, ensuring smooth execution from build-out to showtime.' },
-      { t: 'Event capture',    x: 645,  y: 1,   w: 438, b: 'We document every moment with high-quality video and photography, turning live experiences into lasting content.' },
+      { t: 'Event Production', x: 63,  y: 1,   w: 438, b: 'We handle every logistical and creative detail, ensuring smooth execution from build-out to showtime.' },
+      { t: 'Event Capture',    x: 645,  y: 1,   w: 438, b: 'We document every moment with high-quality video and photography, turning live experiences into lasting content.' },
       { t: 'Livestream',       x: 1227, y: 1,   w: 438, b: 'We produce seamless live broadcasts, extending the reach of events to global audiences in real time.' },
       { t: 'Fabrication',      x: 63,  y: 202, w: 300, b: 'We design and build custom installations, transforming spaces into immersive brand experiences.' },
       { t: 'BTS',              x: 645,  y: 202, w: 438, b: 'We document behind-the-scenes content that pulls back the curtain, showcasing the energy and creativity behind the experience.' },
-      { t: 'Event recap',      x: 1227, y: 202, w: 438, b: 'We craft compelling highlight videos that capture the essence of the event and keep the momentum going long after it\u2019s over.' },
-      { t: 'Event recap',      x: 1227, y: 202, w: 438, b: 'We craft compelling highlight videos that capture the essence of the event and keep the momentum going long after it’s over.' },
+      { t: 'Event Recap',      x: 1227, y: 202, w: 438, b: 'We craft compelling highlight videos that capture the essence of the event and keep the momentum going long after it\u2019s over.' },
     ]},
   ];
 const CS_WORKS = [
