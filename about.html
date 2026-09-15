@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=1728">
-<script src="footerlaw.js?v=20260914a"></script>
+<script src="footerlaw.js?v=20260914c"></script>
 <title>SIXTWENTYSIX — About</title>
 <!--
   ABOUT — synced 1:1 to Full Site frame 220:1095 (2026-08-18).
@@ -397,7 +397,10 @@ const io = new IntersectionObserver(entries => {
        frame at full width, centred in whatever viewport is there — a
        laptop shows it just under the header, an iPad holds it mid-screen.
        Supersedes the 8/20 fill-the-viewport crop. */
-    const REEL_H = Math.round(1732 * 9 / 16);
+    /* 9/14 (second pass, Joel: "go back to the sizzle locking full screen,
+       just make sure its centered"): the locked reel is the whole viewport
+       again (the 8/20 law — the video covers it, centred), on any aspect. */
+    const REEL_H = Math.max(957, Math.round(window.innerHeight));
     const REEL_GROW = REEL_H - 957;
     const heroEl = document.getElementById('abHero');
     const rz = document.createElement('div');
@@ -482,7 +485,7 @@ const io = new IntersectionObserver(entries => {
        opacity across the last value. The footer stays outside. */
     const cvLock = document.createElement('div');
     cvLock.id = 'cvBelowLock';
-    cvLock.style.cssText = 'position:absolute; left:0; top:0; width:1728px; height:0; will-change:transform, opacity;';
+    cvLock.style.cssText = 'position:absolute; left:0; top:0; width:1728px; height:0;';
     pg.appendChild(cvLock);
     cvBelow.forEach(el => cvLock.appendChild(el));
     /* -64: the team photos dissolve ~92% up their cells, which left a dead
@@ -510,7 +513,7 @@ const io = new IntersectionObserver(entries => {
       window.SX_SNAPS = [window.AB_SNAP_REEL, window.AB_SNAP_CV].filter(Boolean);
     }
     layoutCv();
-    window.addEventListener('resize', () => { layoutCv(); cvScroll(); });
+    window.addEventListener('resize', () => { layoutCv(); cvLock.__mode = null; cvScroll(); });
 
     /* the scroll only STEPS the values now — the browser does the pinning */
     function cvScroll() {
@@ -519,12 +522,18 @@ const io = new IntersectionObserver(entries => {
       if (window.scrollY >= pinStart) {
         setVal(Math.min(vals.length - 1, Math.floor((ty / CV_SPAN) * vals.length)));
       }
+      /* 9/14 (second pass, Joel: "for the core team remove the opacity ...
+         it is making the headshots move up and back down"): the team section
+         is pinned the way the stepper is — position:fixed while the values
+         run (zero lag; the scroll-driven translate corrected one frame late
+         and bobbed), absolute before and after — and never dimmed. */
       const p = window.scrollY - pinStart;
-      const step = CV_SPAN / vals.length;
-      const lift = Math.max(0, Math.min(CV_SPAN, CV_SPAN - p));
-      const k = Math.max(0, Math.min(1, (p - (CV_SPAN - step)) / step));
-      cvLock.style.transform = 'translateY(' + (-lift) + 'px)';
-      cvLock.style.opacity = (0.15 + 0.85 * k).toFixed(3);
+      const mode = p < 0 ? 'pre' : (p <= CV_SPAN ? 'lock' : 'post');
+      if (mode !== cvLock.__mode) {
+        cvLock.__mode = mode;
+        if (mode === 'lock') cvLock.style.cssText = 'position:fixed; left:50%; margin-left:-864px; top:' + (-(pinStart + CV_SPAN)) + 'px; width:1728px; height:0; z-index:3;';
+        else cvLock.style.cssText = 'position:absolute; left:0; top:0; width:1728px; height:0; transform:translateY(' + (mode === 'pre' ? -CV_SPAN : 0) + 'px);';
+      }
     }
     window.addEventListener('scroll', cvScroll, { passive: true });
     cvScroll();
@@ -746,9 +755,9 @@ document.querySelectorAll('.fd').forEach(el => io.observe(el));
   requestAnimationFrame(roll);
 })();
 </script>
-<script src="smoothscroll.js?v=20260914a"></script>
-<script src="logomorph.js?v=20260914b"></script>
-<script src="menu.js?v=20260914a"></script>
+<script src="smoothscroll.js?v=20260914c"></script>
+<script src="logomorph.js?v=20260914c"></script>
+<script src="menu.js?v=20260914c"></script>
 <script>
 /* Safari back-forward cache restores dead builds from memory - always reload */
 window.addEventListener('pageshow', function (e) { if (e.persisted) location.reload(); });

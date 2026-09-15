@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=1728">
-<script src="footerlaw.js?v=20260914a"></script>
+<script src="footerlaw.js?v=20260914c"></script>
 <title>SIXTWENTYSIX — Services</title>
 <!--
   SERVICES — synced 1:1 to Full Site frame 220:1353 + stepper states
@@ -531,6 +531,7 @@ const io = new IntersectionObserver(entries => {
     document.getElementById('below').style.top = (EXTRA + grow - 118) + 'px';
     document.getElementById('page').style.height = (4081 + EXTRA + grow - 205) + 'px'; /* testimonials -> footer on the ~300 rhythm (8/21 audit) */
     colsEl.style.top = COLS_TOP + 'px';
+    lockEl.__mode = null; /* a new seat: re-pin from scratch */
     driveLock();
   }
   /* THE BELOW LOCK (9/14, Joel: "our blueprint should just be locked in
@@ -549,16 +550,25 @@ const io = new IntersectionObserver(entries => {
   const belowEl = document.getElementById('below');
   const lockEl = document.createElement('div');
   lockEl.id = 'belowLock';
-  lockEl.style.cssText = 'position:absolute; left:0; top:0; width:1728px; height:0; will-change:transform, opacity;';
+  lockEl.style.cssText = 'position:absolute; left:0; top:0; width:1728px; height:0;';
   [...belowEl.children].forEach(ch => { if (!ch.classList.contains('footer')) lockEl.appendChild(ch); });
   belowEl.insertBefore(lockEl, belowEl.firstChild);
   function driveLock() {
     if (REVEAL || !EXTRA) return;
     const p = window.scrollY - pinStart();
     const step = EXTRA / STEPS.length;
-    const lift = Math.max(0, Math.min(EXTRA, EXTRA - p));
     const k = Math.max(0, Math.min(1, (p - (EXTRA - step)) / step));
-    lockEl.style.transform = 'translateY(' + (-lift) + 'px)';
+    /* 9/14 (second pass): pinned like the stepper — position:fixed while
+       the steps run, absolute before and after. The scroll-driven translate
+       corrected one frame late under the scripted scroll and bobbed. */
+    const mode = p < 0 ? 'pre' : (p <= EXTRA ? 'lock' : 'post');
+    if (mode !== lockEl.__mode) {
+      lockEl.__mode = mode;
+      if (mode === 'lock') {
+        const belowTop = parseFloat(belowEl.style.top) || 0; /* the wrapper's origin is #below's top */
+        lockEl.style.cssText = 'position:fixed; left:50%; margin-left:-864px; top:' + (belowTop - pinStart() - EXTRA) + 'px; width:1728px; height:0; z-index:3;';
+      } else lockEl.style.cssText = 'position:absolute; left:0; top:0; width:1728px; height:0; transform:translateY(' + (mode === 'pre' ? -EXTRA : 0) + 'px);';
+    }
     lockEl.style.opacity = (0.15 + 0.85 * k).toFixed(3);
   }
   /* FIXED-emulated pin (Joel 8/22 — the stepper was jittering): native
@@ -890,9 +900,9 @@ const io = new IntersectionObserver(entries => {
 
 document.querySelectorAll('.fd').forEach(el => io.observe(el));
 </script>
-<script src="smoothscroll.js?v=20260914a"></script>
-<script src="logomorph.js?v=20260914b"></script>
-<script src="menu.js?v=20260914a"></script>
+<script src="smoothscroll.js?v=20260914c"></script>
+<script src="logomorph.js?v=20260914c"></script>
+<script src="menu.js?v=20260914c"></script>
 <script>
 /* Safari back-forward cache restores dead builds from memory - always reload */
 window.addEventListener('pageshow', function (e) { if (e.persisted) location.reload(); });
