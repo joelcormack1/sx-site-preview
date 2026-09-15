@@ -186,7 +186,7 @@
         Object.assign(c.el.style, { left: el + 'px', top: (et + eh + c.gap) + 'px' });
       });
       const v = tile.el.querySelector('video');
-      if (v) v.play().catch(() => {});
+      if (v) { v.style.display = ''; v.play().catch(() => {}); }
       if (cfg.onEnter) cfg.onEnter(tile);
     }
 
@@ -210,8 +210,14 @@
       } else {
         (tile.caps || []).forEach(c => c.el.classList.remove('is-hover'));
       }
+      /* 9/15 (Joel, phone: "when you click on one and then another, the
+         last one doesn't lose opacity"; the iPad's "1 or 2 thumbnails do
+         not lower in opacity"): WebKit keeps a <video> that has played on
+         its own compositor layer and can ignore the tile's opacity, so the
+         old tile LOOKED fully lit through its paused loop. The loop is
+         taken off screen outright on leave and brought back on enter. */
       const v = tile.el.querySelector('video');
-      if (v) v.pause();
+      if (v) { v.pause(); v.style.display = 'none'; }
       if (cfg.onLeave) cfg.onLeave(tile);
     }
 

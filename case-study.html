@@ -1081,8 +1081,8 @@ document.querySelectorAll('.fd').forEach(el => io.observe(el));
     /* spots: hover plays the loop and ghosts the rest; on touch the first
        tap plays, the second opens (the site's tap law) */
     let armed = null;
-    const lightUp = a => { rail.classList.add('lit'); a.classList.add('on'); const v = a.querySelector('video'); if (v) v.play().catch(() => {}); };
-    const lightOff = a => { a.classList.remove('on'); const v = a.querySelector('video'); if (v) v.pause(); if (!rail.querySelector('.cs-rcell.on')) rail.classList.remove('lit'); };
+    const lightUp = a => { rail.classList.add('lit'); a.classList.add('on'); const v = a.querySelector('video'); if (v) { v.style.display = ''; v.play().catch(() => {}); } };
+    const lightOff = a => { a.classList.remove('on'); const v = a.querySelector('video'); if (v) { v.pause(); v.style.display = 'none'; } if (!rail.querySelector('.cs-rcell.on')) rail.classList.remove('lit'); };
     cellEls.forEach(a => {
       if (!a.classList.contains('cs-rcell')) return;
       a.addEventListener('pointerenter', e => { if (e.pointerType !== 'touch') lightUp(a); });
