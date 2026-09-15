@@ -275,10 +275,25 @@
       var list = [].concat(window.SX_SNAPS || [], window.SX_SNAP ? [window.SX_SNAP] : []);
       return list.filter(function (z) { return z && z.step > 0 && z.count > 0; });
     }
+    /* A SLOW ZONE (9/15, Joel on the core values: "too jolty and glitchy
+       ... maybe it's not one swipe per, but just slowed down"): a zone
+       published with {slow: true, gain} is not stepped at all — inside it
+       a finger's drag and flick simply count for `gain` of themselves, so
+       the values roll by slowly and continuously, no clamps, no glides.
+       The entrance gate still lands a fling on the zone's first step. */
+    function slowZoneAt(y) {
+      var zs = snapZones();
+      for (var i = 0; i < zs.length; i++) {
+        var z = zs[i];
+        if (z.slow && y >= z.start && y < z.start + z.count * z.step) return z;
+      }
+      return null;
+    }
     function snapZone(y) {
       var zs = snapZones();
       for (var i = 0; i < zs.length; i++) {
         var z = zs[i], end = z.start + z.count * z.step;
+        if (z.slow) continue;
         if (y >= z.start - z.step && y < end + z.step) return z;
       }
       return null;
@@ -332,8 +347,10 @@
       /* clientY inside the frame is already in 1728-canvas units (view.html
          scales the whole iframe), so the finger tracks the content 1:1 and
          what is under it stays under it. No multiplier, unlike the wheel. */
+      var sz = slowZoneAt(window.scrollY);
+      if (sz) dy *= (sz.gain || 0.3);        // a slow zone: the hand counts for less
       var inst = dy / dt * 1000;
-      tV = tV ? tV * 0.4 + inst * 0.6 : inst;  // smoothed, for the release
+      tV = tV ? tV * 0.4 + inst * 0.6 : inst;  // smoothed, for the release (already slowed inside a zone)
       tY = y; tT = now;
       push(dy);
       if (snapK !== null) {

@@ -371,7 +371,17 @@ const io = new IntersectionObserver(entries => {
     copy.style.opacity = '0';
     setTimeout(() => { copy.textContent = COPY[i]; copy.style.opacity = ''; }, 180);
   }
-  vals.forEach(v => v.addEventListener('click', () => setVal(Number(v.dataset.i))));
+  /* 9/15 (Joel: "if you click through the core values ... to Make It
+     Count, you can keep scrolling from there. Right now you click it and
+     when you start to scroll it goes back to Fueled By Passion"): a click
+     also moves the scroll to that value's slot in the pinned run, so the
+     scroll-driven stepping continues FROM the clicked value. */
+  vals.forEach(v => v.addEventListener('click', () => {
+    const i = Number(v.dataset.i);
+    setVal(i);
+    const z = window.AB_SNAP_CV;
+    if (z) window.scrollTo({ top: Math.round(z.start + i * z.step + 1), behavior: 'smooth' });
+  }));
   /* THE LOCK (Joel 8/19): scroll until the strip sits dead center, the page
      then holds while continued scrolling steps through each value, and once
      Make It Count lands the page rolls on. Implemented as a scroll span:
@@ -509,7 +519,12 @@ const io = new IntersectionObserver(entries => {
       t = Math.max(t, Math.ceil(seatMin));
       stickBox.style.top = t + 'px';
       /* one swipe = one value on touch (smoothscroll.js reads this) */
-      window.AB_SNAP_CV = { start: BLOCK_TOP - t, step: CV_SPAN / vals.length, count: vals.length };
+      /* 9/15 (Joel: "too jolty and glitchy on the core value section, maybe
+         it's not one swipe per, but just slowed down"): the values are a SLOW
+         zone now — a finger rolls through them continuously at 0.3 of its
+         travel (a fast flick covers about a value and a half, no clamps, no glides). The wheel's
+         200px-a-value roll (8/21) is untouched. */
+      window.AB_SNAP_CV = { start: BLOCK_TOP - t, step: CV_SPAN / vals.length, count: vals.length, slow: true, gain: 0.25 };
       window.SX_SNAPS = [window.AB_SNAP_REEL, window.AB_SNAP_CV].filter(Boolean);
     }
     layoutCv();

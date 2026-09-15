@@ -434,7 +434,14 @@ const io = new IntersectionObserver(entries => {
      The whole block (heading + rows + copy) pins centered in the viewport
      on native sticky; continued scroll steps the four rows at the house
      pacing (200px each); then the page rolls on. */
-  rows.forEach((r, i) => r.addEventListener('click', () => show(i)));
+  /* 9/15 (Joel): a click also moves the scroll to that row's slot, so the
+     scroll-driven stepping continues from the clicked row instead of
+     snapping back to row one */
+  rows.forEach((r, i) => r.addEventListener('click', () => {
+    show(i);
+    const z = window.SX_SNAP;
+    if (z && z.count === rows.length) window.scrollTo({ top: Math.round(z.start + i * z.step + 1), behavior: 'smooth' });
+  }));
   if (!location.search.includes('reveal=1')) {
     const pg2 = document.getElementById('page');
     const pgTop = pg2.getBoundingClientRect().top;

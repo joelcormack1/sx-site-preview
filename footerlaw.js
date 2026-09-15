@@ -82,7 +82,12 @@
            "i don't see it"). Hold until the footer is a third in, then play
            the whole rise across the visible stretch, landing exactly at
            the page bottom. */
-        const pp = Math.max(0, Math.min(1, (p - 0.35) / 0.65));
+        /* 9/15 (Joel, iPad vertical: "if you are at the bottom, even if you
+           haven't scrolled all the way but you can see the footer, add it"):
+           the mark is fully up once the footer is 60% on screen, not only at
+           the very last pixel — a flick that settles with the footer in view
+           shows the whole SIX26 */
+        const pp = Math.max(0, Math.min(1, (p - 0.15) / 0.45));
         const e = pp * pp * (3 - 2 * pp);
         mark.style.transform = 'translateY(' + ((1 - e) * 100).toFixed(2) + '%)';
       };
