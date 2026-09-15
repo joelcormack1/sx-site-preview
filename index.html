@@ -579,7 +579,12 @@ function fitHero() {
      grid had NO cap, so intent banked during the intro slingshotted through
      the work. Now the entrance runs at 2200 and the rest of the page at
      2600 — one tempo, no cliff. */
-  window.SX_SCROLL_MAXV = REVEAL ? null : (window.scrollY < 960 ? 2200 : 2600);
+  /* 9/14 (Joel: "speed up the scrolling on the home page, it's soooo slow"):
+     the 2600px/s limit that used to hold the WHOLE page (9/8) made every
+     flick crawl at one screen a second; the limit now paces only the
+     entrance (morph + reel fade), and past it the page runs free like every
+     other page. */
+  window.SX_SCROLL_MAXV = REVEAL ? null : (window.scrollY < 960 ? 2200 : null);
 }
 fitHero();
 /* Rounded lerp: every header element lands on whole pixels. Fractional tops
@@ -845,7 +850,7 @@ window.addEventListener('scroll', () => {
      (the services stepper's SX_SCROLL_MAXV mechanism) holds the entrance
      to a cinematic pace; past the entrance the page scrolls free. Gentle
      scrolling never reaches the cap, so the soft feel is untouched. */
-  window.SX_SCROLL_MAXV = window.scrollY < SCRUB_MORPH * 0.8 + SCRUB_FADE ? 2200 : 2600; /* 9/8: 1600/null -> 2200/2600, see fitHero */
+  window.SX_SCROLL_MAXV = window.scrollY < SCRUB_MORPH * 0.8 + SCRUB_FADE ? 2200 : null; /* 9/14: the limit paces the entrance only (was 2600 for the whole page) */
   /* 9/4 (Joel): heading back UP, the reassembly FINISHES ITSELF — if the
      wheel stops anywhere inside the morph zone the page glides the last
      stretch to 0 on its own, so the logo never strands mid-morph. Gated

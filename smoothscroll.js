@@ -24,6 +24,12 @@
   /* Lenis: value = lerp(value, target, 1 - exp(-DECAY * dt)) where the decay
      constant reproduces lerp 0.1 per frame at 60fps: -ln(1 - 0.1) * 60. */
   var DECAY = 4.6; // Joel 8/21: slower, silkier tempo (was 6.3244 = Lenis lerp 0.1; this ~ lerp 0.074)
+  /* 9/14 (Joel: "speed up the scrolling ... soooo slow"): a finger's flick
+     coasts on a longer curve than the wheel's damper — the release velocity
+     is reproduced exactly (offset = v / FLING_DECAY) and eases out over
+     ~0.3s instead of ~0.2s, so the same flick travels ~45% further. Back
+     to the wheel's tempo the moment the page settles or a hand returns. */
+  var FLING_DECAY = 3.2, flinging = false;
 
   /* ---- DEBUG READOUT (9/14): ?sxdebug=1 paints the engine's state on the
      page itself, for devices with no console (the iPad "not scrolling"
@@ -113,12 +119,13 @@
        you finger slide"): while a finger is on the glass the damper closes
        on it at 11 instead of 4.6 — the page keeps up with the hand (a
        ~5-frame lag instead of ~13) — and lets go at the site's own tempo. */
-    current += (target - current) * (1 - Math.exp(-(riding ? 11 : DECAY) * dt));
+    current += (target - current) * (1 - Math.exp(-(riding ? 11 : (flinging ? FLING_DECAY : DECAY)) * dt));
     var pacing = (cap != null && wanted > target) || (pull != null && current > target) ||
                  (window.SX_SCROLL_DRIVE != null); // still riding: stay alive
     if (Math.abs(target - current) < 0.6 && !pacing) {
       current = target;
       animating = false;
+      flinging = false;
     }
     window.scrollTo(0, Math.round(current));
     if (HUD) hudPaint();
@@ -294,6 +301,7 @@
          drop banked intent so the touch starts from where the page IS */
       wanted = animating ? current : window.scrollY;
       window.SX_SCROLL_DRIVE = null;
+      flinging = false; /* the hand is back: the wheel's tempo again */
       /* the snap zone: remember which step the finger started on and hold
          the gesture to one step either way */
       var z = snapZone(window.scrollY);
@@ -381,7 +389,8 @@
          still subject to every SX_SCROLL_* limit inside the tick. */
       if (performance.now() - tT < 100 && Math.abs(tV) > 200) {
         var dir = tV > 0 ? 1 : -1;
-        push(Math.max(-6500, Math.min(6500, tV)) / DECAY); /* 9/14: a flick carries further (was 4200) */
+        flinging = true;
+        push(Math.max(-9000, Math.min(9000, tV)) / FLING_DECAY); /* 9/14: a flick carries further and coasts longer (was 4200 / DECAY) */
         /* a fling never sails THROUGH a stepping section: it lands on the
            next zone's first step (or last step when swiping back up), so
            the reel -> core values swipe opens on value one, not value four.
