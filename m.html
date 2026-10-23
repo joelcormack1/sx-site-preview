@@ -1817,6 +1817,15 @@ function homeScroll() {
       document.body.appendChild(w);
       homeWipe = w;
     }
+    /* 10/21: the SX is a canvas since the 9/14 film, and cloneNode copies a
+       canvas BLANK, so the white half of the wipe lost its letters. Paint
+       the real header's current frame into the clone every wipe step. */
+    const oc = hdr.querySelectorAll('canvas'), wc = homeWipe.querySelectorAll('canvas');
+    oc.forEach((c, i) => {
+      const k = wc[i]; if (!k) return;
+      if (k.width !== c.width || k.height !== c.height) { k.width = c.width; k.height = c.height; }
+      const x = k.getContext('2d'); x.clearRect(0, 0, k.width, k.height); x.drawImage(c, 0, 0);
+    });
     hdr.style.clipPath = 'inset(0 0 ' + Math.max(0, HDR_H - t).toFixed(1) + 'px 0)';
     homeWipe.style.clipPath = 'inset(' + Math.max(0, t).toFixed(1) + 'px 0 0 0)';
   } else clearHomeWipe();

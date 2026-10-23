@@ -1,0 +1,1653 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
+<title>SIXTWENTYSIX</title>
+<!--
+  MOBILE v2 (2026-09-04). Joel's law: "use the logic of the current website
+  I built and apply mobile sizing from the Figma Full Site Mobile frames."
+  Every desktop law translated, not simplified:
+  - THE MORPH: SIX26 -> SX in the header on scroll — I/2/6 fade, the X
+    glides into the S, the (R) returns after lock. NO scale change (Joel
+    9/4). Reverse plays going back up; menu open = SIX26 at the same size.
+  - THE REEL MOMENT (Joel 9/8): on home the header's white dissolves as
+    the morph lands so the sizzle reel runs full-bleed under white marks,
+    then the statement sheet's edge wipes the white back in (desktop law).
+  - THE LOOP LAW: every work tile plays its own loop — on mobile the tile
+    in view plays (one at a time, muted).
+  - THE FOOTER LAW: black flush to the very bottom, black overscroll.
+  - Density toggle: rows of 2 / rows of 1 (desktop's 4/3/2/1 cluster,
+    mobile sizes), persisted.
+  - Tabs are text + underline (site language), never bordered chips.
+  - Director flow per the live site: loop + name -> scroll darkens the
+    film (0.79, the desktop pv scrim) -> about/awards over it -> work.
+  - Statements verbatim with the desktop bold splits. Spelling laws hold.
+  - Generated from m-src.html by inject-m.py (logos inline; loops/copy/
+    ledgers lifted from the desktop pages so nothing drifts).
+  2026-09-08 sync to Joel's Figma edits (Full Site Mobile, 305:3889):
+  - Type scale down: statements 20/23, body 12/17, tabs 12, tile caps 14,
+    section labels 24/28, page titles 32/36. Cities show on every page.
+  - Services stepper "slides as you scroll from 1 2 3" (Joel's canvas
+    note): sticky 01 Creative / 02 Production / 03 Post / 04 Experiential
+    row, the words glide left as each pillar's items scroll under it.
+  - Director: name + Back at the top-left over the film, SCROLL TO VIEW
+    MORE WORK cue, scroll darkens to 0.75 with role / awards / about.
+  - About: statement above the reel (reel 475 tall); Contact + Careers
+    restyled to the frames; Home density toggle = Joel's icon (2x2 / 1).
+  - Case Studies: desktop ledger + Live Action / Creative Studio /
+    Experiential tabs (11 / 4 / 8), opening on Live Action (Joel 9/11),
+    not the raw CMS list.
+-->
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  /* FOOTER LAW: bottom overscroll is black, top stays white */
+  /* iOS overscroll: the old 50/50 gradient REPEATS below the document and
+     its next tile starts white (Joel 9/8, "white under the footer every
+     time"). Now: black canvas, one non-repeating white sheet that runs from
+     far above the page down to 100px above its end — white when you pull
+     at the top, black when you pull past the footer. */
+  /* Safari tints its toolbar from the canvas colour, so the canvas stays
+     WHITE (a black canvas turned the whole bottom bar black, Joel 9/8).
+     The black under the footer comes from a fixed strip parked just below
+     the viewport (visible only when you pull past the end), and the root
+     refuses to rubber-band at all where iOS supports it. */
+  html { background: #fff; overscroll-behavior-y: none; }
+  body::after { content: ''; position: fixed; left: 0; right: 0; bottom: -400px; height: 400px; background: #000; z-index: -1; pointer-events: none; }
+  body { background: #fff; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #000; overscroll-behavior-y: none; }
+  a { color: inherit; text-decoration: none; }
+  img, video { display: block; max-width: 100%; }
+  .wrap { padding: 0 20px; }
+
+  /* ================= header + THE MORPH ================= */
+  /* THE REEL MOMENT (Joel 9/8, "same as the main site"): the header's white
+     is its own layer. On home it dissolves as the morph lands so the sizzle
+     reel runs full-bleed under white marks, then the statement sheet's
+     leading edge WIPES the white back in as it slides under the header
+     (desktop updateReelMoment). Interior pages: solid white. */
+  #hdr { position: fixed; top: 0; left: 0; right: 0; height: 60px; background: transparent; z-index: 40; }
+  #hdrBg { position: absolute; inset: 0; background: #fff; }
+  #hdr .in { height: 100%; position: relative; padding: 0 20px; z-index: 1; }
+  #hdr.snap, #hdr.snap * { transition: none !important; }
+  #lm { position: absolute; left: 20px; top: 17px; width: 160px; height: 26px; display: block; }
+  /* > child only: the (R) is two NESTED spans (ring + R) with their own
+     inline geometry — the old descendant rule forced them to 26px tall and
+     stacked the R above the ring (Joel's 9/8 screenshot) */
+  #lm > span { position: absolute; top: 0; height: 26px; display: block; }
+  #lm > span > svg { height: 100%; width: auto; }
+  #lm svg { display: block; }   /* every piece incl. the (R)'s ring + R: inline svgs sit on a baseline and sink */
+  #lm svg path { fill: #000; transition: fill 0.35s ease; }
+  /* dark chrome (director hero, the home reel moment): no white, marks in white */
+  #hdr.dark #hdrBg { opacity: 0; }
+  #hdr.dark #lm svg path { fill: #fff; }
+  #hdr.dark #lm canvas { filter: invert(1); } /* 9/14: the film's frames are black ink with alpha */
+  /* cities ride beside the mark on EVERY page (Figma header component):
+     left is driven by the morph (beside SIX26 at q=0, beside SX at q=1) */
+  #hdrCities { position: absolute; left: 186px; top: 18px; font-size: 8.5px; line-height: 12px; letter-spacing: 0.26px; text-transform: uppercase; transition: color 0.35s ease; }
+  #hdr.dark #hdrCities { color: #fff; }
+  #burger { position: absolute; right: 20px; top: 21px; width: 33px; height: 18px; background: none; border: 0; cursor: pointer; z-index: 2; }
+  #burger i { position: absolute; left: 0; width: 33px; height: 2px; background: #000; border-radius: 2px; transition: transform 0.4s cubic-bezier(0.65,0,0.35,1), opacity 0.2s ease, background 0.35s ease; }
+  #burger i:nth-child(1) { top: 0; } #burger i:nth-child(2) { top: 8px; } #burger i:nth-child(3) { top: 16px; }
+  #hdr.dark #burger i { background: #fff; }
+  body.menu-open #burger i:nth-child(1) { transform: translateY(8px) rotate(45deg); }
+  body.menu-open #burger i:nth-child(2) { opacity: 0; }
+  body.menu-open #burger i:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
+  body.menu-open #hdr #hdrBg { opacity: 1 !important; }
+  body.menu-open #hdr #burger i { background: #000; }
+  body.menu-open #hdr #lm svg path { fill: #000; }
+  body.menu-open #hdr #lm canvas { filter: none; }
+
+  /* ================= menu (Figma 551:87) ================= */
+  #menu { position: fixed; inset: 0; background: #fff; z-index: 30; padding: 92px 20px 24px;
+          transform: translateY(-102%); transition: transform 0.55s cubic-bezier(0.33,1,0.68,1);
+          display: flex; flex-direction: column; overflow-y: auto; }
+  body.menu-open #menu { transform: none; }
+  #mSearch { width: 100%; border: 0; outline: 0; font: 400 18px/1.2 'Helvetica Neue', Helvetica, sans-serif; letter-spacing: -0.5px; padding: 0 0 14px; background: transparent; }
+  #mSearch::placeholder { color: #a4a4a4; }
+  .m-rule { border-top: 1px solid #a4a4a4; margin-bottom: 34px; }
+  .m-label { font-size: 14px; margin-bottom: 10px; }
+  .m-link { display: block; font-weight: 700; font-size: 30px; line-height: 48px; letter-spacing: -0.9px; transition: opacity 0.25s ease; }
+  .m-link.dim { opacity: 0.18; }
+  #mResults a { display: block; padding: 8px 0; font-weight: 500; font-size: 17px; }
+  #mResults .k { color: #a4a4a4; font-size: 11px; text-transform: uppercase; margin-left: 8px; }
+  #mFoot { margin-top: auto; padding-top: 40px; padding-bottom: env(safe-area-inset-bottom, 0px); font-size: 13px; line-height: 20px; }
+  .ab-reel-chrome { position: absolute; left: 0; right: 0; bottom: 34px; height: 30px; pointer-events: none; opacity: 0; transition: opacity 0.35s ease; z-index: 6; }
+  .ab-reel-chrome.on { opacity: 1; pointer-events: auto; }
+  .ab-reel-chrome button { position: absolute; top: 0; width: 30px; height: 30px; padding: 0; border: 0; background: none; cursor: pointer; }
+  .ab-reel-chrome button img { width: 100%; height: 100%; display: block; }
+  .ab-reel-chrome .rc-audio { left: 20px; width: 26px; height: 29px; }
+  .ab-reel-chrome .rc-audio.off { opacity: 0.45; }
+  .ab-reel-chrome .rc-fs { right: 20px; }
+  /* 9/14 (Joel: "Linkedin in the footer is cut off"): on a short phone the
+     menu's foot row fell below the screen and the fixed sheet could not
+     scroll — the sheet scrolls now, and under 700px of height the links
+     tighten so the whole menu fits without scrolling */
+  #menu { overflow-y: auto; -webkit-overflow-scrolling: touch; }
+  @media (max-height: 700px) {
+    #menu { padding-top: 84px; }
+    .m-link { font-size: 26px; line-height: 40px; }
+    .m-label { margin-bottom: 6px; }
+    #mFoot { padding-top: 24px; }
+  }
+
+  /* ================= shared ================= */
+  #app { padding-top: 60px; min-height: 100vh; background: #fff; }
+  /* Figma 9/8 type scale: title 32/36, label 24/28, statement 20/23, body 12/17 */
+  .pg-title { font-weight: 700; font-size: 32px; line-height: 36px; letter-spacing: -1.28px; padding: 44px 0 0; }
+  .sec-row { display: flex; align-items: flex-start; justify-content: space-between; margin: 86px 0 28px; }
+  .sec-label { font-weight: 700; font-size: 24px; line-height: 28px; letter-spacing: -0.72px; }
+  .statement { font-size: 20px; line-height: 23px; letter-spacing: -0.7px; font-weight: 400; }
+  .statement b { font-weight: 700; }
+  .statement .md, .statement.md { font-weight: 500; }
+  .statement .gray { color: #bdbdbd; }
+  .fdm { opacity: 0; transform: translateY(22px); transition: opacity 0.7s cubic-bezier(0.16,1,0.3,1), transform 0.7s cubic-bezier(0.16,1,0.3,1); }
+  .fdm.seen { opacity: 1; transform: none; }
+
+  /* density toggle — the site's cluster at mobile size (2-up / 1-up) */
+  /* Joel's icon (Figma 605:1299): 2x2 squares = two per row, one block = one per row */
+  /* exact Figma geometry (605:1270-1297): 2x2 = 10.7 + 1.4 + 11.4 wide, 8.6 + 2.1 + 9.3 tall; 10.8 to the 24.3x20 block */
+  .gtog { display: flex; gap: 10.8px; align-items: flex-start; padding-top: 4px; }
+  .gtog button { background: none; border: 0; padding: 0; cursor: pointer; opacity: 0.13; transition: opacity 0.25s ease; display: block; line-height: 0; }
+  .gtog button.on { opacity: 1; }
+  .gtog i { display: block; background: #686767; border-radius: 1.5px; } /* 9/15 Joel: slightly rounded */
+  .gtog .q { display: grid; grid-template-columns: 10.7px 11.4px; grid-template-rows: 8.6px 9.3px; gap: 2.1px 1.4px; }
+  .gtog .q i { width: 100%; height: 100%; }
+  .gtog .one i { width: 24.3px; height: 20px; }
+
+  /* tiles — hard corners, caption under (brand + director), THE LOOP LAW */
+  .grid { display: grid; gap: 22px 12px; grid-template-columns: 1fr; }
+  .grid.g2 { grid-template-columns: 1fr 1fr; }
+  .tile { display: block; }
+  .tile .ph { width: 100%; aspect-ratio: 16/9; background: #d9d9d9; overflow: hidden; position: relative; }
+  .tile .ph img, .tile .ph video { position: absolute; left: -1px; top: -1px; width: calc(100% + 2px); height: calc(100% + 2px); object-fit: cover; }
+  .tile .ph video { opacity: 0; transition: opacity 0.45s ease; }
+  .tile.playing .ph video { opacity: 1; }
+  /* 9/14 (Joel: "on mobile make sure that the copy is the same, it looks
+     different on the home page when it comes to title / director name"):
+     the caption pair is the desktop's — bold caps title, then the director
+     in small tracked caps at 30% black (index.html .wtitle / .wdir). */
+  .tile .t { font-weight: 700; font-size: 14px; line-height: 17px; letter-spacing: -0.14px; margin-top: 10px; text-transform: uppercase; }
+  .tile .d { font-size: 9.5px; line-height: 13px; letter-spacing: 0.57px; text-transform: uppercase; color: rgba(0,0,0,0.3); margin-top: 1px; }
+  .grid.g2 .tile .t { font-size: 12px; margin-top: 7px; }
+  .grid.g2 .tile .d { font-size: 8.5px; }
+  /* the tap law's ghost: the rest of the grid dims while one tile plays —
+     and, 9/15 (Joel: "the other images should get smaller because of the
+     phone scale"), they recede. The first cut drew only the picture in by
+     6%, which at 15% opacity no eye can see (Joel, same day: "all of the
+     other thumbnails aren't shrinking smaller"): the WHOLE tile (picture
+     and caption) now steps back to 85%, a clear 12px inset on each side of
+     a two-up tile. The transition lives on .tile itself and names both
+     properties: the reveal (.fdm, 22px rise) shares the same transform, so
+     an opacity-only transition here would snap the rise. */
+  .tile { transition: opacity 0.45s cubic-bezier(0.16,1,0.3,1), transform 0.6s cubic-bezier(0.16,1,0.3,1); transform-origin: center center; }
+  .grid.ghost .tile:not(.playing) { opacity: 0.15; transform: scale(0.85); }
+
+  /* tabs — site language: text + 1px underline the width of the word (Figma 551:951-954) */
+  .tabs { display: flex; gap: 44px; margin: 28px 0 40px; flex-wrap: wrap; }
+  .tabs button { background: none; border: 0; padding: 0 0 3px; font: 400 12px/17px 'Helvetica Neue', Helvetica, sans-serif; letter-spacing: -0.26px; color: #bdbdbd; border-bottom: 1px solid transparent; cursor: pointer; transition: color 0.25s ease, border-color 0.25s ease; }
+  .tabs button.on { color: #000; border-color: #000; }
+
+  /* PAGED RAILS (Figma 553:1456 / 553:1391 / 557:274 + the progress
+     vectors 553:1457-58): one card per page, swipe, a 303px hairline
+     track with a black thumb that walks with the page. */
+  .press-rail { display: flex; gap: 14px; overflow-x: auto; scroll-snap-type: x mandatory; padding: 4px 20px 8px; scroll-padding-left: 20px; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+  .press-rail[data-rail="prBar"] { scroll-padding-left: 35px; }
+  .press-rail[data-rail="xBar"] { scroll-padding-left: 31px; }
+  .press-rail[data-rail="tBar"] { scroll-padding-left: 30px; }
+  .press-rail::-webkit-scrollbar { display: none; }
+  .pbar { position: relative; height: 1px; width: 303px; background: #bbbbbb; }
+  .pbar i { position: absolute; left: 0; top: 0; height: 1px; background: #000; width: 55px; transition: transform 0.35s cubic-bezier(0.33,1,0.68,1); }
+  /* NEWS AND FEATURES = the desktop rail (index.html): the cards ROLL
+     continuously (24px/s, periodic copies), a tap lights a card (the logo
+     lifts, the article image burns in over ~1s, the others ghost to 15%,
+     the roll pauses), a second tap or READ opens the article, a swipe
+     drags the rail, the chevrons nudge one card. Frame geometry (553:1418):
+     logo / 54 / 16px quote / 53 / READ; 150px of headroom for the lift. */
+  /* touch-action pan-y: vertical pans stay the page's, horizontal ones are OURS
+     (without it iOS claims a slightly diagonal swipe as a scroll and cancels the drag) */
+  .news-rail { position: relative; overflow: hidden; padding-top: 150px; touch-action: pan-y; }
+  .news-track { display: flex; gap: 61px; padding-left: 35px; will-change: transform; align-items: flex-start; }
+  .press { flex: 0 0 305px; position: relative; cursor: pointer; transition: opacity 0.5s ease; }
+  .news-track.lit .press:not(.lit) { opacity: 0.15; }
+  .press-logo { position: relative; z-index: 2; line-height: 0; transition: transform 0.5s cubic-bezier(0.32,0.72,0,1); }
+  .press.lit .press-logo { transform: translateY(var(--logo-up, 0px)); }
+  .press-wipe { position: absolute; left: 0; width: 274px; height: 154px; overflow: hidden; opacity: 0; transition: opacity 0.6s ease; }
+  .press-wipe img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .press.lit .press-wipe { opacity: 1; transition: opacity 1s ease 0.15s; }
+  .press img.lg { width: auto; display: inline-block; }
+  .press .q { font-weight: 400; font-size: 16px; line-height: 22px; letter-spacing: -0.32px; margin: 54px 0 53px; }
+  .press .read { display: inline-block; font-size: 14px; line-height: 33px; font-weight: 500; }
+  .pr-chev { background: none; border: 0; font-size: 28px; line-height: 1; padding: 0 2px; cursor: pointer; color: #000; }
+
+  /* ================= footer — flush black, no white below ================= */
+  /* Figma footer component 551:38: cta 23/25, labels 9px, links 12/16, mark 350 wide */
+  .footer { background: #000; color: #fff; margin-top: 56px; padding: 24px 35px 0; }
+  .footer .cta { font-weight: 700; font-size: 23px; line-height: 25px; letter-spacing: 0; }
+  .footer .cta a { text-decoration: none; }
+  .footer .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 20px 18px; margin: 44px 0 0; font-size: 12px; line-height: 16px; }
+  .footer .cols .b { font-weight: 700; font-size: 9px; line-height: 9px; letter-spacing: 0.45px; color: #6b6b6b; text-transform: uppercase; margin-bottom: 7px; }
+  .footer .mark { line-height: 0; margin: 28px -15px 0; padding-bottom: 18px; }
+  .footer .mark svg { width: 100%; height: auto; display: block; }
+  .footer .mark svg path { fill: #fff; }
+
+  /* home */
+  /* FIRST-SCREEN LAW (desktop + Joel 9/4): header + full-screen sizzle
+     reel only; all content starts below the fold. dvh tracks the phone's
+     collapsing URL bar; vh is the fallback. */
+  .heroReel { width: 100%; height: calc(100vh - 60px); height: calc(100dvh - 60px); object-fit: cover; background: #000; }
+  /* THE REEL MOMENT, staged (Joel 9/8): the reel is PINNED for the first
+     HOME_HOLD px of scroll. It opens zoomed 40% in; the first scroll runs
+     the morph, dissolves the white and zooms the reel out to 1.0, then it
+     breathes (nothing moves) until the sheet slides up over it. */
+  .home-stage { position: relative; height: calc(100vh + 460px); height: calc(100lvh + 460px); margin-top: -60px; background: #000; }
+  .home-pin { position: sticky; top: 0; height: 100vh; height: 100lvh; overflow: hidden; background: #000; }
+  .home-reel { display: block; width: 100%; height: 100%; object-fit: cover; background: #000; transform: scale(1.4); transform-origin: 50% 50%; will-change: transform; }
+  .home-body { position: relative; z-index: 2; background: #fff; }
+
+  /* director — the live-site flow */
+  /* svh = the SMALL viewport (Safari's toolbar showing), so the cue at the
+     bottom is never hidden behind the browser bar (Joel 9/8: "the scroll
+     arrow isnt visible on director page") */
+  /* dvh = the viewport as it IS right now (Safari's bar open or collapsed):
+     svh left a black band under the film once the bar collapsed (Joel 9/8,
+     "there shouldnt be a black line there"), vh hid the cue behind the bar */
+  /* lvh = the LARGE viewport (bar collapsed): the film always reaches the
+     bottom, whichever state Safari's bar is in when you arrive (dvh lagged
+     the bar on in-app navigation and left a black line, Joel 9/8). The cue
+     rides above the bar by the difference between the two viewports. */
+  .dir-stage { position: relative; height: 210vh; height: 210lvh; background: #000; margin-top: -60px; }
+  .dir-hero { position: sticky; top: 0; height: 100vh; height: 100lvh; overflow: hidden; }
+  .dir-hero video, .dir-hero img.pst { position: absolute; left: -2px; top: -2px; width: calc(100% + 4px); height: calc(100% + 4px); object-fit: cover; }
+  .dir-scrim { position: absolute; inset: 0; background: #000; opacity: 0; }
+  /* Figma 605:1207 / 605:1102: name + Back top-left, cue at the bottom,
+     scroll darkens to 0.75 and brings role / awards / about in over the film */
+  .dir-id { position: absolute; left: 30px; top: 93px; color: #fff; }
+  .dir-id .nm { font-weight: 700; font-size: 18px; line-height: 19px; letter-spacing: -0.48px; text-transform: uppercase; }
+  .dir-id .bk { display: block; font-size: 11px; line-height: 11px; letter-spacing: -0.22px; margin-top: 10px; color: #fff; }
+  .dir-cue { position: absolute; left: 0; right: 0; bottom: 35px; bottom: calc(35px + 100lvh - 100dvh); text-align: center; color: #fff; font-weight: 700; font-size: 8px; line-height: 14px; letter-spacing: 0.16px; text-transform: uppercase; transition: opacity 0.3s ease; text-shadow: 0 1px 6px rgba(0,0,0,0.6); }
+  .dir-cue svg { display: block; margin: 10px auto 0; overflow: visible; filter: drop-shadow(0 1px 3px rgba(0,0,0,0.7)); }
+  .dir-about { position: absolute; left: 30px; right: 30px; top: 209px; color: #fff; opacity: 0; }
+  .dir-about .lab { font-weight: 700; font-size: 11px; line-height: 12px; letter-spacing: 0.22px; text-transform: uppercase; margin-bottom: 19px; }
+  .dir-about .aw { font-size: 11px; line-height: 20px; letter-spacing: -0.33px; text-transform: uppercase; margin-bottom: 40px; }
+  .dir-about .aw .b { font-weight: 700; }
+  .dir-about .aw .gap { height: 20px; }
+  .dir-about .bio { font-size: 11px; line-height: 14px; letter-spacing: -0.33px; }
+  .dir-work { position: relative; background: #fff; z-index: 2; }
+  .dir-work .tabs { margin: 39px 0 40px; }
+  .back { display: inline-block; font-size: 12px; line-height: 17px; letter-spacing: -0.26px; margin-top: 32px; }
+
+  /* work (film) page */
+  .film { position: relative; width: 100%; aspect-ratio: 16/9; background: #000 center/cover no-repeat; }
+  .film iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+  /* Figma 551:977: Back 12px gray, brand 30/36 + project 28/28, 14px bold labels, 12/17 copy */
+  .cs-head { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; margin-top: 13px; }
+  .cs-head .brand { font-weight: 700; font-size: 30px; line-height: 36px; letter-spacing: -0.9px; }
+  .cs-head .proj { font-size: 28px; line-height: 28px; letter-spacing: -0.6px; }
+  .cs-headline { font-size: 20px; line-height: 25px; letter-spacing: -0.6px; margin-top: 22px; }
+  .cs-headline .sub { display: block; margin-top: 6px; font-size: 13px; line-height: 18px; color: #6b6b6b; }
+  .cs-led { margin-top: 80px; }
+  .cs-led .lab { font-weight: 700; font-size: 14px; line-height: 17px; letter-spacing: -0.28px; margin-top: 42px; }
+  .cs-led .lab:first-child { margin-top: 0; }
+  .cs-led .cp { font-size: 12px; line-height: 17px; letter-spacing: -0.26px; color: #000; margin-top: 11px; }
+  .cs-led .cp p { margin-bottom: 8px; }
+  /* 9/14: everything else the CMS holds for a work (desktop case-study.html
+     translated to 390): reach in the ledger, then galleries, media grids,
+     behind-the-scenes rails, click-to-play films, testimonials, campaign
+     spots and you-might-also-like as the site's own tiles */
+  .cs-extra .lab { font-weight: 700; font-size: 14px; line-height: 17px; letter-spacing: -0.28px; margin: 42px 0 14px; }
+  .cs-extra .cp { font-size: 12px; line-height: 17px; letter-spacing: -0.26px; color: #000; }
+  .cs-extra .cp b { font-weight: 700; }
+  .cs-extra .mimg { display: block; width: 100%; height: auto; margin-top: 10px; background: #d9d9d9; }
+  .cs-extra .mvid { position: relative; width: 100%; background: #000; margin-top: 10px; }
+  .cs-extra .mvid iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+  .cs-extra .stack { margin-top: 32px; }
+  .cs-extra .stack > :first-child { margin-top: 0; }
+  .x-rail { display: flex; gap: 10px; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; margin: 32px -20px 0; padding: 0 20px; -webkit-overflow-scrolling: touch; }
+  .x-rail::-webkit-scrollbar { display: none; }
+  .x-rail > * { flex: 0 0 auto; scroll-snap-align: start; height: 260px; }
+  .x-rail img { height: 260px; width: auto; display: block; background: #d9d9d9; }
+  .x-rail .mvid { margin-top: 0; }
+  .vclick { position: relative; width: 100%; aspect-ratio: 16/9; background: #000 center/cover no-repeat; margin-top: 32px; overflow: hidden; }
+  .vclick .pl { position: absolute; left: 50%; top: 50%; width: 22px; height: 28px; margin: -14px 0 0 -11px; }
+  .vclick iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+  .cs-extra .grid { margin-top: 14px; }
+
+  /* creatives ledger rows (desktop cre-row language) */
+  .cre { display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #e0e0e0; padding: 20px 0 21px; }
+  .cre .nm { font-weight: 700; font-size: 21px; line-height: 21px; letter-spacing: -0.63px; }
+  .cre svg { flex-shrink: 0; transition: transform 0.3s ease; }
+  .cre:active svg { transform: rotate(90deg); }
+
+  /* experiential (Figma 553:1391-94 + 553:1472): hairline offering cards
+     in a paged rail, then the desktop process list — the live step wears
+     its number in black, the rest sit grey, one copy below */
+  .x-card { flex: 0 0 318px; height: 286px; scroll-snap-align: start; background: #fff; color: #000; border: 1px solid #000; padding: 36px 36px 0; }
+  .x-card h3 { font-weight: 700; font-size: 20px; line-height: 20px; letter-spacing: -0.6px; margin-bottom: 29px; }
+  .x-card p { font-size: 13px; line-height: 19px; color: #000; max-width: 247px; }
+  /* THE LOCK (desktop experiential.html): the block pins mid-screen and the
+     scroll steps 01 -> 04; once Event Capture has had its turn the page
+     releases and the footer comes in (Joel 9/8) */
+  .hp-zone { position: relative; margin-top: 117px; }   /* Figma: bar 2244 -> heading 2361 */
+  .hp-stick { position: sticky; top: 60px; background: #fff; padding-bottom: 40px; }
+  .hp-row { display: flex; gap: 17px; align-items: baseline; margin-bottom: 13px; cursor: pointer; }
+  .hp-row .n { display: none; font-size: 18px; line-height: 18px; color: #a3a3a3; width: 21px; flex: 0 0 21px; }
+  .hp-row.on .n { display: block; }
+  .hp-row .t { font-weight: 700; font-size: 19px; line-height: 19px; letter-spacing: -0.57px; color: #bdbdbd; transition: color 0.4s ease; }
+  .hp-row.on .t { color: #000; }
+  .hp-copy { font-size: 13px; line-height: 19px; color: #000; margin: 35px 0 0; min-height: 57px; transition: opacity 0.25s ease; }
+
+  /* services — THE STEPPER (Figma 551:1164-1179 + Joel's note 607:347
+     "Slide as you scroll from 1 2 3 etc"): the 01 Creative / Production /
+     Post / Experiential row sticks under the header; as each pillar's
+     items scroll up under it the number ticks and the words glide left so
+     the live word seats at x58. Desktop's STEPS items verbatim. */
+  /* THE PIN (Joel 9/8, "exact same as the main website"): the whole block
+     pins under the header for STP_EXTRA px of scroll; scroll position picks
+     the step, the words glide left in their clipper, the number ticks, the
+     rule scrubs, and the step's columns pop up staggered (desktop paintCols). */
+  .stp-zone { position: relative; margin: 73px -20px 0; }
+  .stp-stick { position: sticky; top: 60px; height: calc(100vh - 60px); height: calc(100svh - 60px); overflow: hidden; background: #fff; padding: 0 20px; }
+  .svc-rule { height: 2px; width: 350px; background: #000; transform-origin: left; transform: scaleX(0.18); margin-bottom: 17px; }
+  .stp .row { display: flex; align-items: baseline; white-space: nowrap; }
+  .stp .num { flex: 0 0 38px; font-size: 22px; line-height: 22px; }
+  .stp .wclip { flex: 1; overflow: hidden; margin-right: -20px; }
+  .stp .words { display: flex; gap: 30px; transition: transform 0.75s cubic-bezier(0.33,1,0.68,1); will-change: transform; }
+  .stp .words span { font-weight: 700; font-size: 30px; line-height: 36px; letter-spacing: -0.9px; color: #bdbdbd; transition: color 0.55s ease; }
+  .stp .words span.on { color: #000; }
+  .stp-cols { display: grid; grid-template-columns: 1fr 1fr; column-gap: 29px; row-gap: 20px; align-content: start; padding: 44px 0 0 23px; will-change: transform; } /* no transition: the drift is scrubbed by the finger (a transition re-fired per scroll event made Post judder, Joel 9/8) */
+  .stp-cols .t { font-weight: 700; font-size: 21px; line-height: 25px; letter-spacing: -0.7px; }
+  .stp-cols .b { font-size: 12px; line-height: 17px; letter-spacing: -0.26px; margin-top: 7px; }
+  .stp-cols .it { opacity: 0; transform: translateY(18px); }
+  .stp-cols.in .it { opacity: 1; transform: none; transition: opacity 0.6s cubic-bezier(0.16,1,0.3,1) var(--d, 0s), transform 0.6s cubic-bezier(0.16,1,0.3,1) var(--d, 0s); }
+  .step { display: flex; gap: 11px; margin: 0 0 28px 4px; }
+  .step .n { flex: 0 0 17px; font-size: 15px; line-height: 15px; color: #bdbdbd; padding-top: 5px; }
+  .step .st { font-weight: 700; font-size: 21px; line-height: 25px; letter-spacing: -0.7px; }
+  .step .sb { font-size: 12px; line-height: 17px; letter-spacing: -0.26px; color: #a3a3a3; margin-top: 3px; max-width: 281px; }
+  /* testimonials (Figma 557:274-277): quote, round avatar, name, role — no card border */
+  .tst { flex: 0 0 330px; scroll-snap-align: start; text-align: center; }
+  .tst .q { font-size: 15px; line-height: 22px; letter-spacing: -0.3px; color: #000; font-weight: 400; }
+  .tst .av { width: 84px; height: 84px; border-radius: 50%; object-fit: cover; margin: 36px auto 22px; }
+  .tst .nm { font-weight: 700; font-size: 16px; line-height: 16px; letter-spacing: -0.32px; }
+  .tst .rl { font-size: 12px; line-height: 12px; color: #6b6b6b; margin-top: 8px; }
+
+  /* about — core values + the team rail (desktop cell language) */
+  /* ===== ABOUT = the desktop about.html choreography, phone-sized =====
+     1. the statement holds while its grey words turn black one by one
+     2. the reel arrives small (0.7, fading in), the scroll grows it to full
+        screen, it holds for a beat (REEL LOCK), then releases
+     3. the core values pin mid-screen and the scroll steps the six values
+     4. the team cells roll (desktop tm-cell geometry x 0.365) */
+  .ab-stmt-zone { position: relative; }
+  /* the opener is a full screen of text, centered; the reel waits below the fold (Joel 9/8) */
+  .ab-stmt-stick { position: sticky; top: 60px; background: #fff; height: calc(100vh - 60px); height: calc(100dvh - 60px); display: flex; align-items: center; padding: 0 35px 40px; }
+  .ab-stmt-stick .statement .w { color: #bdbdbd; transition: color 0.25s ease; }
+  .ab-stmt-stick .statement .w.lit { color: #000; }
+  .ab-reel-zone { position: relative; margin-top: -60px; }
+  .ab-reel-pin { position: sticky; top: 0; height: 100vh; height: 100lvh; overflow: hidden; background: #fff; }
+  .ab-reel { position: absolute; inset: 0; background: #000; transform-origin: 50% 50%; opacity: 0; transform: translateY(44px) scale(0.7); transition: opacity 1.9s cubic-bezier(0.45,0.05,0.15,1), transform 1.9s cubic-bezier(0.45,0.05,0.15,1); }
+  .ab-reel.in { opacity: 1; transform: translateY(0) scale(0.7); }
+  .ab-reel.in.scrub { transition: opacity 1.9s cubic-bezier(0.45,0.05,0.15,1); }
+  .ab-reel video { position: absolute; left: -2px; top: -2px; width: calc(100% + 4px); height: calc(100% + 4px); object-fit: cover; }
+  .cv-zone { position: relative; margin-top: 120px; }   /* room after the reel releases (desktop: 287px) */
+  .cv-stick { position: sticky; top: 60px; background: #fff; padding: 0 20px 40px; }
+  /* core values (Figma 552:150/156): 21/25 bold strip, one value live, its copy below */
+  .cv { font-weight: 700; font-size: 21px; line-height: 25px; letter-spacing: -0.7px; color: #bdbdbd; }
+  .cv .sep { color: #bdbdbd; transition: color 0.35s ease; }
+  .cv .sep:has(+ .v.on) { color: #121212; }
+  .cv .v { color: #bdbdbd; transition: color 0.35s ease; cursor: pointer; }
+  .cv .v.on { color: #121212; }
+  .cv-copy { font-size: 12px; line-height: 17px; letter-spacing: -0.26px; color: #6b6b6b; margin-top: 16px; min-height: 34px; transition: opacity 0.25s ease; }
+  /* team (desktop tm-cell at 0.365: cell 182x259, pitch 163, photo bottom-aligned,
+     rule + name + role top-left, the whole cell dissolves to white at the foot) */
+  /* Joel 9/8: cells spread (pitch 236), 70px of headroom so the labels
+     never sit on a face, footer pulled up over the dissolve so no white strip */
+  .tm-rail { position: relative; height: 330px; overflow: hidden; margin-top: 59px; touch-action: pan-y; }
+  .tm-track { position: absolute; left: 0; top: 0; height: 330px; will-change: transform; }
+  .tm-cell { position: absolute; top: 0; width: 200px; height: 330px; -webkit-mask-image: linear-gradient(180deg, #000 62%, transparent 92%); mask-image: linear-gradient(180deg, #000 62%, transparent 92%); }
+  .tm-rail + .footer { margin-top: -30px; }
+  .tm-cell img { position: absolute; max-width: none; }
+  .tm-rule { position: absolute; width: 0; height: 31px; border-left: 1px solid #000; }
+  .tm-name { position: absolute; width: 120px; font-weight: 700; font-size: 12px; line-height: 14px; letter-spacing: -0.36px; color: #000; }
+  .tm-role { position: absolute; width: 120px; font-weight: 400; font-size: 10px; line-height: 12px; letter-spacing: -0.3px; color: #000; }
+
+  /* careers (Figma 552:212 as regrouped 9/8) */
+  .roles-lab { font-size: 16px; line-height: 16px; color: #6b6b6b; margin: 57px 0 32px; }
+  .roles-row { border-bottom: 1px solid #e0e0e0; padding: 0 0 18px; margin-bottom: 18px; }
+  .roles-row .rt { font-weight: 700; font-size: 20px; line-height: 23px; letter-spacing: -0.6px; }
+  .roles-row .rm { font-size: 12px; line-height: 16px; color: #6b6b6b; margin-top: 5px; }
+  .roles-row .rm a { margin-left: 18px; color: #6b6b6b; }
+  .roles-none { font-weight: 700; font-size: 20px; line-height: 23px; letter-spacing: -0.6px; color: #6b6b6b; margin: 57px 0 13px; }
+  .plain { font-size: 12px; line-height: 17px; letter-spacing: -0.26px; color: #000; }
+  .plain a { text-decoration: underline; text-underline-position: from-font; }
+  /* contact (Figma 552:243 as regrouped 9/8): 22/23 headline, 12px gray labels, 14px bold values, 44 apart */
+  .ct-title { font-weight: 700; font-size: 22px; line-height: 23px; letter-spacing: -0.9px; padding-top: 65px; }
+  .kv { margin-top: 44px; }
+  .kv .k { font-size: 12px; line-height: 16px; color: #6b6b6b; }
+  .kv .v { font-weight: 700; font-size: 14px; line-height: 17px; letter-spacing: -0.28px; margin-top: 4px; }
+  .kv .v + .v { margin-top: 14px; }
+  .kv .v .r { display: block; font-weight: 400; font-size: 12px; line-height: 16px; letter-spacing: 0; color: #6b6b6b; margin-top: 2px; }
+</style>
+<script src="directors.js?v=20260904a"></script>
+</head>
+<body>
+
+<header id="hdr"><div id="hdrBg"></div><div class="in">
+  <a id="lm" href="#home" aria-label="Home"></a>
+  <p id="hdrCities">LOS ANGELES, CA<br>NEW YORK, NY</p>
+  <button id="burger" aria-label="Menu"><i></i><i></i><i></i></button>
+</div></header>
+
+<nav id="menu">
+  <input id="mSearch" type="text" placeholder="Search" autocomplete="off">
+  <div class="m-rule"></div>
+  <div id="mResults"></div>
+  <p class="m-label">Explore</p>
+  <a class="m-link" data-l="creatives" href="#creatives">Creatives</a>
+  <a class="m-link" data-l="case studies" href="#case-studies">Case Studies</a>
+  <a class="m-link" data-l="experiential" href="#experiential">Experiential</a>
+  <a class="m-link" data-l="services" href="#services">Services</a>
+  <a class="m-link" data-l="about" href="#about">About</a>
+  <p class="m-label" style="margin-top:28px;">Connect</p>
+  <a class="m-link" data-l="careers" href="#careers">Careers</a>
+  <a class="m-link" data-l="contact" href="#contact">Contact</a>
+  <div id="mFoot">
+    <a href="mailto:hello@sixtwentysix.co">hello@sixtwentysix.co</a><br>
+    <a href="https://www.google.com/maps/search/?api=1&query=5976+Washington+Blvd,+Culver+City,+CA+90232" target="_blank" rel="noopener">5976 Washington Blvd, Culver City, CA 90232</a><br>
+    <a href="https://www.linkedin.com/company/sixtwentysix/" target="_blank" rel="noopener">Linkedin</a> / <a href="https://www.instagram.com/sixtwentysixco/" target="_blank" rel="noopener">Instagram</a>
+  </div>
+</nav>
+
+<main id="app"></main>
+
+<script>
+/* ===== injected from the desktop build (inject-m.py) — never hand-edit ===== */
+const LSVG = { s:`%%S%%`, i:`%%I%%`, x:`%%X%%`, n2:`%%N2%%`, n6:`%%N6%%`, rr:`%%RR%%`, rm:`%%RM%%` };
+const SVG_W = `%%W%%`;
+const HP_COPY = %%HP%%;
+const TST = %%TST%%;
+const WORK_LOOPS = %%LOOPS%%;
+const SVC_STEPS = %%STEPS%%;
+const CS_WORKS = %%CSW%%;
+const CS_SLUGS = %%CSS%%;
+const CS_LOOPS = %%CSL%%;
+const CV_COPY = %%CV%%;
+const TEAM = %%TEAM%%;
+const SEARCH_INDEX = %%INDEX%%;
+
+/* ================= data (desktop WORKS + slugs, loop law wired) ================= */
+const HOME_WORKS = [
+  { n:'001', t:'CARDI B', d:'SixTwentySix', img:'assets/live/cs-cardi.jpg', slug:'cardi-b-ah-ha' },
+  { n:'002', t:'PRICELINE', d:'Evan Bourque', img:'assets/live/cs-priceline.jpg', slug:'priceline-new-negotiator' },
+  { n:'003', t:'DUNKIN’', d:'Luke Orlando', img:'assets/live/cs-dunkin-pump.jpg', slug:'dunkin-dunk-n-pump' },
+  { n:'004', t:'HERA', d:'Savannah O’Leary', img:'assets/live/cs-hera.jpg', slug:'hera-age-your-way' },
+  { n:'005', t:'PURA', d:'Nolan Goff', img:'assets/live/cs-pura.jpg', slug:'pura-hands-on' },
+  { n:'006', t:'DUNKIN’', d:'SixTwentySix', img:'assets/live/cs-dunkin-affleck.png', slug:'dunkin-the-value-affleck' },
+  { n:'007', t:'EAT PECANS', d:'Evan Bourque', img:'assets/live/cs-eatpecans.jpg', slug:'eat-pecans-surprisingly-snackable' },
+  { n:'008', t:'MEGAN THEE STALLION', d:'SixTwentySix', img:'assets/live/cs-megan.jpg', slug:'megan-thee-stallion-boa' },
+  { n:'009', t:'LIQUID I.V.', d:'SixTwentySix', img:'assets/live/cs-liquidiv.jpg', slug:'liquid-iv-ice-cream' },
+  { n:'010', t:'PALMS CASINO RESORT', d:'Nolan Goff', img:'assets/live/cs-palms.jpg', slug:'palms-casino-resort-this-is-that-vegas' },
+  { n:'011', t:'TURO', d:'Miles & AJ', img:'assets/live/cs-turo.jpg', slug:'turo-open-the-door-to-extraordinary' },
+  { n:'012', t:'CREDIT KARMA', d:'Miles & AJ', img:'assets/live/cs-creditkarma.jpg', slug:'credit-karma-card-optimizer' }
+];
+HOME_WORKS.forEach(w => { w.loop = WORK_LOOPS[w.n] || null; });
+const EXP_WORKS = [
+  { t:'HEINEKEN', img:'assets/live/exp-heineken.png' },
+  { t:'FIVERR', img:'assets/live/exp-fiverr.jpg' },
+  { t:'TREE HUT', img:'assets/live/exp-treehut.jpg' },
+  { t:'GOOGLE PLAY', img:'assets/live/exp-googleplay.jpg' },
+  { t:'NIKE X CONCRETE BOYS', img:'assets/live/exp-nike.jpg' },
+  { t:'REPUBLIC RECORDS', img:'assets/live/exp-republic.jpg' },
+  { t:'EBAY MOTORS', img:'assets/live/exp-ebay.jpg' },
+  { t:'APEROL', img:'assets/live/exp-aperol.jpg' },
+];
+const PRESS_M = [
+  { logo:'assets/logo-adage.svg', h:31, q:'Priceline revives The Negotiator, with Randall Park succeeding William Shatner.', url:'https://adage.com/creativity/work/aa-priceline-negotiator-handoff/', wipe:'assets/press-adage-wipe.png' },
+  { logo:'assets/logo-forbes.svg', h:38, q:'30 Under 30: Marketing & Advertising.', url:'https://www.forbes.com/profile/sixtwentysix/', wipe:'assets/press-forbes-hover.jpg' },
+  { logo:'assets/logo-rollingstone.svg', h:56, q:'One of the 150 greatest hip-hop videos of all time.', url:'https://www.rollingstone.com/music/music-lists/best-rap-music-videos-1234788922/', wipe:'assets/press-rollingstone-hover.png' },
+];
+const OFFERINGS = [
+  ['Experiential Campaigns', 'Let’s take it offline. We turn heads in a way no screen could through fully integrated experiences that connect with your audience on a deeper, more tangible level. By transforming ideas into real-world moments, we create interactions that are not only seen but felt and shared.'],
+  ['Live Events', 'From red carpets to festival grounds, we design live events that create meaningful connections with your community. Every detail is crafted to amplify your brand, turning attendees into loyal advocates and moments into lasting memories.'],
+  ['Activations & Installations', 'Pop-ups that pop culture. We create bold experiences in unexpected ways, transforming everyday spaces into intersections of interaction and inspiration.'],
+];
+const HP_TITLES = ['Strategy & Concepting', 'Design & Production', 'Audience Engagement', 'Event Capture & Amplification'];
+const STEP_WORDS = ['Creative', 'Production', 'Post', 'Experiential'];
+const TEAM_M = [
+  { n:'Austin Barbera', r:'Co-Founder / Managing Director', img:null },
+  { n:'Jake Krask', r:'Co-Founder / Managing Partner', img:'assets/abt-team-jake.png' },
+  { n:'Carleigh Finch', r:'EP / Head of Business Development', img:'assets/abt-team-carleigh.png' },
+  { n:'Jonny Edwards', r:'Chief Executive Producer', img:'assets/abt-team-jonny.png' },
+  { n:'Sarah Donnenberg', r:'Executive Producer / Special Projects', img:'assets/abt-team-sarah.png' },
+  { n:'Jay Wert', r:'Executive Producer', img:null },
+  { n:'Omeed Boghraty', r:'Executive Creative Director', img:'assets/abt-team-omeed.png' },
+  { n:'Sahil Mirchandani', r:'Head of Production', img:null },
+  { n:'Alex Ramos', r:'Head of Post Production', img:'assets/abt-team-alex.png' },
+];
+const DIRS = window.SX_DIRECTORS || {};
+const esc = s => String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const splitT = t => { const p = String(t||'').split(/\s+[–—-]\s+/); return { brand:(p[0]||'').toUpperCase(), proj:p.slice(1).join(' – ') }; };
+
+/* ================= THE MORPH (header lettermark, h26): JOEL'S FILM =================
+   9/14: the desktop's logomorph.js v3 law — the header draws a frame of
+   SX ANIMATION.mp4 (assets/sxanim/, 73 alpha WebPs) on a canvas, scrubbed
+   by the scroll. q=0 full SIX26 (the big S 26 tall, the word 152 wide as
+   before), q=1 the compact SX (17.5 tall, centred on the old 26 box). */
+const LM_H = 26;
+const LM_T = [[127,322,1163],[127,322,1163],[127,322,1163],[127,322,1163],[127,322,1157],[127,322,1133],[127,322,1109],[127,322,1086],[127,322,1062],[127,322,1038],[127,322,1014],[127,322,990],[127,322,967],[127,322,943],[127,322,919],[127,322,895],[127,322,872],[127,322,848],[127,322,824],[127,322,800],[127,322,777],[127,322,753],[127,322,729],[127,322,705],[127,322,682],[127,322,658],[127,322,634],[127,322,610],[127,322,596],[127,322,596],[127,322,596],[127,322,596],[126,321,596],[126,321,595],[126,320,594],[126,320,592],[126,319,590],[125,317,587],[125,316,584],[124,314,580],[124,312,576],[123,309,571],[122,306,565],[121,303,558],[120,300,551],[119,296,543],[118,292,535],[117,288,526],[115,283,517],[114,279,508],[113,275,499],[112,271,490],[111,267,482],[110,263,475],[109,260,468],[108,257,462],[107,255,457],[106,252,452],[106,251,448],[105,249,445],[105,248,442],[105,247,440],[104,246,438],[104,245,437],[104,245,436],[104,244,435],[104,244,435],[104,244,435],[104,244,435],[104,244,435],[104,244,435],[104,244,435],[104,244,435]];
+const LM_N = LM_T.length, LM_VW = 1180, LM_VH = 338, LM_X0 = 21;
+const LM_KF = LM_H / (LM_T[0][1] - LM_T[0][0]);
+const LM_H1 = (LM_T[LM_N - 1][1] - LM_T[LM_N - 1][0]) * LM_KF;
+const lmEl = document.getElementById('lm');
+lmEl.innerHTML = '';
+const lmCv = document.createElement('canvas');
+lmCv.width = LM_VW; lmCv.height = LM_VH;
+lmCv.setAttribute('role', 'img'); lmCv.setAttribute('aria-label', 'SIXTWENTYSIX');
+lmCv.style.cssText = `position:absolute; left:${(-LM_X0 * LM_KF).toFixed(2)}px; top:0; width:${(LM_VW * LM_KF).toFixed(2)}px; height:${(LM_VH * LM_KF).toFixed(2)}px; display:block; pointer-events:none;`;
+lmEl.appendChild(lmCv);
+const lmCtx = lmCv.getContext('2d');
+const lmCache = [];
+function lmFrame(i, onReady) {
+  let im = lmCache[i];
+  if (!im) { im = new Image(); im.decoding = 'async'; im.src = 'assets/sxanim/f' + String(i).padStart(2, '0') + '.webp'; lmCache[i] = im; }
+  if (im.complete && im.naturalWidth) return im;
+  if (onReady) im.addEventListener('load', onReady, { once: true });
+  return null;
+}
+const citiesEl = document.getElementById('hdrCities');
+let lmQ = -1, lmDrawn = -1, lmWant = 0;
+function lmDraw() {
+  const im = lmFrame(lmWant, lmDraw);
+  if (!im || lmDrawn === lmWant) return;
+  lmCtx.clearRect(0, 0, LM_VW, LM_VH);
+  lmCtx.drawImage(im, 0, 0);
+  lmDrawn = lmWant;
+}
+function renderLM(q) {
+  q = Math.max(0, Math.min(1, q));
+  if (Math.abs(q - lmQ) < 0.004) return;
+  lmQ = q;
+  const i = Math.round(q * (LM_N - 1));
+  const sh = (LM_T[i][1] - LM_T[i][0]) * LM_KF;                       // the S's height at this frame
+  const shrink = Math.max(0, Math.min(1, (LM_H - sh) / (LM_H - LM_H1)));
+  /* the big S sits on the box top; the compact S centres in the 26 box */
+  lmCv.style.top = ((LM_H - sh) / 2 * shrink - LM_T[i][0] * LM_KF).toFixed(2) + 'px';
+  /* cities ride the word's right edge: beside SIX26 (186) at rest, beside the compact SX (100) */
+  const kg = Math.max(0, Math.min(1, (LM_T[0][2] - LM_T[i][2]) / (LM_T[0][2] - LM_T[LM_N - 1][2])));
+  citiesEl.style.left = (186 - 86 * kg).toFixed(1) + 'px';
+  if (i !== lmWant) { lmWant = i; lmDraw(); } else if (lmDrawn !== i) lmDraw();
+}
+for (let i = 0; i < LM_N; i++) lmFrame(i);
+/* damped drive so fast scrolls glide, never snap (the desktop damper law) */
+let lmTarget = 0, lmDisp = 0, lmAnim = false, lmLast = 0;
+function lmTick(now) {
+  const dt = Math.min(0.05, (now - lmLast) / 1000) || 1/60; lmLast = now;
+  lmDisp += (lmTarget - lmDisp) * (1 - Math.exp(-10 * dt));
+  if (Math.abs(lmTarget - lmDisp) < 0.004) { lmDisp = lmTarget; lmAnim = false; }
+  renderLM(lmDisp);
+  if (lmAnim) requestAnimationFrame(lmTick);
+}
+function lmDrive(target) {
+  lmTarget = target;
+  if (!lmAnim) { lmAnim = true; lmLast = performance.now(); requestAnimationFrame(lmTick); }
+}
+let lmScrollBound = false, lmMode = 'scroll';
+function lmOnScroll() { if (lmMode === 'scroll') lmDrive(Math.min(1, window.scrollY / 120)); }
+window.addEventListener('scroll', lmOnScroll, { passive: true });
+
+/* ================= menu ================= */
+const setMenu = open => {
+  document.body.classList.toggle('menu-open', open);
+  document.documentElement.style.overflow = open ? 'hidden' : '';
+  if (open) { lmMode = 'menu'; lmDrive(0); }             /* SIX26, same size (Joel's canvas law) */
+  else { lmMode = 'scroll'; lmOnScroll(); routeChrome(); }
+};
+document.getElementById('burger').addEventListener('click', () => setMenu(!document.body.classList.contains('menu-open')));
+document.querySelectorAll('#menu a').forEach(a => a.addEventListener('click', () => setMenu(false)));
+/* REAL SEARCH = the desktop menu.js index (pages, directors, capabilities,
+   lifted at build time) + the whole WordPress catalogue on first search
+   (every work, every press article). Desktop hrefs map to the app's routes;
+   Enter opens the top hit. */
+const mSearch = document.getElementById('mSearch');
+const mResults = document.getElementById('mResults');
+const toRoute = href => {
+  if (/^https?:/.test(href)) return href;
+  let m;
+  if ((m = href.match(/^director\.html\?who=([^&]+)/))) return '#director/' + m[1];
+  if ((m = href.match(/^case-study\.html\?work=([^&]+)/))) return '#work/' + m[1];
+  const page = href.replace(/\.html.*$/, '');
+  return '#' + (page === 'index' ? 'home' : page);
+};
+let wpIdxLoaded = false, wpIdxLoading = false, searchTop = null;
+function loadWpIndex() {
+  if (wpIdxLoaded || wpIdxLoading) return;
+  wpIdxLoading = true;
+  const gql = q => fetch('https://api.sixtwentysix.co/graphql', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ query: q }) }).then(r => r.json());
+  const jobs = [(async () => {
+    let cursor = null;
+    for (let i = 0; i < 6; i++) {
+      const after = cursor ? ', after: ' + JSON.stringify(cursor) : '';
+      const d = await gql('{ caseStudies(first: 100' + after + ') { pageInfo { hasNextPage endCursor } nodes { slug title } } }');
+      const cs = d.data && d.data.caseStudies;
+      if (!cs) break;
+      cs.nodes.forEach(n => { if (n.title) SEARCH_INDEX.push([n.title.replace(/&amp;/g, '&'), 'Work', 'case-study.html?work=' + n.slug]); });
+      if (!cs.pageInfo.hasNextPage) break;
+      cursor = cs.pageInfo.endCursor;
+    }
+  })(), gql('{ posts(first: 100) { nodes { title news { linkUrl } } } }').then(d => {
+    ((d.data && d.data.posts && d.data.posts.nodes) || []).forEach(n => {
+      if (n.title && n.news && n.news.linkUrl) SEARCH_INDEX.push([n.title.replace(/&amp;/g, '&'), 'News', n.news.linkUrl]);
+    });
+  })];
+  Promise.allSettled(jobs).then(() => { wpIdxLoaded = true; searchFilter(mSearch.value); });
+}
+function searchFilter(raw) {
+  const q = raw.trim().toLowerCase();
+  document.querySelectorAll('.m-link').forEach(l => l.classList.toggle('dim', !!q && !l.dataset.l.includes(q)));
+  searchTop = null;
+  if (!q) { mResults.innerHTML = ''; return; }
+  loadWpIndex();
+  const hits = SEARCH_INDEX.filter(r => r[0].toLowerCase().includes(q)).slice(0, 10);
+  searchTop = hits.length ? toRoute(hits[0][2]) : null;
+  mResults.innerHTML = hits.map(r => {
+    const href = toRoute(r[2]); const ext = /^https?:/.test(href);
+    return `<a href="${esc(href)}"${ext ? ' target="_blank" rel="noopener noreferrer"' : ''}>${esc(r[0])}<span class="k">${esc(r[1])}</span></a>`;
+  }).join('') + (wpIdxLoaded ? '' : '<p style="opacity:0.4; font-size:13px; padding:8px 0;">searching everything…</p>') + '<div style="height:16px"></div>';
+  mResults.querySelectorAll('a').forEach(a => a.addEventListener('click', () => setMenu(false)));
+}
+mSearch.addEventListener('input', () => searchFilter(mSearch.value));
+mSearch.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && searchTop) {
+    if (/^https?:/.test(searchTop)) window.open(searchTop, '_blank', 'noopener'); else location.hash = searchTop;
+    setMenu(false); mSearch.blur();
+  }
+});
+/* THE SX WIPE (desktop logomorph.js + index.html arrival, Joel 9/8): hitting
+   the mark on an interior page draws the header's white all the way down,
+   erasing chrome and page alike; home paints behind full white; the white
+   then retracts UP to the header band while the SIX26 fades in from zero.
+   On home itself the mark just returns you to the top. */
+let sxLeaving = false;
+lmEl.addEventListener('click', e => {
+  e.preventDefault();
+  const page = (location.hash || '#home').slice(1).split('/')[0] || 'home';
+  if (page === 'home') { setMenu(false); window.scrollTo({ top: 0, behavior: 'smooth' }); return; }
+  if (sxLeaving) return;
+  sxLeaving = true;
+  setMenu(false);
+  const sheet = document.createElement('div');
+  sheet.style.cssText = 'position:fixed; left:0; right:0; top:0; height:0; background:#fff; z-index:60; pointer-events:none;';
+  document.body.appendChild(sheet);
+  const hdr = document.getElementById('hdr');
+  let navved = false;
+  const go = () => {
+    if (navved) return;
+    navved = true;
+    hdr.style.transition = 'none'; hdr.style.opacity = '0'; hdr.style.zIndex = '70';   /* fade plays ON TOP of the retracting white */
+    location.hash = '#home';                                                           /* home paints behind full white */
+    sheet.style.transition = 'none'; sheet.style.height = window.innerHeight + 'px';
+    void sheet.offsetHeight; void hdr.offsetHeight;                                    /* commit the start frame */
+    sheet.style.transition = 'height 0.85s cubic-bezier(0.45, 0, 0.2, 1) 0.05s';
+    sheet.style.height = HDR_H + 'px';                                                 /* ends ON the header band */
+    hdr.style.transition = 'opacity 0.75s ease 0.15s'; hdr.style.opacity = '1';
+    setTimeout(() => { sheet.remove(); hdr.style.transition = ''; hdr.style.opacity = ''; hdr.style.zIndex = ''; sxLeaving = false; }, 1500);
+  };
+  void sheet.offsetHeight;                                                             /* commit height 0 */
+  sheet.style.transition = 'height 0.8s cubic-bezier(0.45, 0, 0.2, 1)';
+  sheet.style.height = window.innerHeight + 'px';
+  sheet.addEventListener('transitionend', () => setTimeout(go, 60), { once: true });
+  setTimeout(go, 1400);   /* safety: never strand the tap */
+});
+
+/* ================= shared components ================= */
+const FOOTER = `
+<footer class="footer">
+  <p class="cta">Connect with us at<br><a href="mailto:hello@sixtwentysix.co">hello@sixtwentysix.co</a></p>
+  <div class="cols">
+    <div><p class="b">JOIN THE TEAM</p><a href="mailto:careers@sixtwentysix.co">careers@sixtwentysix.co</a></div>
+    <div><p class="b">CAPABILITIES DECK</p><a href="mailto:hello@sixtwentysix.co?subject=Capabilities%20deck">Request our deck</a></div>
+    <div><p class="b">NEWSLETTER</p><a href="mailto:hello@sixtwentysix.co?subject=Subscribe">Subscribe</a></div>
+    <div><p class="b">FOLLOW US</p><a href="https://www.instagram.com/sixtwentysixco/" target="_blank" rel="noopener">IG</a> / <a href="https://www.linkedin.com/company/sixtwentysix" target="_blank" rel="noopener">LI</a></div>
+  </div>
+  <div class="mark">${SVG_W}</div>
+</footer>`;
+
+const tileHtml = w => `
+  <a class="tile fdm" href="${w.slug ? '#work/' + esc(w.slug) : 'javascript:void(0)'}"${w.loop ? ` data-loop="${esc(w.loop)}"` : ''}${w.img ? ` data-still="${esc(w.img)}"` : ''}>
+    <div class="ph"><img loading="lazy" src="${esc(w.img)}" alt="${esc(w.t)}"></div>
+    <p class="t">${esc(w.t)}</p>${w.d ? `<p class="d">${esc(w.d)}</p>` : ''}
+  </a>`;
+
+/* density toggle: rows of 1 / rows of 2 (persisted) */
+let density = 1;
+try { density = parseInt(localStorage.getItem('sx-m-density') || '1', 10) || 1; } catch (e) {}
+const togHtml = () => `
+  <div class="gtog">
+    <button data-d="2" class="q${density === 2 ? ' on' : ''}" aria-label="Two per row"><i></i><i></i><i></i><i></i></button>
+    <button data-d="1" class="one${density === 1 ? ' on' : ''}" aria-label="One per row"><i></i></button>
+  </div>`;
+function armToggles() {
+  document.querySelectorAll('.gtog button').forEach(b => b.addEventListener('click', () => {
+    density = parseInt(b.dataset.d, 10);
+    try { localStorage.setItem('sx-m-density', String(density)); } catch (e) {}
+    document.querySelectorAll('.gtog button').forEach(o => o.classList.toggle('on', o.dataset.d === b.dataset.d));
+    document.querySelectorAll('.grid').forEach(g => g.classList.toggle('g2', density === 2));
+  }));
+}
+const gridOpen = () => `<div class="grid${density === 2 ? ' g2' : ''}">`;
+
+/* THE LOOP LAW, mobile (9/14, Joel: "on mobile i want to switch the logic
+   to how i have it on ipad where you click the video and the loop plays
+   then click again and go to video, and that's a universal note across the
+   board"): nothing plays on its own any more. The first tap on a tile plays
+   its loop and ghosts the rest of its grid; the second tap on the same tile
+   opens the work; a tap anywhere else, or a real scroll, lets it go. A tile
+   with no loop opens on the first tap. */
+let mHeld = null, mHeldY = 0;
+function mRelease() {
+  if (!mHeld) return;
+  /* 9/15 (Joel: "when you click on one and then another, the last one
+     doesn't lose opacity"): WebKit keeps a <video> that has played on its
+     own compositor layer and can ignore the tile's opacity, so the old tile
+     stayed lit through its paused loop. The loop is removed outright; the
+     next tap builds a fresh one (preload none, so it costs nothing). */
+  const v = mHeld.querySelector('video');
+  if (v) { v.pause(); v.remove(); }
+  mHeld.classList.remove('playing');
+  const g = mHeld.closest('.grid');
+  if (g) g.classList.remove('ghost');
+  mHeld = null;
+}
+function armLoops() { mRelease(); }
+document.addEventListener('click', e => {
+  const tile = e.target.closest && e.target.closest('.tile[data-loop]');
+  if (!tile) { mRelease(); return; }
+  if (mHeld === tile) { mRelease(); return; } /* second tap: the link opens the work */
+  e.preventDefault(); e.stopPropagation();
+  mRelease();
+  let v = tile.querySelector('video');
+  if (!v) {
+    v = document.createElement('video');
+    v.muted = true; v.loop = true; v.playsInline = true; v.preload = 'none';
+    v.src = tile.dataset.loop;
+    tile.querySelector('.ph').appendChild(v);
+  }
+  mHeld = tile; mHeldY = window.scrollY;
+  tile.classList.add('playing');
+  const g = tile.closest('.grid');
+  if (g) g.classList.add('ghost');
+  v.play().catch(() => {});
+}, true);
+window.addEventListener('scroll', () => { if (mHeld && Math.abs(window.scrollY - mHeldY) > 40) mRelease(); }, { passive: true });
+
+/* instant-landing law: tapping a tile stashes its art for the film page */
+document.addEventListener('click', e => {
+  const a = e.target.closest && e.target.closest('.tile[data-still]');
+  if (a) { try { sessionStorage.setItem('sx-m-art', JSON.stringify({ src: a.dataset.still, t: Date.now() })); } catch (err) {} }
+}, true);
+
+/* ================= pages ================= */
+const app = document.getElementById('app');
+const R = {};
+
+R.home = () => `
+  <div class="home-stage"><div class="home-pin">
+    <video class="home-reel" id="homeReel" src="assets/live/reel-m.mp4" autoplay muted loop playsinline poster="assets/hero.png"></video>
+  </div></div>
+  <div class="home-body" id="homeSheet">
+  <div class="wrap">
+    <p class="statement" style="margin:75px 0 0 4px; max-width:303px;"><b>We reimagine how brands connect</b> <span class="md">with their audience through innovative storytelling.</span></p>
+    <div class="sec-row"><p class="sec-label">Featured Work</p>${togHtml()}</div>
+    ${gridOpen()}${HOME_WORKS.map(tileHtml).join('')}</div>
+    <div class="sec-row"><p class="sec-label">News and Features</p>
+      <div style="display:flex;gap:14px;"><button class="pr-chev" id="prPrev">&#8249;</button><button class="pr-chev" id="prNext">&#8250;</button></div></div>
+  </div>
+  <div class="news-rail" id="prRail"><div class="news-track" id="prTrack"></div></div>
+  <div class="pbar" id="prBar" style="margin:48px 0 0 36px;"><i></i></div>
+  ${FOOTER}
+  </div>`;
+
+R.creatives = () => `
+  <div class="wrap">
+    <p class="pg-title" style="margin-bottom:40px;">Our<br>Creatives</p>
+    ${Object.values(DIRS).map(d => `
+      <a class="cre fdm" href="#director/${esc(d.slug)}">
+        <span class="nm">${esc(d.name)}</span>
+        <svg width="15" height="11" viewBox="0 0 15 11"><path d="M8.6 10L13.5 5.5 8.6 1M13.5 5.5H0" stroke="#000" stroke-width="1.6" fill="none"/></svg>
+      </a>`).join('')}
+  </div>
+  ${FOOTER}`;
+
+R.director = slug => {
+  const d = DIRS[slug] || DIRS['evan-bourque'];
+  const secs = (d.sections || []).map(x => ({ name: x.name.trim().toLowerCase().replace(/(^|\s)\S/g, c => c.toUpperCase()), works: x.works }));
+  const seen = new Map();
+  secs.forEach(sec => sec.works.forEach(w => {
+    if (!w.still) return;
+    if (!seen.has(w.slug)) seen.set(w.slug, { ...w, feat: false, cat: null });
+    const e = seen.get(w.slug);
+    if (sec.name === 'Featured') e.feat = true; else if (!e.cat) e.cat = sec.name;
+  }));
+  const works = [...seen.values()];
+  const cats = ['Featured', ...secs.map(x => x.name).filter(n => n !== 'Featured')]
+    .filter(c => works.some(w => c === 'Featured' ? w.feat : w.cat === c));
+  window.__dirWorks = works;
+  return `
+  <div class="dir-stage" id="dirStage">
+    <div class="dir-hero">
+      ${d.poster ? `<img class="pst" src="${esc(d.poster)}" alt="">` : ''}
+      ${d.reel ? `<video src="${esc(d.reel)}" autoplay muted loop playsinline ${d.poster ? `poster="${esc(d.poster)}"` : ''}></video>` : ''}
+      <div class="dir-scrim" id="dirScrim"></div>
+      <div class="dir-about" id="dirAbout">
+        <p class="lab">${esc((d.roles || 'Director').replace(/,\s*/g, ' / '))}</p>
+        ${(d.awards && d.awards.length) ? `<div class="aw">${d.awards.map((a, i) => `${a.b && i ? '<div class="gap"></div>' : ''}<p class="${a.b ? 'b' : ''}">${esc(a.t)}</p>`).join('')}</div>` : ''}
+        ${d.bio ? `<p class="lab">About</p><p class="bio">${esc(d.bio)}</p>` : ''}
+      </div>
+      <div class="dir-id" id="dirId">
+        <p class="nm">${esc(d.name)}</p>
+        <a class="bk" href="#creatives">Back to Directors</a>
+      </div>
+      <div class="dir-cue" id="dirCue">Scroll to view more work
+        <svg width="24" height="8" viewBox="0 0 24 8"><path d="M1 1L12 7L23 1" stroke="#fff" stroke-width="1.6" stroke-linecap="round" fill="none"/></svg></div>
+    </div>
+  </div>
+  <div class="dir-work">
+    <div class="wrap">
+      <div class="tabs">${cats.map((c, i) => `<button class="${i === 0 ? 'on' : ''}" data-c="${esc(c)}">${esc(c)}</button>`).join('')}</div>
+      <div id="dirGrid"></div>
+    </div>
+    ${FOOTER}
+  </div>`;
+};
+
+/* Case Studies = the desktop ledger (WORKS + SLUGS + LOOPS from
+   case-studies.html) behind the frame's three tabs: 11 / 4 / 8.
+   Live Action leads and the page opens on it (Joel 9/11), same as desktop. */
+const CS_TABS = [['live', 'Live Action'], ['cs', 'Creative Studio'], ['exp', 'Experiential']];
+const csTiles = cat => CS_WORKS.filter(w => w.cats.includes(cat)).map(w => {
+  const f = w.img.split('/').pop();
+  return tileHtml({ t: w.t, img: w.img, slug: CS_SLUGS[f] || null, loop: CS_LOOPS[f] || null });
+}).join('');
+R['case-studies'] = () => `
+  <div class="wrap">
+    <p class="pg-title">Case Studies</p>
+    <div class="tabs" id="csTabs">${CS_TABS.map(([k, l], i) => `<button class="${i === 0 ? 'on' : ''}" data-c="${k}">${l}</button>`).join('')}</div>
+    <div id="csGrid">${gridOpen()}${csTiles(CS_TABS[0][0])}</div></div>
+  </div>
+  ${FOOTER}`;
+
+R.work = slug => `
+  <div class="film" id="film"><div id="filmSlot"></div></div>
+  <div class="wrap">
+    <a class="back" style="color:#6b6b6b;" href="javascript:history.back()">Back to work</a>
+    <div class="cs-head" id="csTitle"></div>
+    <div class="cs-led" id="csLed"></div>
+    <div class="cs-extra" id="csExtra"></div>
+  </div>
+  ${FOOTER}`;
+
+R.experiential = () => `
+  <div class="wrap">
+    <p class="statement md" style="margin-top:44px;">We concept unforgettable experiences that ignite connections between brands and their communities.</p>
+    <div style="height:91px"></div>
+    ${gridOpen()}${EXP_WORKS.map(tileHtml).join('')}</div>
+    <p class="sec-label" style="margin:87px 0 57px;">What we bring to life</p>
+  </div>
+  <div class="press-rail" data-rail="xBar" style="padding:0 31px; gap:15px;">
+    ${OFFERINGS.map(([t, b]) => `<div class="x-card fdm"><h3>${t}</h3><p>${b}</p></div>`).join('')}
+  </div>
+  <div class="pbar" id="xBar" style="margin:47px 0 0 43px;"><i></i></div>
+  <div class="hp-zone" id="hpZone"><div class="hp-stick wrap" id="hpStick" style="padding:0 20px 40px 31px;">
+    <p class="sec-label" style="margin:0 0 51px;">How we make it happen</p>
+    <div id="hpList">${HP_TITLES.map((t, i) => `
+      <div class="hp-row${i === 0 ? ' on' : ''}" data-i="${i}"><p class="n">0${i + 1}</p><p class="t">${t}</p></div>`).join('')}</div>
+    <p class="hp-copy" id="hpCopy">${esc(String(HP_COPY[0] || '').split('\n\n')[0])}</p>
+  </div></div>
+  ${FOOTER}`;
+
+R.services = () => `
+  <div class="wrap">
+    <p class="pg-title">We’ve Got<br>You Covered</p>
+    <p class="plain" style="margin-top:20px;">5-star experiences, 100% of the time. We create experiences that resonate deeply with your audience by combining cutting-edge technology, artistic vision, and meticulous attention to detail.</p>
+    <div class="stp-zone" id="stpZone">
+      <div class="stp-stick stp">
+        <div class="svc-rule" id="stpRule"></div>
+        <div class="row fdm">
+          <span class="num" id="stpNum">01</span>
+          <div class="wclip"><div class="words" id="stpWords">${STEP_WORDS.map((w, i) => `<span class="${i === 0 ? 'on' : ''}">${w}</span>`).join('')}</div></div>
+        </div>
+        <div class="stp-cols" id="stpCols"></div>
+      </div>
+    </div>
+    <p class="sec-label" style="margin:46px 0 21px;">Our Blueprint</p>
+    <p class="plain" style="margin-bottom:60px;">No matter where you are on your creative and production journey, we’re ready to dive in and get to work with our trusted process.</p>
+    ${[['01','Creative Brief','Before we kick off creative, we understand your goals, objectives, target audience, and more.'],
+       ['02','Research & Development','Through in-depth analysis, market trends, and competitor insights, we learn what everyone else is doing so we can do it differently.'],
+       ['03','Vision Building','Brainstorms, tissue sessions, and lots of exploration. We’ll develop creative territories to hone in on the best vision for your team.'],
+       ['04','Pre-Production','Before our directors say “action,” we plan and prepare every aspect of the shoot.'],
+       ['05','Production','It’s showtime, and we’re ready to bring the vision to life — from the first shot of the day to the Martini shot.'],
+       ['06','Post-Production','From offline to online to delivery, we’re there every step of the way to craft the finished product.']]
+      .map(([n, t, b]) => `<div class="step fdm"><p class="n">${n}</p><div><p class="st">${esc(t)}</p><p class="sb">${esc(b)}</p></div></div>`).join('')}
+    <p class="sec-label" style="margin:80px 0 60px;">Don’t Believe Us, Believe...</p>
+  </div>
+  <div class="press-rail" data-rail="tBar" style="padding:0 30px; gap:60px;">
+    ${TST.map(p => `
+      <div class="tst fdm">
+        <p class="q">“${esc(p.q)}”</p>
+        <img class="av" src="${esc(p.av)}" alt="">
+        <p class="nm">${esc(p.name)}</p><p class="rl">${esc(p.role)}${p.brand ? ', ' + esc(p.brand) : ''}</p>
+      </div>`).join('')}
+  </div>
+  <div class="pbar" id="tBar" style="margin:50px 0 0 43px;"><i></i></div>
+  ${FOOTER}`;
+
+/* About per Figma 552:137 (9/8): statement FIRST at x35, then the 475-tall
+   reel, then core values (one live + its copy, desktop's click-to-switch
+   plus a slow auto-roll while in view), then the team rail */
+const CV_VALUES = ['Fueled by Passion', 'Stay Curious', 'If There’s A Will, There’s A Way', 'Your Next Five Moves', 'Do What You Say', 'Make It Count'];
+const AB_GRAY = 'Our diverse roster of visionary creatives are rewriting the rules of storytelling and visual expression — driven by our shared values and unique perspectives. Brands don’t come to us for content. They come to us for stories that move.';
+R.about = () => `
+  <div class="ab-stmt-zone" id="abStmtZone"><div class="ab-stmt-stick">
+    <p class="statement" style="max-width:310px;"><b>A Full Service Creative Studio Reimagining Storytelling.</b> <b class="gray" id="abGray">${AB_GRAY.split(/\s+/).map(w => `<span class="w">${esc(w)}</span>`).join(' ')}</b></p>
+  </div></div>
+  <div class="ab-reel-zone" id="abReelZone"><div class="ab-reel-pin">
+    <div class="ab-reel" id="abReel"><video src="assets/live/sx-reel-m.mp4" autoplay muted loop playsinline poster="assets/abt-hero-2.png"></video></div>
+    <!-- 9/15 (Joel: "when the sizzle reel plays on the about page, some icons
+         should pop up to be able to watch the video full screen, so that it's
+         in the proper aspect ratio"): sound + fullscreen while the reel holds -->
+    <div class="ab-reel-chrome" id="abReelChrome">
+      <button class="rc-audio" aria-label="Sound"><img src="assets/cs-audio.svg" alt=""></button>
+      <button class="rc-fs" aria-label="Full screen"><img src="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 30 30%22 fill=%22none%22 stroke=%22%23fff%22 stroke-width=%222%22><path d=%22M11 3H3v8M19 3h8v8M11 27H3v-8M19 27h8v-8%22/></svg>" alt=""></button>
+    </div>
+  </div></div>
+  <div class="cv-zone" id="cvZone"><div class="cv-stick" id="cvStick">
+    <p class="sec-label" style="margin:0 0 24px;">Our Core Values</p>
+    <p class="cv" id="cvStrip">${CV_VALUES.map((v, i) => `<span class="sep">/&nbsp;&nbsp;</span><span class="v${i === 0 ? ' on' : ''}" data-i="${i}">${v}</span>${i < CV_VALUES.length - 1 ? '<span class="sep"> </span>' : ''}`).join('')}</p>
+    <p class="cv-copy" id="cvCopy">${esc(CV_COPY[0] || '')}</p>
+  </div></div>
+  <div class="wrap">
+    <div class="sec-row" style="margin:91px 0 0;"><p class="sec-label">Meet the core team</p>
+      <div style="display:flex;gap:14px;"><button class="pr-chev" id="tmPrev">&#8249;</button><button class="pr-chev" id="tmNext">&#8250;</button></div></div>
+  </div>
+  <div class="tm-rail" id="tmRail"><div class="tm-track" id="tmTrack"></div></div>
+  ${FOOTER}`;
+
+R.careers = () => `
+  <div class="wrap">
+    <p class="pg-title">Careers</p>
+    <p class="statement" style="margin-top:26px;"><b>We create stories that grow.<br>And careers that do too.</b></p>
+    <p class="roles-lab">Open roles&nbsp;&nbsp;(02)</p>
+    <div class="roles-row"><p class="rt">Art Director</p><p class="rm">Culver City, CA · Full-time<a href="mailto:careers@sixtwentysix.co?subject=Art%20Director">Apply</a></p></div>
+    <div class="roles-row"><p class="rt">Treatment Designer</p><p class="rm">Culver City, CA · Full-time<a href="mailto:careers@sixtwentysix.co?subject=Treatment%20Designer">Apply</a></p></div>
+    <p class="roles-none">Don’t see your role?</p>
+    <p class="plain">We’re always looking for exceptional people. Send your resume or reel, the job title, and the role you’d propose to <a href="mailto:careers@sixtwentysix.co">careers@sixtwentysix.co</a> and tell us what you’d bring.</p>
+  </div>
+  ${FOOTER}`;
+
+/* 9/14 (Joel: "information for contact is wrong on the mobile version"):
+   the phone's contact page now carries exactly what the desktop contact
+   page carries (contact.html) — the statement, mail and phone, HQ, careers,
+   follow, more, the team with their roles, and representation. The drafted
+   "Let's make something that moves" and the New York line are gone. */
+const CT_TEAM = [ /* 9/14: every name links out, the live site's mailtos */
+  ['Austin Barbera', 'Co-Founder / Managing Director', 'austin'],
+  ['Jake Krask', 'Co-Founder / Managing Partner', 'jake'],
+  ['Carleigh Finch', 'Executive Producer / Head of Business Development', 'carleigh'],
+  ['Jonny Edwards', 'Chief Executive Producer', 'jonny'],
+  ['Sarah Donnenberg', 'Executive Producer / Special Projects', 'sarah'],
+  ['Jay Wert', 'Executive Producer', 'jay'],
+];
+const CT_REPS = [
+  ['West Coast', 'Stephanie Stephens Reps'],
+  ['Midwest', 'The House of Representatives'],
+  ['East Coast', 'Moustache'],
+  ['Music Video', 'Labuda'],
+];
+R.contact = () => `
+  <div class="wrap">
+    <p class="ct-title">No matter where you are in your creative and production journey, we're ready to dive in and get to work.</p>
+    <div class="kv"><p class="k">Email</p><p class="v"><a href="mailto:hello@sixtwentysix.co">hello@sixtwentysix.co</a></p></div>
+    <div class="kv"><p class="k">Phone</p><p class="v"><a href="tel:+18182330518">818-233-0518</a></p></div>
+    <div class="kv"><p class="k">Headquarters</p><p class="v"><a href="https://www.google.com/maps/search/?api=1&query=5976+Washington+Blvd,+Culver+City,+CA+90232" target="_blank" rel="noopener">5976 Washington Blvd,<br>Culver City, CA 90232</a></p></div>
+    <div class="kv"><p class="k">Careers</p><p class="v"><a href="mailto:careers@sixtwentysix.co">careers@sixtwentysix.co</a></p></div>
+    <div class="kv"><p class="k">Follow us</p><p class="v"><a href="https://www.instagram.com/sixtwentysixco/" target="_blank" rel="noopener">Instagram</a><br><a href="https://www.linkedin.com/company/sixtwentysix/" target="_blank" rel="noopener">LinkedIn</a></p></div>
+    <div class="kv"><p class="k">More</p><p class="v"><a href="mailto:hello@sixtwentysix.co?subject=SX%20-%20Capabilities%20Deck%20Request&body=Hi!%20I%20am%20requesting%20the%20SixTwentySix%20capabilities%20deck.">Request our capabilities deck</a><br><a href="mailto:hello@sixtwentysix.co?subject=Newsletter">Subscribe to our newsletter</a></p></div>
+    <div class="kv"><p class="k">Team</p>${CT_TEAM.map(([n, r, u]) => `<p class="v"><a href="mailto:${u}@sixtwentysix.co">${esc(n)}<span class="r">${esc(r)}</span></a></p>`).join('')}</div>
+    <div class="kv"><p class="k">Representation</p>${CT_REPS.map(([n, r]) => `<p class="v">${esc(n)}<span class="r">${esc(r)}</span></p>`).join('')}</div>
+  </div>
+  ${FOOTER}`;
+
+/* ================= boot helpers ================= */
+function paintDirGrid(works, cat) {
+  const list = works.filter(w => cat === 'Featured' ? w.feat : w.cat === cat);
+  document.getElementById('dirGrid').innerHTML = gridOpen() + list.map(w => {
+    const t = splitT(w.title);
+    return tileHtml({ t: t.brand, d: t.proj, img: w.still, slug: w.slug, loop: w.loop });
+  }).join('') + '</div>';
+  armAll();
+}
+
+/* director scroll choreography: film darkens (0.79, the desktop pv scrim),
+   the about layer fades in over it, the name holds */
+function dirScroll() {
+  const scrim = document.getElementById('dirScrim');
+  if (!scrim) return;
+  const vh = window.innerHeight;
+  const p = Math.max(0, Math.min(1, window.scrollY / (vh * 0.9)));
+  scrim.style.opacity = (0.75 * p).toFixed(3);            /* Figma 605:1103: 75% black */
+  const ab = document.getElementById('dirAbout');
+  if (ab) { ab.style.opacity = String(Math.min(1, Math.max(0, (p - 0.25) / 0.6))); }
+  /* the cue holds through the darkened state (Figma 605:1102 keeps it);
+     the work sheet covers it when it arrives */
+}
+window.addEventListener('scroll', dirScroll, { passive: true });
+
+/* THE STEPPER drive (desktop stepFromScroll / show / paintCols translated).
+   The zone is stick + STP_EXTRA tall; while the stick is pinned, scroll
+   progress p picks the step. Step change: words glide, number ticks, the
+   old columns fade, the new step's columns pop up staggered. Inside a tall
+   step (Post, Experiential) the columns drift up over the step's span so
+   the last row is reachable on a small phone. Leaving the section re-arms. */
+const STP_EXTRA = 1920;                  /* 4 steps x 480px of scroll */
+let stpActive = -1, stpColsTimer = null;
+function stpPaintCols(i) {
+  const cols = document.getElementById('stpCols');
+  cols.classList.remove('in');
+  cols.innerHTML = SVC_STEPS[i].items.map((it, n) =>
+    `<div class="it" style="--d:${(n * 0.09).toFixed(2)}s"><p class="t">${esc(it.t)}</p><p class="b">${esc(it.b)}</p></div>`).join('');
+  cols.style.transform = '';
+  /* how far this step's columns overrun the pinned stick, measured ONCE
+     from layout (transforms and opacity do not move scrollHeight) */
+  const stick = cols.closest('.stp-stick');
+  stpOver = Math.max(0, cols.offsetTop + cols.scrollHeight - stick.clientHeight + 24);
+  setTimeout(() => cols.classList.add('in'), 30);
+}
+let stpOver = 0;
+function stpShow(i) {
+  if (i === stpActive) return;
+  stpActive = i;
+  const words = [...document.querySelectorAll('#stpWords span')];
+  words.forEach((w, n) => w.classList.toggle('on', n === i));
+  document.getElementById('stpWords').style.transform = `translateX(${-words[i].offsetLeft}px)`;
+  document.getElementById('stpNum').textContent = '0' + (i + 1);
+  clearTimeout(stpColsTimer);
+  document.getElementById('stpCols').classList.remove('in');
+  stpColsTimer = setTimeout(() => stpPaintCols(i), 260);
+}
+function stpScroll() {
+  const zone = document.getElementById('stpZone');
+  if (!zone) return;
+  const zr = zone.getBoundingClientRect();
+  const start = window.scrollY + zr.top - HDR_H;          /* scrollY at which the stick pins */
+  const p = (window.scrollY - start) / STP_EXTRA;
+  const rule = document.getElementById('stpRule');
+  rule.style.transform = 'scaleX(' + (0.18 + 0.82 * Math.max(0, Math.min(1, p))).toFixed(4) + ')';
+  /* off the section entirely -> re-arm so it replays on return */
+  if (zr.bottom < 0 || zr.top > window.innerHeight) {
+    if (stpActive !== -1) { stpActive = -1; document.getElementById('stpCols').classList.remove('in'); }
+    return;
+  }
+  const n = SVC_STEPS.length;
+  const i = Math.max(0, Math.min(n - 1, Math.floor(Math.max(0, p) * n)));
+  stpShow(i);
+  /* tall step (Post, Experiential on a short phone): the columns drift up
+     across the middle of the step's span so the last row is reachable */
+  const cols = document.getElementById('stpCols');
+  if (stpOver > 0 && p >= 0) {
+    const ps = Math.max(0, Math.min(1, (p * n - i - 0.3) / 0.6));
+    cols.style.transform = `translateY(${(-stpOver * ps).toFixed(1)}px)`;
+  }
+}
+window.addEventListener('scroll', stpScroll, { passive: true });
+function armStepper() {
+  const zone = document.getElementById('stpZone');
+  if (!zone) return;
+  const stick = zone.querySelector('.stp-stick');
+  zone.style.height = (stick.offsetHeight + STP_EXTRA) + 'px';
+  stpActive = -1;
+  stpScroll();
+}
+
+/* ================= News and Features: THE ROLL (desktop index.html) =================
+   Periodic copies of the cards drift left at 24px/s; a tap lights a card
+   (logo up, image burns in, the rest ghost) and pauses; tapping the lit
+   card or READ opens the article; a swipe drags; the chevrons nudge one
+   card. The WordPress press feed replaces the three baked cards when it
+   answers (desktop law: 100% of what's on WordPress is on the site). */
+const NEWS_PITCH = 305 + 61, WIPE_W = 274, WIPE_H = 154;
+const news = { items: [], period: 0, drift: 0, vel: 0, paused: false, nudge: 0, last: 0, litTimer: null, run: false };
+function newsCard(p) {
+  const logo = p.logoHtml || `<img class="lg" style="height:${p.h}px" src="${esc(p.logo)}" alt="">`;
+  const up = p.wipe ? -(WIPE_H + 24 - p.h) : 0;
+  return `<div class="press" data-url="${esc(p.url)}">
+    <div class="press-logo" style="--logo-up:${up}px;">${logo}</div>
+    ${p.wipe ? `<div class="press-wipe" style="top:${p.h + 42 - WIPE_H}px;"><img src="${esc(p.wipe)}" alt="" loading="lazy"></div>` : ''}
+    <p class="q">“${esc(p.q)}”</p>
+    ${p.url ? `<a class="read" href="${esc(p.url)}" target="_blank" rel="noopener noreferrer">READ</a>` : ''}
+  </div>`;
+}
+function buildNewsRail(items) {
+  const host = document.getElementById('prTrack');
+  if (!host) return;
+  news.items = items;
+  news.period = items.length * NEWS_PITCH;
+  const copies = Math.ceil((innerWidth + NEWS_PITCH) / news.period) + 1;
+  let html = '';
+  for (let c = 0; c < copies; c++) html += items.map(newsCard).join('');
+  host.innerHTML = html;
+  const thumb = document.querySelector('#prBar i');
+  if (thumb) thumb.style.width = (303 / items.length).toFixed(1) + 'px';
+}
+function newsUnlight() {
+  const host = document.getElementById('prTrack');
+  if (!host) return;
+  host.classList.remove('lit');
+  host.querySelectorAll('.press.lit').forEach(c => c.classList.remove('lit'));
+  news.paused = false;
+}
+function newsTick(now) {
+  if (!news.run) return;
+  const host = document.getElementById('prTrack');
+  if (!host) { news.run = false; return; }
+  const dt = Math.min(0.05, (now - news.last) / 1000) || 0;
+  news.last = now;
+  if (!news.paused) news.drift += 24 * dt;
+  /* momentum: the flick's speed decays (~0.45s time constant) back onto the slow roll */
+  if (news.vel) { news.drift += news.vel * dt; news.vel *= Math.exp(-dt * 2.2); if (Math.abs(news.vel) < 2) news.vel = 0; }
+  if (news.nudge !== 0) { const step = Math.sign(news.nudge) * Math.min(Math.abs(news.nudge), 700 * dt); news.drift += step; news.nudge -= step; }
+  const pos = ((news.drift % news.period) + news.period) % news.period;
+  host.style.transform = 'translateX(' + (-pos).toFixed(2) + 'px)';
+  const thumb = document.querySelector('#prBar i');
+  if (thumb) thumb.style.transform = 'translateX(' + ((pos / news.period) * (303 - 303 / news.items.length)).toFixed(1) + 'px)';
+  requestAnimationFrame(newsTick);
+}
+function armNews() {
+  buildNewsRail(PRESS_M);
+  const host = document.getElementById('prTrack');
+  news.drift = 0; news.nudge = 0; news.paused = false; news.last = performance.now();
+  if (!news.run) { news.run = true; requestAnimationFrame(newsTick); }
+  /* tap: light it (desktop hover); tap again or READ: open */
+  host.addEventListener('click', e => {
+    if (e.target.closest('a')) return;
+    const c = e.target.closest('.press');
+    if (!c) return;
+    if (c.classList.contains('lit')) { if (c.dataset.url) window.open(c.dataset.url, '_blank', 'noopener'); return; }
+    host.querySelectorAll('.press.lit').forEach(o => o.classList.remove('lit'));
+    c.classList.add('lit'); host.classList.add('lit'); news.paused = true;
+  });
+  /* tap anywhere else: the card goes back to normal and the roll resumes (Joel 9/8) */
+  if (!news.docBound) {
+    news.docBound = true;
+    document.addEventListener('click', e => {
+      const lit = document.querySelector('#prTrack .press.lit');
+      if (lit && !e.target.closest('#prTrack .press')) newsUnlight();
+    });
+  }
+  /* swipe drags the rail (the cards follow the finger), a hold parks it, the roll resumes on release */
+  armDrag(host.parentElement, {
+    start: () => { news.paused = true; news.vel = 0; },
+    move: dx => { news.drift -= dx; },
+    end: (dragged, v) => { if (dragged) news.vel = v; if (!host.querySelector('.press.lit')) news.paused = false; }
+  });
+  document.getElementById('prPrev').onclick = () => { news.nudge -= NEWS_PITCH; };
+  document.getElementById('prNext').onclick = () => { news.nudge += NEWS_PITCH; };
+  /* WordPress press feed (same query as the desktop) */
+  fetch('https://api.sixtwentysix.co/graphql', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ query: '{ posts(first: 100) { nodes { title news { linkUrl logo { node { sourceUrl mediaDetails { width height } } } logoImage { node { sourceUrl mediaDetails { width height } } } } featuredImage { node { sourceUrl } } } } }' })
+  }).then(r => r.json()).then(j => {
+    const items = ((j.data && j.data.posts && j.data.posts.nodes) || []).map(n => {
+      const nw = n.news || {};
+      const lg = (nw.logo && nw.logo.node) || (nw.logoImage && nw.logoImage.node) || null;
+      const d = lg && lg.mediaDetails;
+      const w = d && d.width && d.height ? Math.min(170, Math.round(d.width / d.height * 34)) : null;
+      return { q: n.title, url: nw.linkUrl || '', h: 34,
+        wipe: (n.featuredImage && n.featuredImage.node && n.featuredImage.node.sourceUrl) || '',
+        logoHtml: lg ? `<img src="${esc(lg.sourceUrl)}" alt="" style="height:34px; width:${w ? w + 'px' : 'auto'}; max-width:170px; filter:brightness(0);">` : '' };
+    }).filter(p => p.q);
+    if (items.length >= 3 && document.getElementById('prTrack')) buildNewsRail(items);
+  }).catch(() => {});
+}
+
+/* finger drag for the rolling rails (news, team): touch + pointer, passive */
+function armDrag(el, h) {
+  /* velocity from the last ~80ms of movement -> the rail keeps the flick's
+     speed on release and eases back to its slow roll (Joel 9/8) */
+  let x = null, dragged = false, samples = [];
+  const down = cx => { x = cx; dragged = false; samples = [[performance.now(), cx]]; h.start(); };
+  const move = cx => {
+    if (x === null) return;
+    const dx = cx - x; x = cx;
+    const now = performance.now(); samples.push([now, cx]); samples = samples.filter(s => now - s[0] < 90);
+    if (dx) { dragged = true; h.move(dx); }
+  };
+  const up = () => {
+    if (x === null) return;
+    x = null;
+    let v = 0;
+    if (samples.length > 1) { const a = samples[0], b = samples[samples.length - 1]; const dt = (b[0] - a[0]) / 1000; if (dt > 0) v = -(b[1] - a[1]) / dt; }
+    h.end(dragged, Math.max(-3500, Math.min(3500, v)));
+  };
+  el.addEventListener('touchstart', e => down(e.touches[0].clientX), { passive: true });
+  el.addEventListener('touchmove', e => move(e.touches[0].clientX), { passive: true });
+  el.addEventListener('touchend', up, { passive: true });
+  el.addEventListener('touchcancel', up, { passive: true });
+}
+
+/* paged rails: the thumb is 1/n of the 303px track and walks with the page */
+function armRails() {
+  document.querySelectorAll('[data-rail]').forEach(rail => {
+    const bar = document.getElementById(rail.dataset.rail);
+    if (!bar) return;
+    const cards = rail.children.length || 1;
+    const thumb = bar.firstElementChild;
+    thumb.style.width = (303 / cards).toFixed(1) + 'px';
+    const paint = () => {
+      const step = rail.children[1] ? rail.children[1].offsetLeft - rail.children[0].offsetLeft : rail.clientWidth;
+      const i = Math.max(0, Math.min(cards - 1, Math.round(rail.scrollLeft / step)));
+      thumb.style.transform = `translateX(${(i * 303 / cards).toFixed(1)}px)`;
+    };
+    rail.addEventListener('scroll', paint, { passive: true });
+    rail.addEventListener('scrollend', paint, { passive: true });
+    paint();
+  });
+}
+
+/* how we make it happen — THE LOCK: the block pins (centered when it fits),
+   the scroll steps the list 01 -> 04 across HP_EXTRA px, a tap also picks;
+   after the last step the zone ends and the footer rolls in */
+const HP_EXTRA = 4 * 320;
+let hpOn = -1;
+function hpSet(i) {
+  if (i === hpOn) return;
+  hpOn = i;
+  document.querySelectorAll('#hpList .hp-row').forEach(r => r.classList.toggle('on', Number(r.dataset.i) === i));
+  const c = document.getElementById('hpCopy');
+  if (!c) return;
+  c.style.opacity = '0';
+  setTimeout(() => { c.textContent = String(HP_COPY[i] || '').split('\n\n')[0]; c.style.opacity = ''; }, 160);
+}
+function hpScroll() {
+  const zone = document.getElementById('hpZone'), stick = document.getElementById('hpStick');
+  if (!zone) return;
+  const top = parseFloat(stick.style.top) || 60;
+  const start = window.scrollY + zone.getBoundingClientRect().top - top;   /* scrollY at which it pins */
+  const p = (window.scrollY - start) / HP_EXTRA;
+  if (p < 0) { hpSet(0); return; }
+  hpSet(Math.max(0, Math.min(HP_TITLES.length - 1, Math.floor(p * HP_TITLES.length))));
+}
+window.addEventListener('scroll', hpScroll, { passive: true });
+function armHP() {
+  const zone = document.getElementById('hpZone'), stick = document.getElementById('hpStick');
+  hpOn = -1;
+  if (!zone) return;
+  const h = stick.offsetHeight;
+  stick.style.top = Math.max(60, Math.round((window.innerHeight - h) / 2)) + 'px';
+  zone.style.height = (h + HP_EXTRA) + 'px';
+  stick.querySelectorAll('.hp-row').forEach(r => r.addEventListener('click', () => hpSet(Number(r.dataset.i))));
+  hpScroll();
+}
+
+/* ================= ABOUT choreography (desktop about.html translated) ================= */
+const AB_LIT = 260, AB_GROW = 300, AB_LOCK = 300, CV_SPAN = 1200;   /* 6 values x 200 (desktop) */
+let cvOn = -1, tmDrift = 0, tmPos = 0, tmRun = false, tmLast = 0, tmPaused = false, tmVel = 0;
+function cvSet(i) {
+  if (i === cvOn) return;
+  cvOn = i;
+  document.querySelectorAll('#cvStrip .v').forEach(v => v.classList.toggle('on', Number(v.dataset.i) === i));
+  const c = document.getElementById('cvCopy');
+  if (!c) return;
+  c.style.opacity = '0';
+  setTimeout(() => { c.textContent = CV_COPY[i] || ''; c.style.opacity = ''; }, 180);
+}
+function aboutScroll() {
+  const sz = document.getElementById('abStmtZone');
+  if (!sz) return;
+  const y = window.scrollY, vh = window.innerHeight;
+  /* 1. the words light one by one across the statement's hold */
+  const words = document.querySelectorAll('#abGray .w');
+  const p1 = Math.max(0, Math.min(1, (y - (sz.offsetTop - HDR_H)) / AB_LIT));
+  const lit = Math.floor(p1 * words.length + 0.0001);
+  words.forEach((w, i) => w.classList.toggle('lit', i < lit));
+  /* 2. the reel: fades + rises in as it comes on screen (one clocked play),
+        then the scroll grows it 0.7 -> 1 across AB_GROW while pinned, holds
+        AB_LOCK, releases; the header goes dark while the reel is full screen */
+  const rz = document.getElementById('abReelZone'), reel = document.getElementById('abReel');
+  const rr = rz.getBoundingClientRect();
+  if (rr.top < vh * 0.85 && !reel.classList.contains('in')) reel.classList.add('in');
+  const p2 = (y - rz.offsetTop) / AB_GROW;
+  if (p2 > 0) {
+    const k = Math.min(1, p2); const s = k * k * (3 - 2 * k);
+    reel.classList.add('scrub');
+    reel.style.transform = `translateY(0) scale(${(0.7 + 0.3 * s).toFixed(4)})`;
+  } else if (reel.classList.contains('scrub')) { reel.classList.remove('scrub'); reel.style.transform = ''; }
+  const full = p2 >= 0.9 && rr.bottom > vh;        /* pinned full-screen: dark chrome */
+  document.getElementById('hdr').classList.toggle('dark', full);
+  const rc = document.getElementById('abReelChrome'); if (rc) rc.classList.toggle('on', full);
+  /* 3. the values step with the scroll while their block is pinned */
+  const cz = document.getElementById('cvZone'), cs = document.getElementById('cvStick');
+  const pinStart = cz.offsetTop - (parseFloat(cs.style.top) || 60);
+  if (y >= pinStart) cvSet(Math.min(CV_VALUES.length - 1, Math.floor(((y - pinStart) / CV_SPAN) * CV_VALUES.length)));
+  else cvSet(0);
+}
+window.addEventListener('scroll', aboutScroll, { passive: true });
+const TM_PITCH = 236, TM_H = 330, TM_K = 0.365;
+function tmCell(t, i, lap) {
+  const w = Math.round(t.w * TM_K), h = Math.round(t.h * TM_K);
+  /* Joel 9/8: same scale, but the photo sits right under the labels (top 48)
+     so more of the body shows; the rail's edge + the dissolve cut it off below */
+  return `<div class="tm-cell" style="left:${(20 + i * TM_PITCH + lap)}px;">
+    ${t.img ? `<img src="${esc(t.img)}" alt="${esc(t.name)}" style="left:40px; top:48px; width:${w}px; height:${h}px;">` : ''}
+    <div class="tm-rule" style="left:8px; top:6px;"></div>
+    <p class="tm-name" style="left:20px; top:4px;">${esc(t.name)}</p>
+    <p class="tm-role" style="left:20px; top:20px;">${esc(t.role)}</p>
+  </div>`;
+}
+function tmTick(now) {
+  if (!tmRun) return;
+  const track = document.getElementById('tmTrack');
+  if (!track) { tmRun = false; return; }
+  const dt = Math.min(0.05, (now - tmLast) / 1000) || 0; tmLast = now;
+  const period = TM_PITCH * TEAM.length;
+  if (!tmPaused) tmDrift += 16 * dt;                      /* desktop 44px/s at 0.365 scale */
+  if (tmVel) { tmDrift += tmVel * dt; tmVel *= Math.exp(-dt * 2.2); if (Math.abs(tmVel) < 2) tmVel = 0; }   /* flick momentum */
+  const pos = (((tmPos * TM_PITCH + tmDrift) % period) + period) % period;
+  track.style.transform = `translateX(${(-pos).toFixed(2)}px)`;
+  requestAnimationFrame(tmTick);
+}
+function armAbout() {
+  const sz = document.getElementById('abStmtZone');
+  if (!sz) return;
+  const stick = sz.firstElementChild;
+  sz.style.height = (stick.offsetHeight + AB_LIT) + 'px';
+  const rz = document.getElementById('abReelZone');
+  rz.style.height = (window.innerHeight + AB_GROW + AB_LOCK) + 'px';
+  const cs = document.getElementById('cvStick'), cz = document.getElementById('cvZone');
+  cs.style.top = Math.max(60, Math.round((window.innerHeight - cs.offsetHeight) / 2)) + 'px';
+  cz.style.height = (cs.offsetHeight + CV_SPAN) + 'px';
+  cvOn = -1;
+  cs.querySelectorAll('.v').forEach(v => v.addEventListener('click', () => cvSet(Number(v.dataset.i))));
+  /* the reel's sound + fullscreen (9/15): fullscreen is the native player,
+     which keeps the film's aspect ratio; sound comes on with it */
+  const rv = document.querySelector('#abReel video'), rc = document.getElementById('abReelChrome');
+  if (rv && rc) {
+    const au = rc.querySelector('.rc-audio');
+    au.classList.toggle('off', rv.muted);
+    au.addEventListener('click', e => { e.stopPropagation(); rv.muted = !rv.muted; au.classList.toggle('off', rv.muted); });
+    rc.querySelector('.rc-fs').addEventListener('click', e => {
+      e.stopPropagation();
+      rv.muted = false; au.classList.remove('off');
+      if (rv.webkitEnterFullscreen) rv.webkitEnterFullscreen();
+      else if (rv.requestFullscreen) rv.requestFullscreen();
+    });
+    rv.addEventListener('webkitendfullscreen', () => { rv.muted = true; au.classList.add('off'); const p = rv.play(); if (p && p.catch) p.catch(() => {}); });
+  }
+  /* team: two laps so the roll never shows a gap; chevrons page a cell */
+  const period = TM_PITCH * TEAM.length;
+  document.getElementById('tmTrack').innerHTML = TEAM.map((t, i) => tmCell(t, i, 0)).join('') + TEAM.map((t, i) => tmCell(t, i, period)).join('');
+  tmDrift = 0; tmPos = 0; tmPaused = false; tmLast = performance.now();
+  if (!tmRun) { tmRun = true; requestAnimationFrame(tmTick); }
+  /* swipe drags the cells with the finger, a hold parks the roll, release resumes */
+  armDrag(document.getElementById('tmRail'), {
+    start: () => { tmPaused = true; tmVel = 0; },
+    move: dx => { tmDrift -= dx; },
+    end: (dragged, v) => { if (dragged) tmVel = v; tmPaused = false; }
+  });
+  document.getElementById('tmNext').onclick = () => { tmPos = Math.min(TEAM.length - 2, tmPos + 1); };
+  document.getElementById('tmPrev').onclick = () => { tmPos = Math.max(-2, tmPos - 1); };
+  aboutScroll();
+}
+
+async function bootWork(slug) {
+  /* instant landing: the tapped tile's art paints the film box NOW */
+  try {
+    const art = JSON.parse(sessionStorage.getItem('sx-m-art') || '{}');
+    if (art.src && Date.now() - (art.t || 0) < 15000)
+      document.getElementById('film').style.backgroundImage = `url("${art.src.replace(/"/g, '%22')}")`;
+  } catch (e) {}
+  try {
+    const r = await fetch('https://api.sixtwentysix.co/graphql', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ query:
+        'fragment M on MediaItem { sourceUrl srcSet altText mediaDetails { width height } } ' +
+        'fragment W on CaseStudy { __typename title slug featuredImage { node { sourceUrl imageMeta { videoUrl } } } } ' +
+        '{ caseStudy(id: ' + JSON.stringify(slug) + ', idType: SLUG) { title pageMeta { headline subHeadline featuredvimeoid services { name } ' +
+        'intro { introBlocks { title body } theChallenge theSpark theDelivery results awards } ' +
+        'reach { platform } campaigns { title works { nodes { ...W } } } subContent { nodes { ...W } } recommended { nodes { ...W } } ' +
+        'imageCarousel { nodes { ...M } } ' +
+        'content { fieldGroupName ' +
+        '... on PageMetaContentMediaGridLayout { layout layoutPresets media { vimeoVideoId image { node { ...M } } } } ' +
+        '... on PageMetaContentMediaCarouselLayout { media { vimeoVideoId image { node { ...M } } } } ' +
+        '... on PageMetaContentVimeovideoonclickLayout { videoid linkText linkUrl image { node { ...M } } } ' +
+        '... on PageMetaContentTestimonialsLayout { testimonials { title body reviewername reviewertitle reviewerbrand } } ' +
+        '... on PageMetaContentNewsLayout { articles { nodes { ... on Post { title link } } } } } ' +
+        '} featuredImage { node { sourceUrl } } } }' })
+    });
+    const cs = (await r.json()).data.caseStudy;
+    if (!cs) return;
+    const tt = splitT(cs.title || '');
+    document.getElementById('csTitle').innerHTML =
+      `<span class="brand">${esc((cs.title || '').split(/\s+[–—-]\s+/)[0])}</span>${tt.proj ? `<span class="proj">${esc(tt.proj)}</span>` : ''}`;
+    const metaHl = cs.pageMeta || {};
+    if ((metaHl.headline || '').trim() || (metaHl.subHeadline || '').trim())
+      document.getElementById('csTitle').insertAdjacentHTML('afterend',
+        `<p class="cs-headline">${esc((metaHl.headline || '').trim())}${(metaHl.subHeadline || '').trim() ? `<span class="sub">${esc(metaHl.subHeadline.trim())}</span>` : ''}</p>`);
+    const meta = cs.pageMeta || {}, intro = meta.intro || {};
+    /* 9/14: a photography work with no film and no featured image opens on
+       its first carousel still (the desktop rule) */
+    let galNodes = (((meta.imageCarousel || {}).nodes) || []).filter(n => n && n.sourceUrl);
+    if (meta.featuredvimeoid)
+      document.getElementById('filmSlot').innerHTML =
+        `<iframe src="https://player.vimeo.com/video/${esc(meta.featuredvimeoid)}?title=0&byline=0&portrait=0&dnt=1&autoplay=1&muted=1&playsinline=1" allow="autoplay; fullscreen" allowfullscreen></iframe>`;
+    else if (cs.featuredImage && cs.featuredImage.node)
+      document.getElementById('film').style.backgroundImage = `url("${cs.featuredImage.node.sourceUrl}")`;
+    else if (galNodes.length) {
+      document.getElementById('film').style.backgroundImage = `url("${galNodes[0].sourceUrl}")`;
+      galNodes = galNodes.slice(1);
+    }
+    const blocks = (intro.introBlocks || []).filter(b => b && String(b.body || '').trim());
+    let rows = blocks.length
+      ? blocks.map(b => [b.title || '', b.body, true])
+      : [['Challenge', intro.theChallenge, false],
+         ['The Spark', intro.theSpark, false], ['The Delivery', intro.theDelivery, false],
+         ['Results', intro.results, false], ['Awards', intro.awards, true]];
+    const svc = (meta.services || []).map(x => x && x.name && x.name.trim()).filter(Boolean);
+    if (svc.length) rows.push(['Services', svc.join(', '), false]);
+    const REACH_NAMES = { ctv: 'CTV', youtube: 'YouTube', meta: 'Meta', ooh: 'OOH', linear: 'Linear TV', x: 'X',
+      linkedin: 'LinkedIn', snapchat: 'Snapchat', tiktok: 'TikTok', instagram: 'Instagram', hulu: 'Hulu', twitch: 'Twitch' };
+    const reach = [...new Set((meta.reach || []).flatMap(q => (q && q.platform) || [])
+      .map(x => REACH_NAMES[String(x).toLowerCase()] || String(x).toUpperCase()))];
+    if (reach.length) rows.push(['Reach', reach.join(', '), false]);
+    rows = rows.filter(x => x[1] && String(x[1]).trim());
+    /* no copy -> film straight to the footer (the desktop law) */
+    document.getElementById('csLed').innerHTML = rows.map(([l, c, isHtml]) =>
+      `<p class="lab">${esc(l)}</p><div class="cp">${isHtml ? c : '<p>' + esc(c) + '</p>'}</div>`).join('');
+
+    /* ---- 9/14: everything else the CMS holds, in the CMS's order (the
+       desktop sections, stacked for the phone) ---- */
+    const nodesOf = c => ((c && c.nodes) || []).filter(Boolean);
+    const csNodes = c => nodesOf(c).filter(n => n.__typename === 'CaseStudy' && n.slug);
+    const dims = n => { const md = (n && n.mediaDetails) || {}; return (md.width > 0 && md.height > 0) ? { w: md.width, h: md.height } : { w: 16, h: 9 }; };
+    const mNode = m => (m && m.image && m.image.node && m.image.node.sourceUrl) ? m.image.node : null;
+    const img = (n, cls) => `<img class="${cls}" loading="lazy" src="${esc(n.sourceUrl)}"${n.srcSet ? ` srcset="${esc(n.srcSet)}" sizes="600px"` : ''} width="${dims(n).w}" height="${dims(n).h}" alt="${esc(n.altText || '')}">`;
+    const bg = (id, n) => { const d = dims(n); return `<div class="mvid" style="aspect-ratio:${d.w}/${d.h};"><iframe loading="lazy" src="https://player.vimeo.com/video/${esc(String(id).trim())}?background=1&autoplay=1&loop=1&muted=1&dnt=1&playsinline=1" allow="autoplay; fullscreen"></iframe></div>`; };
+    const media = m => m.vimeoVideoId ? bg(m.vimeoVideoId, mNode(m)) : (mNode(m) ? img(mNode(m), 'mimg') : '');
+    const tile = w => { const fi = w.featuredImage && w.featuredImage.node; return tileHtml({ t: w.title, img: fi && fi.sourceUrl, slug: w.slug, loop: fi && fi.imageMeta && fi.imageMeta.videoUrl }); };
+    const tiles = (label, list) => list.length ? `<p class="lab">${esc(label)}</p>${gridOpen()}${list.map(tile).join('')}</div>` : '';
+    const seen = new Set([slug]);
+    const spots = [];
+    (meta.campaigns || []).forEach(c => csNodes(c && c.works).forEach(n => { if (!seen.has(n.slug)) { seen.add(n.slug); spots.push(n); } }));
+    csNodes(meta.subContent).forEach(n => { if (!seen.has(n.slug)) { seen.add(n.slug); spots.push(n); } });
+    const recs = csNodes(meta.recommended).filter(n => n.slug !== slug);
+    let x = '';
+    const gal = galNodes;
+    if (gal.length) x += `<div class="stack">${gal.map(n => img(n, 'mimg')).join('')}</div>`;
+    (meta.content || []).filter(Boolean).forEach(L => {
+      const g = String(L.fieldGroupName || '');
+      const items = (L.media || []).filter(m => m && (mNode(m) || m.vimeoVideoId));
+      if (/MediaGrid/i.test(g) && items.length) x += `<div class="stack">${items.map(media).join('')}</div>`;
+      else if (/MediaCarousel/i.test(g) && items.length) x += `<div class="x-rail">${items.map(media).join('')}</div>`;
+      else if (/Vimeovideoonclick/i.test(g) && (L.videoid || mNode(L))) {
+        const n = mNode(L);
+        x += `<div class="vclick" data-v="${esc(String(L.videoid || '').trim())}"${n ? ` style="background-image:url('${esc(n.sourceUrl)}')"` : ''}>${L.videoid ? '<img class="pl" src="assets/cs-play.svg" alt="Play">' : ''}</div>`;
+      }
+      else if (/Testimonials/i.test(g)) (L.testimonials || []).forEach(t => {
+        if (!t || !String(t.body || '').trim()) return;
+        const who = [t.reviewername, [t.reviewertitle, t.reviewerbrand].filter(Boolean).join(', ')].filter(Boolean);
+        x += `<p class="lab">${esc(t.reviewerbrand || t.title || 'Testimonial')}</p><div class="cp"><p>${esc(String(t.body).trim())}</p>${who.length ? `<p><b>${esc(who[0])}</b>${who[1] ? '<br>' + esc(who[1]) : ''}</p>` : ''}</div>`;
+      });
+      else if (/News/i.test(g)) {
+        const arts = nodesOf(L.articles).filter(a => a && a.title && a.link);
+        if (arts.length) x += `<p class="lab">Press</p><div class="cp">${arts.map(a => `<p><a href="${esc(a.link)}" target="_blank" rel="noopener">${esc(a.title)}</a></p>`).join('')}</div>`;
+      }
+    });
+    x += tiles('More from the campaign', spots);
+    x += tiles('You might also like', recs);
+    const extra = document.getElementById('csExtra');
+    extra.innerHTML = x;
+    extra.querySelectorAll('.vclick').forEach(v => v.addEventListener('click', () => {
+      if (!v.dataset.v) return;
+      v.innerHTML = `<iframe src="https://player.vimeo.com/video/${esc(v.dataset.v)}?autoplay=1&title=0&byline=0&portrait=0&dnt=1&playsinline=1" allow="autoplay; fullscreen" allowfullscreen></iframe>`;
+    }, { once: true }));
+    armAll();
+  } catch (e) {}
+}
+
+function bootCaseStudies() {
+  document.querySelectorAll('#csTabs button').forEach(t => t.addEventListener('click', () => {
+    document.querySelectorAll('#csTabs button').forEach(o => o.classList.toggle('on', o === t));
+    document.getElementById('csGrid').innerHTML = gridOpen() + csTiles(t.dataset.c) + '</div>';
+    armAll();
+  }));
+}
+
+const io = new IntersectionObserver(es => es.forEach(e => {
+  if (e.isIntersecting) { e.target.classList.add('seen'); io.unobserve(e.target); }
+}), { threshold: 0.1 });
+function revealNow() {
+  document.querySelectorAll('.fdm:not(.seen)').forEach(el => {
+    const r = el.getBoundingClientRect();
+    if (r.top < innerHeight + 80 && r.bottom > -80) el.classList.add('seen');
+  });
+}
+window.addEventListener('scroll', revealNow, { passive: true });
+function armAll() {
+  document.querySelectorAll('.fdm:not(.seen)').forEach(el => io.observe(el));
+  revealNow();
+  armToggles();
+  armLoops();
+}
+
+/* THE REEL MOMENT, mobile (desktop updateReelMoment translated). The white
+   dissolve starts at 80% of the morph span (120px) and rides a smoothstep
+   over the next 160px; the header goes dark past 55%. When the statement
+   sheet's top edge (t, viewport px) enters the 60px band, a white clone of
+   the header is clipped to BELOW the edge and the dark header to ABOVE it,
+   so the white stripes back in bottom-up exactly on the sheet's edge. */
+const HOME_FADE_START = 96, HOME_FADE_LEN = 160, HDR_H = 60;
+/* 9/14 autoplay kick (see footerlaw.js): a reel the phone refused to start plays on the first gesture */
+(function () {
+  function kick() {
+    document.querySelectorAll('video[autoplay]').forEach(v => { if (v.paused) { v.muted = true; const p = v.play(); if (p && p.catch) p.catch(() => {}); } });
+  }
+  ['touchstart', 'pointerdown', 'scroll'].forEach(ev => window.addEventListener(ev, kick, { passive: true, capture: true }));
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) kick(); });
+  window.addEventListener('hashchange', () => setTimeout(kick, 300));
+})();
+let homeWipe = null;
+function clearHomeWipe() {
+  const hdr = document.getElementById('hdr');
+  hdr.style.clipPath = '';
+  if (homeWipe) { homeWipe.remove(); homeWipe = null; }
+}
+function homeScroll() {
+  const sheet = document.getElementById('homeSheet');
+  const hdr = document.getElementById('hdr'), bg = document.getElementById('hdrBg');
+  if (!sheet) return;
+  const t = sheet.getBoundingClientRect().top;
+  const ft = Math.max(0, Math.min(1, (window.scrollY - HOME_FADE_START) / HOME_FADE_LEN));
+  const fade = ft * ft * (3 - 2 * ft);
+  bg.style.opacity = t > 0 ? String(+(1 - fade).toFixed(3)) : '';
+  /* the reel zooms out 1.4 -> 1.0 on the same breath as the white dissolve (desktop: 1.35) */
+  const reel = document.getElementById('homeReel');
+  if (reel) reel.style.transform = 'scale(' + (1.4 - 0.4 * fade).toFixed(4) + ')';
+  const dark = fade > 0.55 && t > 0;
+  const wiping = dark && t < HDR_H;
+  if (hdr.classList.contains('dark') !== dark) {
+    if (t < HDR_H) { hdr.classList.add('snap'); setTimeout(() => hdr.classList.remove('snap'), 80); }
+    hdr.classList.toggle('dark', dark);
+  }
+  if (wiping) {
+    if (!homeWipe) {
+      const w = hdr.cloneNode(true);        /* keeps the ids so the #hdr CSS applies; appended
+                                               AFTER the real one so getElementById still hits it */
+      w.classList.remove('dark', 'snap');
+      w.style.pointerEvents = 'none';
+      w.querySelector('#hdrBg').style.opacity = '1';
+      document.body.appendChild(w);
+      homeWipe = w;
+    }
+    /* 10/21: the SX is a canvas since the 9/14 film, and cloneNode copies a
+       canvas BLANK, so the white half of the wipe lost its letters. Paint
+       the real header's current frame into the clone every wipe step. */
+    const oc = hdr.querySelectorAll('canvas'), wc = homeWipe.querySelectorAll('canvas');
+    oc.forEach((c, i) => {
+      const k = wc[i]; if (!k) return;
+      if (k.width !== c.width || k.height !== c.height) { k.width = c.width; k.height = c.height; }
+      const x = k.getContext('2d'); x.clearRect(0, 0, k.width, k.height); x.drawImage(c, 0, 0);
+    });
+    hdr.style.clipPath = 'inset(0 0 ' + Math.max(0, HDR_H - t).toFixed(1) + 'px 0)';
+    homeWipe.style.clipPath = 'inset(' + Math.max(0, t).toFixed(1) + 'px 0 0 0)';
+  } else clearHomeWipe();
+}
+
+function routeChrome() {
+  const page = (location.hash || '#home').slice(1).split('/')[0] || 'home';
+  const hdr = document.getElementById('hdr');
+  /* interior pages live at the compact SX; home rides the scroll morph */
+  if (page === 'home') { lmMode = 'scroll'; lmOnScroll(); homeScroll(); }
+  else {
+    lmMode = 'page'; lmDrive(1);
+    clearHomeWipe();
+    document.getElementById('hdrBg').style.opacity = '';
+    hdr.classList.toggle('dark', page === 'director' && window.scrollY < innerHeight * 1.6);
+  }
+}
+window.addEventListener('scroll', () => {
+  const page = (location.hash || '#home').slice(1).split('/')[0] || 'home';
+  if (page === 'director')
+    document.getElementById('hdr').classList.toggle('dark', window.scrollY < innerHeight * 1.6);
+  else if (page === 'home') homeScroll();
+}, { passive: true });
+
+function route() {
+  setMenu(false);
+  const h = (location.hash || '#home').slice(1);
+  const [page, arg] = h.split('/');
+  if (page === 'director') app.innerHTML = R.director(decodeURIComponent(arg || ''));
+  else if (page === 'work') { app.innerHTML = R.work(arg); bootWork(decodeURIComponent(arg || '')); }
+  else app.innerHTML = (R[page] || R.home)();
+  window.scrollTo(0, 0);
+  routeChrome();
+  if (page === 'director') {
+    document.querySelectorAll('.tabs button').forEach(t => t.addEventListener('click', () => {
+      document.querySelectorAll('.tabs button').forEach(o => o.classList.toggle('on', o === t));
+      paintDirGrid(window.__dirWorks, t.dataset.c);
+    }));
+    const first = document.querySelector('.tabs button');
+    if (first) paintDirGrid(window.__dirWorks, first.dataset.c);
+    dirScroll();
+  }
+  if (page === 'case-studies') bootCaseStudies();
+  if (page === 'services') armStepper();
+  if (page === 'about') armAbout(); else tmRun = false;
+  if (page === 'experiential') armHP();
+  if (page === 'home' || page === '') armNews(); else news.run = false;
+  armRails();
+  armAll();
+}
+window.addEventListener('hashchange', route);
+route();
+</script>
+</body>
+</html>
